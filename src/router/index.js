@@ -26,49 +26,180 @@ export const constantRouterMap = [
     { path: '/404', component: () => import('@/views/404'), hidden: true },
 
     /**
-     * 订单管理
+     * 监控预警
      */
     {
-        path: '/order',
+        path: '/monitor',
         component: Layout,
         alias: [ '/' ],
-        name: 'order',
+        redirect: '/monitor/carts',
+        name: 'monitor',
         hidden: false,
-        // roles: [ 'repaier' ], // 只有 修理厂用户 (维修单位) 才可以访问
-        meta: { title: '订单管理', icon: 'order' },
+        // roles: [ 'repaier' ],
+        meta: { title: '监控预警', icon: 'monitor' },
         children: [{
-            path: '/',
-            component: () => import('@/views/order/index'),
-            meta: { title: '订单管理', icon: 'order', noCache: true, /** noCache 如果设置为true，则不会被 <keep-alive> 缓存(默认 false) */ }
+            path: 'carts',
+            alias: [ '/' ],
+            component: () => import('@/views/monitor/carts'),
+            name: 'monitor-carts',
+            meta: { title: '车行监控', icon: 'carts', noCache: true, /** noCache 如果设置为true，则不会被 <keep-alive> 缓存(默认 false) */ }
+        }, {
+            path: 'subcompany',
+            name: 'monitor-subsidiary-company',
+            component: () => import('@/views/monitor/sub-company'),
+            meta: { title: '支公司监控', icon: 'subcompany', noCache: true }
+        }, {
+            path: 'team',
+            name: 'monitor-team',
+            component: () => import('@/views/monitor/team'),
+            meta: { title: '团队监控', icon: 'team', noCache: true }
         }],
     },
 
     /**
-     * 商家管理
+     * 统计分析
+     */
+    {
+        path: '/analyze',
+        component: Layout,
+        name: 'analyze',
+        hidden: false,
+        meta: { title: '统计分析', icon: 'order' },
+        children: [{
+            path: '/',
+            component: () => import('@/views/analyze/index'),
+            meta: { title: '统计分析', icon: 'analyze', noCache: true, hidden: true, }
+        }],
+    },
+
+    /**
+     * 清单明细
+     */
+    {
+        path: '/detailedlist',
+        redirect: '/detailedlist/comparison',
+        component: Layout,
+        name: 'detailedlist',
+        hidden: false,
+        meta: { title: '清单明细', icon: 'detailedlist' },
+        children: [{
+            path: 'comparison',
+            name: 'comparison',
+            component: () => import('@/views/price-list/comparison'),
+            meta: { title: '产保比明细', icon: 'comparison', noCache: true }
+        }, {
+            path: 'premium',
+            name: 'premium',
+            component: () => import('@/views/price-list/premium'),
+            meta: { title: '保费明细', icon: 'premium', noCache: true }
+        }, {
+            path: 'loss',
+            name: 'loss',
+            component: () => import('@/views/price-list/loss'),
+            meta: { title: '定损明细', icon: 'loss', noCache: true }
+        }],
+    },
+
+    /**
+     * 车商管理
      */
     {
         path: '/shops',
+        redirect: '/shops/carts',
         component: Layout,
         name: 'shops',
         hidden: false,
-        // roles: [ 'repaier' ], // 只有 修理厂用户 (维修单位) 才可以访问
-        meta: { title: '单位管理', icon: 'shops' },
+        meta: { title: '车商管理', icon: 'shops' },
         children: [{
-            path: '/',
-            component: () => import('@/views/shops/index'),
-            meta: { title: '单位管理', icon: 'shops', noCache: true, hidden: true, }
+            path: 'carts',
+            component: () => import('@/views/shops/carts'),
+            meta: { title: '车商管理', icon: 'carts', noCache: true }
+        }, {
+            path: 'regionsite',
+            name: 'regionsite',
+            component: () => import('@/views/shops/regionsite'),
+            meta: { title: '网点管理', icon: 'regionsite', noCache: true }
+        }, {
+            path: 'subcompany',
+            name: 'subsidiary-company-manage',
+            component: () => import('@/views/shops/sub-company'),
+            meta: { title: '支公司管理', icon: 'subcompany', noCache: true }
+        }, {
+            path: 'team',
+            name: 'team-manage',
+            component: () => import('@/views/shops/team'),
+            meta: { title: '团队管理', icon: 'team', noCache: true }
         }],
     },
+
+    /**
+     * 预测设置
+     */
     {
-        path: '/shops/details',
+        path: '/setting',
+        redirect: '/setting/predict',
         component: Layout,
-        name: 'shops-details',
-        hidden: true,
-        // roles: [ 'repaier' ], // 只有 修理厂用户 (维修单位) 才可以访问
-        meta: { title: '单位管理', icon: 'shops' },
+        name: 'setting',
+        hidden: false,
+        meta: { title: '预测设置', icon: 'predict' },
+        children: [{
+            path: 'predict',
+            component: () => import('@/views/setting/predict'),
+            meta: { title: '预测设置', icon: 'setting', noCache: true }
+        }, {
+            path: 'subcompany',
+            name: 'setting-sub-company',
+            component: () => import('@/views/setting/sub-company'),
+            meta: { title: '支公司数据设置', icon: 'subcompany', noCache: true }
+        }, {
+            path: 'team',
+            name: 'setting-team',
+            component: () => import('@/views/setting/team'),
+            meta: { title: '团队数据设置', icon: 'team', noCache: true }
+        }],
+    },
+
+    /**
+     * 预警日志
+     */
+    {
+        path: '/consolelog',
+        component: Layout,
+        name: 'consolelog',
+        hidden: false,
+        meta: { title: '预警日志', icon: 'consolelog' },
         children: [{
             path: '/',
-            component: () => import('@/views/shops/details'),
+            component: () => import('@/views/consolelog/index'),
+            meta: { title: '预警日志', icon: 'consolelog', noCache: true, hidden: true, }
+        }],
+    },
+
+    /**
+     * 系统设置
+     */
+    {
+        path: '/system',
+        redirect: '/system/user',
+        component: Layout,
+        name: 'system',
+        hidden: false,
+        meta: { title: '系统设置', icon: 'system' },
+        children: [{
+            path: 'user',
+            name: 'user',
+            component: () => import('@/views/system/user'),
+            meta: { title: '用户设置', icon: 'systemuser', noCache: true, hidden: true, }
+        }, {
+            path: 'roles',
+            name: 'roles',
+            component: () => import('@/views/system/roles'),
+            meta: { title: '角色设置', icon: 'roles', noCache: true }
+        }, {
+            path: 'rule',
+            name: 'rule',
+            component: () => import('@/views/system/rule'),
+            meta: { title: ' 预警规则设置', icon: 'rule', noCache: true }
         }],
     },
 

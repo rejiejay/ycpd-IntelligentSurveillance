@@ -57,7 +57,7 @@ export function reqCheckImage(baseToken) {
 /**
  * 退出登录
  */
-export function logout() {
+export function getlogout() {
     return apibasics({
         url: `${config.url.origin}/necrs/server/logout`,
         method: 'get'

@@ -17,7 +17,7 @@
         <!-- 面包屑 用于定位自己在哪 -->
         <el-breadcrumb class="app-breadcrumb" separator="/">
             <transition-group name="breadcrumb">
-                <el-breadcrumb-item v-for="(item,index) in levelList" v-if="item.meta.title" :key="item.path">
+                <el-breadcrumb-item v-for="(item, index) in levelList" v-if="item.meta.title" :key="item.path">
                     <span v-if="item.redirect === 'noredirect' || index == (levelList.length - 1) " class="no-redirect">
                         {{ item.meta.title }}
                     </span>
@@ -59,7 +59,7 @@ import pathToRegexp from 'path-to-regexp';
 // 组件类
 import { mapGetters } from 'vuex';
 // 请求类
-import { logout } from '@/api/login';
+import { getlogout } from '@/api/login';
 
 export default {
     data() {
@@ -104,7 +104,7 @@ export default {
          * 登出的方法
          */
         logout() {
-            logout()
+            getlogout()
             .then(res => {
                 window.sessionStorage.removeItem('necrstoken');
                 this.$router.push('/login');
@@ -129,7 +129,7 @@ export default {
                 matched = [
                     { 
                         path: '/', 
-                        meta: { title: '新能源洗车维修管理平台' }
+                        meta: { title: '车商智慧监控管理系统' }
                     },
                 ].concat(matched);
             }
