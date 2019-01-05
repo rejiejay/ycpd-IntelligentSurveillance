@@ -4,7 +4,9 @@
 
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
-        <h3 class="title">新能源洗车维修管理平台</h3>
+        <div class="banner flex-center"><img :src="img.picc" alt="picc"></div>
+
+        <h3 class="title">PICC智慧监控管理系统</h3>
 
         <!-- 账号 -->
         <el-form-item prop="username">
@@ -34,7 +36,10 @@
                 @keyup.enter.native="handleLogin" 
             ></el-input>
             <span class="show-pwd" @click="showPwd">
-                <svg-icon icon-class="eye" />
+                <svg-icon v-if="pwdType === 'password'" icon-class="eye" />
+                <svg v-else t="1546657974741" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3181" xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16">
+                    <path d="M512 209.403241c-201.731514 0-374.009206 125.476783-443.808922 302.596759 69.798692 177.119977 242.077408 302.596759 443.808922 302.596759 201.933105 0 374.010229-125.476783 443.808922-302.596759C886.009206 334.880023 713.933105 209.403241 512 209.403241zM512 713.731514c-111.355157 0-201.731514-90.375334-201.731514-201.731514s90.375334-201.731514 201.731514-201.731514 201.731514 90.375334 201.731514 201.731514S623.355157 713.731514 512 713.731514zM512 390.961296c-66.772776 0-121.038704 54.265928-121.038704 121.038704s54.265928 121.038704 121.038704 121.038704 121.038704-54.265928 121.038704-121.038704S578.772776 390.961296 512 390.961296z" p-id="3182" fill="#ffffff"></path>
+                </svg>
             </span>
         </el-form-item>
 
@@ -91,13 +96,14 @@
 </template>
 
 <script>
-// 框架类
 import axios from 'axios';
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
 import isMobiler from "@/utils/isMobiler";
-// 配置类
-import config from '@/config';
+// 请求类
+import { getBaseToken, reqCheckImage, checkImage, postLogin } from '@/api/login';
+// 资源类
+import picc from '@/assets/picc.png';
 
 export default {
     name: 'Login',
@@ -126,6 +132,10 @@ export default {
         }
 
         return {
+            img: {
+                picc: picc,
+            },
+
             baseToken: '', // 登录的token （登录之前的 token 都是用到这个，例如：滑动图片的高度）
             checkoutToken: '', // 获取 验证图片滑动距离 使用的 token
             loginToken: '', // 验证图片滑动距离成功 使用的 token
@@ -200,10 +210,7 @@ export default {
         getToken: function getToken() {
             const _this = this;
 
-            axios({
-                url: `${config.url.origin}/necrs/server/index`,
-                method: 'get',
-            })
+            getBaseToken()
             .then(res => {
                 _this.baseToken = res.data.data.token;
                 _this.getMachinePicture(); // 获取人机验证码图片
@@ -260,17 +267,8 @@ export default {
              */
             let loginByPC = () => {
                 _this.loading = true; // 将按钮 设置为 登录中 防止重复提交
-                console.log('请求登录', _this.loginToken)
-                axios({
-                    url: `${config.url.origin}/necrs/server/loginByPC`,
-                    method: 'post',
-                    headers: {'Content-Type': 'application/json'},
-                    data: {
-                        name: _this.loginForm.username,
-                        password: _this.loginForm.password,
-                        token: _this.loginToken,
-                    }
-                })
+
+                postLogin( _this.loginForm.username, _this.loginForm.password, _this.loginToken)
                 .then(res => {
                     _this.loading = false; // 将按钮 设置为 已经登录
 
@@ -342,10 +340,7 @@ export default {
              * 校验滑动图片距离是否正确
              */
             let checkoutDistance = () => {
-                axios({
-                    url: `${config.url.origin}/necrs/server/checkImage?token=${this.checkoutToken}&xWidth=${Math.floor(_this.jigsawMovepx)}`,
-                    method: 'get',
-                })
+                checkImage(_this.checkoutToken, _this.jigsawMovepx)
                 .then(res => {
                     
                     if (res.data.code === 1000) { // 校验成功
@@ -371,7 +366,7 @@ export default {
                         }, 2000);
                     }
                 })
-                .catch(error => alert('向服务器请求验证图片失败'));
+                .catch(error => {console.log(error);alert('向服务器请求验证图片失败')});
             }
 
             /**
@@ -441,11 +436,8 @@ export default {
 		 */
 		getMachinePicture: function getMachinePicture() {
             const _this = this;
-
-            axios({
-                url: `${config.url.origin}/necrs/server/reqCheckImage?token=${this.baseToken}&width=360&height=160`,
-                method: 'get',
-            })
+            
+            reqCheckImage(this.baseToken)
             .then(res => {
                 _this.jigsawBgPicture = res.data.data.oriImagBase64; // 设置 滑动拼图 背景
                 _this.jigsawFrontPicture = res.data.data.cutImagBase64; // 设置 滑动拼图 滑块图
@@ -470,30 +462,45 @@ $light_gray:#eee;
 
 /* reset element-ui css */
 .login-container {
-  .el-input {
-    display: inline-block;
-    height: 47px;
-    width: 85%;
-    input {
-      background: transparent;
-      border: 0px;
-      -webkit-appearance: none;
-      border-radius: 0px;
-      padding: 12px 5px 12px 15px;
-      color: $light_gray;
-      height: 47px;
-      &:-webkit-autofill {
-        box-shadow: 0 0 0px 1000px $bg inset !important;
-        -webkit-text-fill-color: #fff !important;
-      }
+
+    .banner {
+        margin: 0px auto;
+        padding-bottom: 35px;
+        width: 140px;
+
+        img {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
     }
-  }
-  .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    color: #454545;
-  }
+
+    .el-input {
+        display: inline-block;
+        height: 47px;
+        width: 85%;
+
+            input {
+                background: transparent;
+                border: 0px;
+                -webkit-appearance: none;
+                border-radius: 0px;
+                padding: 12px 5px 12px 15px;
+                color: $light_gray;
+                height: 47px;
+                &:-webkit-autofill {
+                box-shadow: 0 0 0px 1000px $bg inset !important;
+                -webkit-text-fill-color: #fff !important;
+                }
+            }
+        }
+
+    .el-form-item {
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        color: #454545;
+    }
 }
 
 </style>

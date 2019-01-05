@@ -59,7 +59,7 @@ import pathToRegexp from 'path-to-regexp';
 // 组件类
 import { mapGetters } from 'vuex';
 // 请求类
-import { logout } from '@/api/user';
+import { logout } from '@/api/login';
 
 export default {
     data() {

@@ -18,7 +18,7 @@ export function getBaseToken() {
  * @param {string} password 密码
  * @param {string} loginToken 人机验证成功后返的token
  */
-export function loginByPC(username, password, loginToken) {
+export function postLogin(username, password, loginToken) {
     return axios({
         url: `${config.url.origin}/necrs/server/loginByPC`,
         method: 'post',
@@ -47,7 +47,7 @@ export function checkImage(checkoutToken, jigsawMovepx) {
  * 获取人机验证码图片
  * @param {string} baseToken 使用当前页面的基础token获取人机验证码图片
  */
-export function checkImage(baseToken) {
+export function reqCheckImage(baseToken) {
     return axios({
         url: `${config.url.origin}/necrs/server/reqCheckImage?token=${baseToken}&width=360&height=160`,
         method: 'get',
