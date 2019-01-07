@@ -116,6 +116,46 @@
         </div>
     </div>
 
+    <!-- 搜索框 -->
+    <div class="monitor-carts-search">
+        <el-input class="carts-search-main"
+            placeholder="请输入内容" 
+            v-model="search" 
+            clearable
+        >
+            <el-button slot="append" icon="el-icon-search"></el-button>
+        </el-input>
+
+        <div class="carts-search-results" v-if="searchResults.length > 0">
+            <div class="search-results-container">
+                <div 
+                    class="search-results-item flex-start-center"
+                    v-for="(item, key) in searchResults" 
+                    :style="`${key !== (searchResults.length - 1) ? 'border-bottom: 1px solid #ddd;' : ''}`"
+                    :key="key"
+                >
+                    <div class="results-item-left flex-rest">
+                        <div class="item-left-title">{{item.title}}</div>
+                        <div class="item-left-address">{{item.address}}</div>
+                        <div class="item-left-lable flex-start-bottom">
+                            <div :class="`left-lable-item ${item.isSigned ? 'signed-contract' : 'not-signed-contract'}`">{{item.isSigned ? "已签约" : "未签约"}}</div>
+                            <el-rate
+                                v-model="item.rate"
+                                disabled
+                                :colors="['#F56C6C', '#F56C6C', '#F56C6C']"
+                                disabled-void-color="#ddd"
+                            ></el-rate>
+                        </div>
+                    </div>
+                    <div class="results-item-img">
+                        <img src="https://ycpd-assets.oss-cn-shenzhen.aliyuncs.com/pingan-wechatapplets/home/banner/001image001.jpg" alt="resultsitemimg" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- 筛选模态框 -->
     <ModalByZindex 
         class="filter-modal"
@@ -149,8 +189,8 @@
                         v-for="item in subcompanyList"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                        :value="item.value"
+                    ></el-option>
                 </el-select>
                 <div style="width: 15px;"></div>
                 <el-select v-model="team" placeholder="请选择团队">
@@ -158,8 +198,8 @@
                         v-for="item in teamList"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                        :value="item.value"
+                    ></el-option>
                 </el-select>
                 <div style="width: 15px;"></div>
                 <el-select v-model="salesman" placeholder="请选择业务员">
@@ -167,8 +207,8 @@
                         v-for="item in salesmanList"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                        :value="item.value"
+                    ></el-option>
                 </el-select>
             </div>
 
@@ -178,8 +218,8 @@
                         v-for="item in cartsList"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                        :value="item.value"
+                    ></el-option>
                 </el-select>
                 <div style="width: 15px;"></div>
                 <el-select v-model="cooperation" placeholder="请选择是否合作">
@@ -187,8 +227,8 @@
                         v-for="item in cooperationList"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                        :value="item.value"
+                    ></el-option>
                 </el-select>
                 <div style="width: 15px;"></div>
                 <el-select v-model="regionType" placeholder="请选择网点类型">
@@ -196,8 +236,8 @@
                         v-for="item in regionTypeList"
                         :key="item.value"
                         :label="item.label"
-                        :value="item.value">
-                    </el-option>
+                        :value="item.value"
+                    ></el-option>
                 </el-select>
             </div>
 
@@ -306,12 +346,30 @@ export default {
 
             rate: 4, // 评分
 
-            // 是否显示筛选模态框
-            isFilterModalShow: true,
+            /**
+             * 搜索
+             */
+            search: '', // 搜索内容
+            searchResults: [ // 搜索结果
+                // {
+                //     title: '深圳市宝创汽车贸易有限公司',
+                //     address: '广东省深圳市龙岗区宝荷大道171号',
+                //     isSigned: false,
+                //     lable: '已签约',
+                //     rate: 4,
+                // }, {
+                //     title: '深圳市宝创汽车贸易有限公司',
+                //     address: '广东省深圳市龙岗区宝荷大道171号',
+                //     isSigned: true,
+                //     lable: '已签约',
+                //     rate: 3,
+                // }
+            ],
 
             /**
              * 筛选
              */
+            isFilterModalShow: false, // 是否显示筛选模态框
             startTime: initStartTime, // 开始日期
             endTime: initEndTime, // 结束日期
             subcompany: '', // 支公司
@@ -577,6 +635,74 @@ $black4: #C0C4CC;
                     padding-top: 5px;
                     font-size: 12px;
                 }
+            }
+        }
+    }
+}
+
+// 搜索框
+.monitor-carts-search {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+    width: 300px;
+
+    .carts-search-results {
+        padding-top: 15px;
+        
+        .search-results-container {
+            background: #fff;
+            padding: 0px 10px 0px 10px;
+        }
+
+        .search-results-item {
+            padding-top: 10px;
+            padding-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .results-item-left {
+            padding-right: 15px;
+            font-size: 12px;
+
+            .item-left-title {
+                color: $black1;
+                padding-bottom: 2.5px;
+            }
+
+            .item-left-address {
+                color: $black3;
+                padding-bottom: 5px;
+            }
+
+            .item-left-lable {
+
+                .left-lable-item {
+                    font-size: 12px;
+                    padding: 0px 5px;
+                    margin-right: 10px;
+                    line-height: 20px;
+                    color: #fff;
+                }
+
+                .signed-contract {
+                    background: #67C23A;
+                }
+
+                .not-signed-contract {
+                    background: #F56C6C;
+                }
+            }
+        }
+
+        .results-item-img {
+            width: 70px;
+            height: 50px;
+
+            img {
+                display: block;
+                width: 100%;
+                height: 100%;
             }
         }
     }
