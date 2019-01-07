@@ -112,12 +112,8 @@ export const constantRouterMap = [
         meta: { title: '车商管理', icon: 'shops' },
         children: [{
             path: 'carts',
+            name: 'carts',
             component: () => import('@/views/shops/carts'),
-            meta: { title: '车商管理', icon: 'carts', noCache: true }
-        }, {
-            path: 'regionsite',
-            name: 'regionsite',
-            component: () => import('@/views/shops/regionsite'),
             meta: { title: '网点管理', icon: 'regionsite', noCache: true }
         }, {
             path: 'subcompany',
@@ -143,10 +139,6 @@ export const constantRouterMap = [
         hidden: false,
         meta: { title: '预测设置', icon: 'predict' },
         children: [{
-            path: 'predict',
-            component: () => import('@/views/setting/predict'),
-            meta: { title: '预测设置', icon: 'setting', noCache: true }
-        }, {
             path: 'subcompany',
             name: 'setting-sub-company',
             component: () => import('@/views/setting/sub-company'),
