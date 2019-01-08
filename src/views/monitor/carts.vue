@@ -171,15 +171,11 @@
 
             <div class="modal-main-time flex-start">
                 <el-date-picker
-                    v-model="startTime"
-                    type="date"
-                    placeholder="开始日期"
-                ></el-date-picker>
-                <div style="width: 15px;"></div>
-                <el-date-picker
-                    v-model="endTime"
-                    type="date"
-                    placeholder="结束日期"
+                    v-model="startendTime"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
                 ></el-date-picker>
             </div>
 
@@ -423,8 +419,7 @@ export default {
              * 筛选
              */
             isFilterModalShow: false, // 是否显示筛选模态框
-            startTime: initStartTime, // 开始日期
-            endTime: initEndTime, // 结束日期
+            startendTime: '', // 开始结束时间
             subcompany: '', // 支公司
             subcompanyList: [
                 {
@@ -891,7 +886,7 @@ $black4: #C0C4CC;
         padding-top: 15px;
 
         .el-date-editor {
-            width: 307px;
+            width: 660px;
         }
     }
 
