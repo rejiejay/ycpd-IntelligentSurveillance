@@ -19,7 +19,7 @@
 
         <div class="company-operate-right">
             <el-input class="carts-search-main"
-                placeholder="安装支公司搜索" 
+                placeholder="按照支公司搜索" 
                 v-model="search" 
                 clearable
             >
@@ -32,7 +32,7 @@
     <div class="subsidiary-company-table">
         <div class="company-table-title flex-start">
             <div class="company-table-ranking">
-                <span>排名</span>
+                排名
             </div>
             <div class="company-table-name">
                 <span>名称</span>
@@ -51,6 +51,101 @@
             </div>
         </div>
 
+        <div class="company-table-form">
+            <!-- 一个项 -->
+            <div class="company-table-item flex-start-center"
+                v-for="(item, key) in subCompanyList" 
+                :key="key"
+            >
+                <div class="company-table-ranking">{{item.no}}</div>
+                <div class="company-table-name">{{item.name}}</div>
+
+                <div class="company-table-premium flex-rest">
+                    <div class="company-table-container flex-start">
+
+                        <div class="company-table-activate flex-start-center"
+                            :style="`width: ${
+                                item.premiumPercent
+                            }%; background: ${
+                                /** 小于警戒线会显示黄色 */
+                                item.premiumPercent < premiumWarningLine ? '#E6A23C' : '#67C23A'
+                            };`"
+                        >
+                            <div class="flex-rest" v-if="item.premiumPercent < 70 /** 这里设置最大宽度为 70% 因为最后有 1800 / 6000 万元 怕会被挡住 */" ></div>
+                            <div v-else style="width: 70%;"></div>
+                            <div class="table-activate-percent" v-if="item.premiumPercent >= 30 /** 当百分比大于30 的时候显示在这边即可 */">
+                                <span>{{`${item.premiumPercent}%`}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="company-table-disable flex-rest flex-start-center">
+                            <span 
+                                v-if="item.premiumPercent < 30 /** 当百分比小于30的显示在这边，因为怕会被挤掉 */"
+                            >{{`${item.premiumPercent}%`}}</span>
+                        </div>
+                        
+                        <div class="company-table-lable">{{`${item.premium} / ${item.premiumPredicted} 万元`}}</div>
+                    </div>
+                </div>
+                <div class="company-table-loss flex-rest">
+                    <div class="company-table-container flex-start">
+
+                        <div class="company-table-activate flex-start-center"
+                            :style="`width: ${item.lossPercent}%; background: ${item.lossPercent < premiumWarningLine ? '#E6A23C' : '#67C23A'};`"
+                        >
+                            <div class="flex-rest" v-if="item.lossPercent < 70" ></div>
+                            <div v-else style="width: 70%;"></div>
+                            <div class="table-activate-percent" v-if="item.lossPercent >= 30">
+                                <span>{{`${item.lossPercent}%`}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="company-table-disable flex-rest flex-start-center">
+                            <span v-if="item.lossPercent < 30">{{`${item.lossPercent}%`}}</span>
+                        </div>
+                        
+                        <div class="company-table-lable">{{`${item.loss} / ${item.lossPredicted} 万元`}}</div>
+                    </div>
+                </div>
+                <div class="company-table-proportion flex-rest">
+                    <div class="company-table-container flex-start">
+                        <div class="company-table-activate flex-start-center"
+                            :style="`width: ${item.proportion}%; background: ${item.proportion < premiumWarningLine ? '#E6A23C' : '#67C23A'};`"
+                        >
+                            <div class="flex-rest"></div>
+                            <div class="table-activate-percent" v-if="item.proportion >= 30">
+                                <span>{{`${item.proportion}%`}}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="company-table-disable flex-rest flex-start-center">
+                            <span v-if="item.proportion < 30">{{`${item.proportion}%`}}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 预警线 -->
+            <div class="table-form-predicted flex-start">
+                <div style="width: 45px;"></div>
+                <div style="width: 200px;"></div>
+                <div class="company-table-premium flex-rest flex-start">
+                    <div class="company-table-predicted" :style="`width: ${premiumWarningLine}%`">
+                        <div class="table-predicted-label">{{premiumWarningLine}}%</div>
+                    </div>
+                </div>
+                <div class="company-table-loss flex-rest flex-start">
+                    <div class="company-table-predicted" :style="`width: ${lossSortLine}%`">
+                        <div class="table-predicted-label">{{lossSortLine}}%</div>
+                    </div>
+                </div>
+                <div class="company-table-proportion flex-rest flex-start">
+                    <div class="company-table-predicted" :style="`width: ${proportionSortLine}%`">
+                        <div class="table-predicted-label">{{proportionSortLine}}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
     
@@ -145,6 +240,10 @@ export default {
              */
             proportionSort: null,
 
+            premiumWarningLine: 50, // 保费 预警线 （百分比1~100）
+            lossSortLine: 50, // 定损 预警线 （百分比1~100）
+            proportionSortLine: 50, // 产保比 预警线 （百分比1~100）
+
             /**
              * 分页相关
              */
@@ -153,6 +252,37 @@ export default {
             pageTotal: 1, // 一共多少条数据 
 
             subCompanyList: [
+                {
+                    no: 1, // 排名
+                    name: '深圳市有限公司', // 名称
+                    premium: 1800, // 保费收入（万元）
+                    premiumPredicted: 6000, // 保费预测收入（万元）
+                    premiumPercent: 60, // 保费预测百分比(1~100)
+                    loss: 1800, // 保费收入（万元）
+                    lossPredicted: 6000, // 保费预测收入（万元）
+                    lossPercent: 20, // 保费预测百分比(1~100)
+                    proportion: 20, // 产保比 (1~100)
+                }, {
+                    no: 2,
+                    name: '深圳市宝创汽车贸易有限公司爱的萨达四大的',
+                    premium: 1800, // 保费收入（万元）
+                    premiumPredicted: 6000, // 保费预测收入（万元）
+                    premiumPercent: 40, // 保费预测百分比(1~100)
+                    loss: 1800, // 保费收入（万元）
+                    lossPredicted: 6000, // 保费预测收入（万元）
+                    lossPercent: 45, // 保费预测百分比(1~100)
+                    proportion: 90, // 产保比 (1~100)
+                }, {
+                    no: 3,
+                    name: '深圳市宝创汽车贸易有限公司',
+                    premium: 1800, // 保费收入（万元）
+                    premiumPredicted: 6000, // 保费预测收入（万元）
+                    premiumPercent: 20, // 保费预测百分比(1~100)
+                    loss: 1800, // 保费收入（万元）
+                    lossPredicted: 6000, // 保费预测收入（万元）
+                    lossPercent: 80, // 保费预测百分比(1~100)
+                    proportion: 60, // 产保比 (1~100)
+                }, 
             ],
         } 
     },
@@ -168,10 +298,10 @@ export default {
          */
         sortToIcon: function sortToIcon(name) {
             if (name && name === 'up') {
-                return 'el-icon-caret-top';
+                return 'el-icon-caret-bottom';
 
             } else if (name && name === 'down') {
-                return 'el-icon-caret-bottom';
+                return 'el-icon-caret-top';
 
             } else {
                 return 'el-icon-d-caret';
@@ -275,6 +405,11 @@ $black4: #C0C4CC;
     padding: 15px;
 
     .company-table-title {
+        color: $black1;
+        font-size: 16px;
+        padding-bottom: 15px;
+        
+
         span {
             padding-left: 15px;
         }
@@ -305,6 +440,91 @@ $black4: #C0C4CC;
 
     .company-table-name {
         width: 200px;
+    }
+
+    // 一个项
+    .company-table-form {
+        position: relative;
+
+        .company-table-item {
+            border-top: 1px solid #ddd;
+            min-height: 45px;
+        }
+
+        .company-table-ranking {
+            text-align: center;
+        }
+
+        // 因为会换行 所以给与一定的间距
+        .company-table-name {
+            padding: 15px;
+        }
+
+        .company-table-premium, 
+        .company-table-loss, 
+        .company-table-proportion {
+            padding-right: 15px;
+
+            .company-table-container {
+                position: relative;
+                height: 45px;
+                background: #f5f5f5;
+            }
+
+            // 激活的百分比进度部分
+            .company-table-activate {
+                height: 45px;
+
+                .table-activate-percent {
+                    color: #fff;
+
+                    span {
+                        padding-right: 10px;
+                    }
+                }
+            }
+
+            // 失效的百分比进度部分
+            .company-table-disable {
+                height: 45px;
+
+                span {
+                    padding-left: 10px;
+                }
+            }
+
+            .company-table-lable {
+                position: absolute;
+                line-height: 45px;
+                right: 10px;
+            }
+        }
+
+        // 预警线
+        .table-form-predicted {
+            position: absolute;
+            left: 0px;
+            top: 0px;
+            width: 100%;
+            height: 100%;
+
+            > div {
+                height: 100%;
+                padding-bottom: 7.5px;
+            }
+
+            .company-table-predicted {
+                position: relative;
+                height: 100%;
+                border-right: 1px solid #F56C6C;
+
+                .table-predicted-label {
+                    position: absolute;
+                    bottom: -20px;
+                    right: -15px;
+                }
+            }
+        }
     }
 }
 
