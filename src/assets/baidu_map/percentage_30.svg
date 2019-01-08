@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="40px" height="48.5px" viewBox="0 0 64 78" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.4 (67378) - http://www.bohemiancoding.com/sketch -->
+    <title>30@3x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <filter x="-33.3%" y="-300.0%" width="166.7%" height="700.0%" filterUnits="objectBoundingBox" id="filter-1">
+            <feGaussianBlur stdDeviation="2" in="SourceGraphic"></feGaussianBlur>
+        </filter>
+        <path d="M14.1258066,49.1362905 C5.73775827,44.822631 0,36.0813781 0,26 C0,11.6405965 11.6405965,0 26,0 C40.3594035,0 52,11.6405965 52,26 C52,36.0813781 46.2622417,44.822631 37.8741934,49.1362905 L26,62 L14.1258066,49.1362905 Z M26,34 C30.418278,34 34,30.418278 34,26 C34,21.581722 30.418278,18 26,18 C21.581722,18 18,21.581722 18,26 C18,30.418278 21.581722,34 26,34 Z" id="path-2"></path>
+        <filter x="-19.2%" y="-12.9%" width="138.5%" height="132.3%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="3" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0   0 0 0 0 0   0 0 0 0 0  0 0 0 0.3 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="其它" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="人保地图" transform="translate(-381.000000, -702.000000)">
+            <g id="分组" transform="translate(159.000000, 558.000000)">
+                <g id="30" transform="translate(228.000000, 148.000000)">
+                    <ellipse id="椭圆形-copy-8" fill-opacity="0.35" fill="#000000" filter="url(#filter-1)" cx="26" cy="69" rx="9" ry="1"></ellipse>
+                    <g id="合并形状">
+                        <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                        <use fill="#FFFFFF" fill-rule="evenodd" xlink:href="#path-2"></use>
+                    </g>
+                    <path d="M26,50 C12.745166,50 2,39.254834 2,26 C2,12.745166 12.745166,2 26,2 C39.254834,2 50,12.745166 50,26 C50,39.254834 39.254834,50 26,50 Z M26,36 C31.5228475,36 36,31.5228475 36,26 C36,20.4771525 31.5228475,16 26,16 C20.4771525,16 16,20.4771525 16,26 C16,31.5228475 20.4771525,36 26,36 Z" id="椭圆形" fill="#E74741" fill-rule="nonzero"></path>
+                    <path d="M26,1.5 L26,16.5 C20.7532949,16.5 16.5,20.7532949 16.5,26 C16.5,31.2467051 20.7532949,35.5 26,35.5 C30.2218887,35.5 33.8005436,32.7459885 35.0374762,28.936454 L49.3071754,33.5729603 C46.1171915,43.3975493 36.8880289,50.5 26,50.5 C12.4690236,50.5 1.5,39.5309764 1.5,26 C1.5,12.4690236 12.4690236,1.5 26,1.5 Z" id="合并形状" stroke="#FFFFFF" fill="#66C231" fill-rule="nonzero"></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

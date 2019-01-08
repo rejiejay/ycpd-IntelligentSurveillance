@@ -323,6 +323,19 @@
 <script>
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
+// 资源类
+import no_cooperate from '@/assets/baidu_map/no_cooperate.svg';
+import percentage_0 from '@/assets/baidu_map/percentage_0.svg';
+import percentage_10 from '@/assets/baidu_map/percentage_10.svg';
+import percentage_20 from '@/assets/baidu_map/percentage_20.svg';
+import percentage_30 from '@/assets/baidu_map/percentage_30.svg';
+import percentage_40 from '@/assets/baidu_map/percentage_40.svg';
+import percentage_50 from '@/assets/baidu_map/percentage_50.svg';
+import percentage_60 from '@/assets/baidu_map/percentage_60.svg';
+import percentage_70 from '@/assets/baidu_map/percentage_70.svg';
+import percentage_80 from '@/assets/baidu_map/percentage_80.svg';
+import percentage_90 from '@/assets/baidu_map/percentage_90.svg';
+import percentage_100 from '@/assets/baidu_map/percentage_100.svg';
 
 export default {
     name: 'monitor-carts',
@@ -343,6 +356,46 @@ export default {
             clientHeight: document.body.offsetHeight || document.documentElement.clientHeight || window.innerHeight, // 设备高度
 
             mountBaiduMap: new BMap.Map('BaiduMap'), // 百度地图实例 
+
+            img: {
+                no_cooperate: no_cooperate,
+                percentage_0: percentage_0,
+                percentage_10: percentage_10,
+                percentage_20: percentage_20,
+                percentage_30: percentage_30,
+                percentage_40: percentage_40,
+                percentage_50: percentage_50,
+                percentage_60: percentage_60,
+                percentage_70: percentage_70,
+                percentage_80: percentage_80,
+                percentage_90: percentage_90,
+                percentage_100: percentage_100,
+            },
+
+            // 地图上的所有数据
+            cartslist: [
+                {
+                    title: '深圳市龙岗区宝创汽车服务中心',
+                    address: '广东省深圳市龙岗区宝荷大道171号',
+                    isSelected: false, // 是否被选中 （选中弹出 Label 标签）
+                    isCooperate: false, // 是否合作
+                    lossAmount: 14232, // 定损金额
+                    premiumAmount: 3244, // 保费金额
+                    longitude: 114.059560, // 经度
+                    latitude: 22.542860, // 纬度
+                }, 
+                {lossAmount: 3, premiumAmount: 100, longitude: 114.049560, latitude: 22.542760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 10, premiumAmount: 100, longitude: 114.039660, latitude: 22.542660, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 17, premiumAmount: 100, longitude: 114.029760, latitude: 22.542560, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 28, premiumAmount: 100, longitude: 114.019860, latitude: 22.542460, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 41, premiumAmount: 100, longitude: 114.069960, latitude: 22.542360, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 52, premiumAmount: 100, longitude: 114.078560, latitude: 22.542260, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 63, premiumAmount: 100, longitude: 114.088360, latitude: 22.542160, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 74, premiumAmount: 100, longitude: 114.098260, latitude: 22.542960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 78, premiumAmount: 100, longitude: 114.118160, latitude: 22.541960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 89, premiumAmount: 100, longitude: 114.128660, latitude: 22.541860, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                {lossAmount: 100, premiumAmount: 100, longitude: 114.138760, latitude: 22.541760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+            ],
 
             rate: 4, // 评分
 
@@ -439,6 +492,114 @@ export default {
             this.mountBaiduMap = new BMap.Map('BaiduMap'); // 创建地图实例  
             this.mountBaiduMap.centerAndZoom(new BMap.Point(114.059560, 22.542860), 13); // 初始化地图，设置中心点坐标(深圳福田) 和地图级别  
             this.mountBaiduMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+            this.renderMarkerPoint();
+        },
+    
+        /**
+         * 渲染地图车行列表
+         * 可以参考商家列表 http://svn.hotgz.com:3390/svn/YCPD_Designer/主站点前端/车主端 - 商家列表/C:/Rejiejay/YCPD_Designer/主站点前端/车主端 - 商家列表\src\views\map\list.vue
+         */
+        renderMarkerPoint: function renderMarkerPoint() {
+            const _this = this;
+
+            /**
+             * 根据 定损金额/保费金额 算出 选择哪张图片
+             * （除开不合作的，一共有11张图）
+             * @param {number} param 百分比 例如 0.01
+             */
+            let calculateImg = param => {
+                let scope = 10 - Math.round(param * 10); // 0~10
+
+                if (scope === 0) {
+                    return _this.img.percentage_0
+                } else {
+                    return _this.img[`percentage_${scope}0`]
+                }
+            }
+
+            /**
+             * 渲染地图上面的标注
+             */
+            this.cartslist.map((val, key) => {
+                let percentage = val.lossAmount / val.premiumAmount; // 定损金额/保费金额
+                // 图标
+                let baiduMapIcon = new BMap.Icon(
+                    _this.img.no_cooperate, // 图片（不合作）
+                    new BMap.Size(30, 45), // 尺寸大小
+                );
+
+                // 合作
+                if (val.isCooperate) {
+                    let myImg = calculateImg(percentage); // 计算图片
+                    baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(40, 48.5));
+                }
+
+                // 当前位置点
+                let baiduMapPoint = new BMap.Point(val.longitude, val.latitude);
+                // 标记
+                let baiduMapMarker = new BMap.Marker(baiduMapPoint, { icon: baiduMapIcon });
+
+                // 文本内容
+                if (val.isCooperate) {
+                    let labelContent = `${Math.floor(percentage * 100)}%`;
+                    let baiduMapLabel = new BMap.Label(
+                        labelContent, // 文本内容 
+                        { 
+                            offset: new BMap.Size(20, -15), // 偏移量
+                            position: baiduMapPoint, // 位置 
+                        }
+                    );
+                    baiduMapLabel.setStyle({ // 样式
+                        transform: 'translateX(-50%)',
+                        display: 'block',
+                        fontSize: '12px',
+                        border: 'none',
+                        color: '#000',
+                        backgroundColor: '#fff',
+                    });
+                    baiduMapMarker.setLabel(baiduMapLabel);
+                }
+
+                // 开始渲染
+                _this.mountBaiduMap.addOverlay(baiduMapMarker);
+
+                // 选中
+                if (val.isSelected) {
+
+                    // 创建信息窗口对象    
+                    let infoWindow = new BMap.InfoWindow(
+                        val.address, 
+                        {    
+                            width : 100,     // 信息窗口宽度 
+                            height: 22,     // 信息窗口高度    
+                            title : val.title  // 信息窗口标题   
+                        }
+                    );
+                    // 打开信息窗口
+                    _this.mountBaiduMap.openInfoWindow(infoWindow, baiduMapPoint); 
+                }
+
+                // 绑定事件
+                baiduMapMarker.addEventListener("click", function () {
+                    let newCartslist = _this.cartslist.concat([]);
+
+                    _this.mountBaiduMap.clearOverlays(); // 清除所有遮罩物
+
+                    _this.cartslist = newCartslist.map((data, index) => {
+                        // 选中
+                        if (key === index) {
+                            data.isSelected = true;
+                        } else {
+                            data.isSelected = false;
+                        }
+                        
+                        return data;
+                    });
+
+                    _this.renderMarkerPoint(); // 重新渲染
+                });
+            });
         },
 
         /**
