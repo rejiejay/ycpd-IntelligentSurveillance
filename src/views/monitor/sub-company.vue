@@ -402,14 +402,13 @@ $black4: #C0C4CC;
 
 // 表单部分
 .subsidiary-company-table {
-    padding: 15px;
+    padding: 15px 15px 30px 15px;
 
     .company-table-title {
         color: $black1;
         font-size: 16px;
         padding-bottom: 15px;
         
-
         span {
             padding-left: 15px;
         }
@@ -445,6 +444,7 @@ $black4: #C0C4CC;
     // 一个项
     .company-table-form {
         position: relative;
+        border-bottom: 1px solid #ddd;
 
         .company-table-item {
             border-top: 1px solid #ddd;
@@ -510,7 +510,6 @@ $black4: #C0C4CC;
 
             > div {
                 height: 100%;
-                padding-bottom: 7.5px;
             }
 
             .company-table-predicted {
@@ -520,7 +519,7 @@ $black4: #C0C4CC;
 
                 .table-predicted-label {
                     position: absolute;
-                    bottom: -20px;
+                    bottom: -24px;
                     right: -15px;
                 }
             }
