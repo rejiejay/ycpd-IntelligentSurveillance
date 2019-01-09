@@ -5,35 +5,39 @@
     <div class="analyze-operate flex-start-bottom">
         <div class="analyze-time-section">
             <el-select v-model="analyzeTimeSection" placeholder="请选择统计分析">
-                <el-option label="按月分析" value="month"></el-option>
                 <el-option label="按日分析" value="data"></el-option>
+                <el-option label="按月分析" value="month"></el-option>
             </el-select>
-        </div>
-
-        <div class="analyze-operate-month flex-start" v-if="analyzeTimeSection === 'month'">
-            <el-date-picker
-                v-model="startMonthTime"
-                type="month"
-                placeholder="开始日期"
-            ></el-date-picker>
-
-            <el-date-picker
-                v-model="endMonthTime"
-                type="month"
-                placeholder="结束日期"
-            ></el-date-picker>
         </div>
 
         <div class="analyze-operate-date flex-start" v-if="analyzeTimeSection === 'data'">
             <el-date-picker
                 v-model="startDataTime"
+                @change="startDataHandle"
                 type="date"
                 placeholder="开始日期"
             ></el-date-picker>
 
             <el-date-picker
                 v-model="endDataTime"
+                @change="endDataHandle"
                 type="date"
+                placeholder="结束日期"
+            ></el-date-picker>
+        </div>
+
+        <div class="analyze-operate-month flex-start" v-if="analyzeTimeSection === 'month'">
+            <el-date-picker
+                v-model="startMonthTime"
+                @change="startMonthHandle"
+                type="month"
+                placeholder="开始日期"
+            ></el-date-picker>
+
+            <el-date-picker
+                v-model="endMonthTime"
+                @change="endMonthHandle"
+                type="month"
                 placeholder="结束日期"
             ></el-date-picker>
         </div>
@@ -67,7 +71,7 @@
 
         <el-button icon="el-icon-search" type="primary">查询</el-button>
         <el-button icon="el-icon-download" type="success">导出</el-button>
-        <el-button size="mini" type="danger" round>清空查询条件</el-button>
+        <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
 
     <!-- 图表部分 -->
@@ -114,24 +118,24 @@ export default {
              * 开始结束月份
              * 最大区间12个月
              */
-            startMonthTime: '',
-            endMonthTime: '',
+            startMonthTime: null,
+            endMonthTime: null,
 
-            subCompanySection: '', // 支公司
+            subCompanySection: null, // 支公司
             subCompanyOptions: [
                 {
                     value: '支公司一',
                     lable: '支公司一',
                 }
             ],
-            teamSection: '', // 业务团队
+            teamSection: null, // 业务团队
             teamOptions: [
                 {
                     value: '业务团队一',
                     lable: '业务团队一',
                 }
             ],
-            regionSection: '', // 网点
+            regionSection: null, // 网点
             regionOptions: [
                 {
                     value: '网点一',
@@ -288,6 +292,148 @@ export default {
          */
         initProportionCharts: function initProportionCharts() {
             let myChart = this.mountProportionCharts;
+        },
+
+        /**
+         * 开始时间（日） 处理函数
+         */
+        startDataHandle: function startDataHandle(date) {
+            // 判断 结束日期 是否为空
+            if (!this.endDataTime) {
+                // 为空不需要做任何处理
+                return false;
+            }
+
+            // 判断 开始时间 是否大于 结束时间
+            if (date.getTime() >= this.endDataTime.getTime()) {
+                // 不大于的情况下, 弹出提示
+                this.endDataTime = new Date(date.getTime() + (3600 * 1000 * 24)); // 结束日期设置往后一天
+                return this.$message({
+                    message: '开始时间必须小于结束时间',
+                    type: 'info'
+                });
+            }
+
+            // 判断跨度是否大于 31天
+            let spanTimestamp = 3600 * 1000 * 24 * 31; // 31天跨度的时间戳
+            if ((this.endDataTime.getTime() - date.getTime()) > spanTimestamp) {
+                // 超过跨度, 弹出提示
+                this.startDataTime = new Date(this.endDataTime.getTime() - spanTimestamp); // 设置为最大跨度的时间
+                return this.$message({
+                    message: '最多可统计31天的数据',
+                    type: 'warning'
+                });
+            }
+        },
+
+        /**
+         * 结束时间（日） 处理函数
+         */
+        endDataHandle: function endDataHandle(date) {
+            // 判断 开始日期 是否为空
+            if (!this.startDataTime) {
+                // 为空不需要做任何处理
+                return false;
+            }
+
+            // 判断 开始时间 是否大于 结束时间
+            if (this.startDataTime.getTime() >= date.getTime()) {
+                // 不大于的情况下, 弹出提示
+                this.startDataTime = new Date(date.getTime() - (3600 * 1000 * 24)); // 开始日期设置往前一天
+                return this.$message({
+                    message: '结束时间必须大于开始时间',
+                    type: 'info'
+                });
+            }
+
+            // 判断跨度是否大于 31天
+            let spanTimestamp = 3600 * 1000 * 24 * 31; // 31天跨度的时间戳
+            if ((date.getTime() - this.startDataTime.getTime()) > spanTimestamp) {
+                // 超过跨度, 弹出提示
+                this.endDataTime = new Date(this.startDataTime.getTime() + spanTimestamp); // 设置为最大跨度的时间
+                return this.$message({
+                    message: '按日分析最多可统计31天的数据',
+                    type: 'warning'
+                });
+            }
+        },
+
+        /**
+         * 开始时间（月） 处理函数
+         */
+        startMonthHandle: function startMonthHandle(date) {
+            // 判断 结束日期 是否为空
+            if (!this.endMonthTime) {
+                // 为空不需要做任何处理
+                return false;
+            }
+
+            // 判断 开始时间 是否大于 结束时间
+            if (date.getTime() >= this.endMonthTime.getTime()) {
+                // 不大于的情况下, 弹出提示
+                this.endMonthTime = new Date(date.getTime() + (3600 * 1000 * 24 * 31)); // 结束日期设置往后一月
+                return this.$message({
+                    message: '开始时间必须小于结束时间',
+                    type: 'info'
+                });
+            }
+
+            // 判断跨度是否大于 12个月
+            let spanTimestamp = 3600 * 1000 * 24 * 365; // 12个月跨度的时间戳
+            if ((this.endMonthTime.getTime() - date.getTime()) > spanTimestamp) {
+                // 超过跨度, 弹出提示
+                this.startMonthTime = new Date(this.endMonthTime.getTime() - spanTimestamp); // 设置为最大跨度的时间
+                return this.$message({
+                    message: '最多可统计12个月的数据',
+                    type: 'warning'
+                });
+            }
+        },
+
+        /**
+         * 结束时间（月） 处理函数
+         */
+        endMonthHandle: function endMonthHandle(date) {
+            // 判断 开始日期 是否为空
+            if (!this.startMonthTime) {
+                // 为空不需要做任何处理
+                return false;
+            }
+
+            // 判断 开始时间 是否大于 结束时间
+            if (this.startMonthTime.getTime() >= date.getTime()) {
+                // 不大于的情况下, 弹出提示
+                this.startMonthTime = new Date(date.getTime() - (3600 * 1000 * 24 * 31)); // 开始日期设置往前一个月
+                return this.$message({
+                    message: '结束时间必须大于开始时间',
+                    type: 'info'
+                });
+            }
+
+            // 判断跨度是否大于 12个月
+            let spanTimestamp = 3600 * 1000 * 24 * 365; // 12个月跨度的时间戳
+            if ((date.getTime() - this.startMonthTime.getTime()) > spanTimestamp) {
+                // 超过跨度, 弹出提示
+                this.endMonthTime = new Date(this.startMonthTime.getTime() + spanTimestamp); // 设置为最大跨度的时间
+                return this.$message({
+                    message: '按日分析最多可统计12个月的数据',
+                    type: 'warning'
+                });
+            }
+        },
+
+        /**
+         * 清空查询条件
+         */
+        clearConditions: function clearConditions() {
+            this.analyzeTimeSection = 'data';
+            this.startDataTime = this.initStartTime;
+            this.endDataTime = this.initEndTime;
+            this.startMonthTime = null;
+            this.endMonthTime = null;
+            this.subCompanySection = null;
+            this.teamSection = null;
+            this.regionSection = null;
         },
 
         /**
