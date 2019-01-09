@@ -341,9 +341,9 @@ export default {
 	data: function data() { 
         let thisFullYear = new Date().getFullYear(); // 今年
         let thisMonth = new Date().getMonth(); // 这个月 - 1
-        // 初始化 筛选的开始时间
+        // 初始化 筛选的开始时间（这个月 1号）
         let initStartTime = new Date(thisFullYear, thisMonth, 1);
-        // 下个月初的时间戳
+        // 下个月初的时间戳（下个月 1号）
         let nextMonthTimestamp = new Date(thisFullYear, thisMonth + 1, 1).getTime();
         // 初始化 筛选的结束时间
         let initEndTime = new Date(thisFullYear, thisMonth, new Date(nextMonthTimestamp - (1000 * 60 * 60 * 24)).getDate());
