@@ -61,12 +61,13 @@ export const constantRouterMap = [
      */
     {
         path: '/analyze',
+        redirect: '/analyze/index',
         component: Layout,
         name: 'analyze',
         hidden: false,
         meta: { title: '统计分析', icon: 'order' },
         children: [{
-            path: '/',
+            path: 'index',
             component: () => import('@/views/analyze/index'),
             meta: { title: '统计分析', icon: 'analyze', noCache: true, hidden: true, }
         }],
@@ -156,12 +157,13 @@ export const constantRouterMap = [
      */
     {
         path: '/consolelog',
+        redirect: '/consolelog/index',
         component: Layout,
         name: 'consolelog',
         hidden: false,
         meta: { title: '预警日志', icon: 'consolelog' },
         children: [{
-            path: '/',
+            path: 'index',
             component: () => import('@/views/consolelog/index'),
             meta: { title: '预警日志', icon: 'consolelog', noCache: true, hidden: true, }
         }],
