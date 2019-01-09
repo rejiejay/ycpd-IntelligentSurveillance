@@ -143,8 +143,8 @@ export default {
                 }
             ],
 
-            mountPremiumLossCharts: null, // 保费收入/定损支出 图表实例
-            mountProportionCharts: null, // 产保比 图表实例
+            mountPremiumLossCharts: null, // 保费收入/定损支出 echarts图表实例
+            mountProportionCharts: null, // 产保比 echarts图表实例
         } 
     },
 
@@ -160,89 +160,18 @@ export default {
          * 初始化 保费收入/定损支出 图表
          */
         initPremiumLossCharts: function initPremiumLossCharts() {
-            // let echartsOption = {
-            //     title: {
-            //         text: '保费收入/定损支出',
-            //         subtext: '单位：万元',
-            //     },
-            //     tooltip: { // 提示框组件。
-            //         trigger: 'axis', // 触发类型: 坐标轴触发
-            //         /**
-            //          * 提示框浮层内容 格式器
-            //          * 因为修改成为了 ... 的点样式, 所以提示需要手动去修改
-            //          * @param {Object|Array} formatter 需要的数据集
-            //          */
-            //         formatter: function formatter(params) {
-            //             let str = ""; 
-            //             let n = []; // 一个新的临时数组
-            //             let m = [];
-            //             for (let i = 0; i < params.length; i++ ) {
-            //                 if( params[i].data == "" || params[i].data == undefined) {
-            //                 } else {
-            //                     n.push(params[i].marker + params[i].seriesName + ":" + params[i].data + "<br>");
-            //                 }
-            //             };
-
-            //             for (let i = 0; i < n.length; i++) {
-            //                 // 如果当前数组的第i已经保存进了临时数组，那么跳过，
-            //                 // 否则把当前项push到临时数组里面
-            //                 if (m.indexOf(n[i]) == -1) {
-            //                     m.push(n[i]);
-            //                 }
-            //             }
-                        
-            //             for(let i = 0; i < m.length; i++ ) {
-            //                 str += m[i];
-            //             }
-
-            //             return str;
-            //         }
-            //     },
-            //     legend: { // 图例组件。
-            //         data: [ '2的指数','3的指数']
-            //     },
-            //     xAxis: { // x 轴
-            //         type: 'category', // 坐标轴 类型 （category: 类目轴，适用于离散的类目数据，为该类型时必须通过 data 设置类目数据。）
-            //         name: '日期', // 坐标轴 昵称
-            //         splitLine: {show: true},
-            //         data: ['一', '二', '三', '四', '五', '六', '七', '八', '九']
-            //     },
-            //     yAxis: { // y 轴
-            //         type: 'value', // 数值轴，适用于连续数据。
-            //     },
-            //     grid: { // 直角坐标系内绘图网格
-            //         top: '60',
-            //         left: '15', // grid 组件离容器左侧的距离。
-            //         right: '15',
-            //         bottom: '0',
-            //         containLabel: true, // grid 区域是否包含坐标轴的刻度标签。
-            //     },
-            //     series: [ // 系列列表。
-            //         {
-            //             name: '3的指数',
-            //             type: 'line',
-            //             data: [1, 3, 9, 27, 81, 247, , ,]
-            //         },
-            //         {
-            //             name: '3的指数',
-            //             type: 'line',
-            //             itemStyle:{
-            //                 normal:{
-            //                 lineStyle:{
-            //                     width:2,
-            //                     type:'dotted'  //'dotted'虚线 'solid'实线
-            //                 }
-            //             }
-            //         }, 
-            //             data: [, , , , , 247, 741, 2223, 6669]
-            //         },
-            //         {
-            //             name: '2的指数',
-            //             type: 'line',
-            //             data: [3,5 ,7 ,35 , 3, 247, 74, 2223, 33]
-            //         },
-            //     ]
-            // }
+            const _this = this;
+            // 现在的时间戳
+            let nowTimestamp = new Date(); 
+            nowTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth(), nowTimestamp.getDate()).getTime();
+            // 提示框浮层内容 格式器
+            let formatter = null;
+            // 图例组件
+            let legendData = ['保费收入', '定损支出'];
+            // x 轴的数据
+            let xAxisData = [];
+            // 系列列表
+            let series = [];
 
             // 公共配置
             let echartsOption = {
@@ -254,7 +183,7 @@ export default {
                     trigger: 'axis', // 触发类型: 坐标轴触发
                 },
                 legend: { // 图例组件。
-                    data: [ '保费收入','定损支出']
+                    data: ['保费收入', '定损支出', '保费收入预测', '定损支出预测']
                 },
                 xAxis: { // x 轴
                     type: 'category', // 坐标轴 类型 （category: 类目轴，适用于离散的类目数据，为该类型时必须通过 data 设置类目数据。）
@@ -273,16 +202,174 @@ export default {
                 },
             }
 
-            // 提示框浮层内容 格式器
-            let formatter = function formatter(params) {}
-            // x 轴的数据
-            let xAxisData = [];
-            // 系列列表
-            let series = [];
+            /**
+             * 初始化 图标 按日分析 
+             */
+            let initChartsByData = () => {
+                let startTimestamp = _this.startDataTime.getTime(); // 开始时间
+                let endDataTimestamp = _this.endDataTime.getTime(); // 结束时间
+                let differDay = (endDataTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
+                let xAxisTemArr = []; // x 轴 临时数据
+                
+                // 初始化 x 轴的数据
+                for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                    let mapTemDate = new Date(startTimestamp + (i * (1000 * 60 * 60 * 24)) ); // 数组循环的时间
+                    let Month = mapTemDate.getMonth() + 1;
+                    let nowDate = mapTemDate.getDate();
+                    
+                    xAxisTemArr.push(`${Month}月${nowDate}日`);
+                }
+
+                // 初始化到 x 轴
+                xAxisData = xAxisTemArr;
+
+                // 既有 真实 又有 预测 数据的情况 （既有 实线 也有 虚线）
+                if (nowTimestamp > startTimestamp && nowTimestamp < endDataTimestamp) {
+                    let premiumRealArr = []; // 保费 真实 临时数据
+                    let lossRealArr = []; // 损金额 真实 临时数据
+                    let premiumPredictArr = []; // 保费 真实 临时数据
+                    let lossPredictArr = []; // 损金额 真实 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                        let thisMapTimestamp = startTimestamp + (i * (1000 * 60 * 60 * 24)); // 当前数组循环的时间戳
+
+                        if (nowTimestamp === thisMapTimestamp) { 
+                            // 两个时间点交错 （今天）
+                            premiumRealArr.push(1020);
+                            lossRealArr.push(3010);
+                            premiumPredictArr.push(1020);
+                            lossPredictArr.push(3010);
+
+                        } else if (thisMapTimestamp > nowTimestamp) {
+                            // 如果循环的时间 大于现在的时间 表示预测数据
+                            premiumRealArr.push(null); // 预测数据 传入 null 即可
+                            lossRealArr.push(null);
+                            premiumPredictArr.push(1020);
+                            lossPredictArr.push(3010);
+                        } else {
+                            // 表示真实数据
+                            premiumRealArr.push(2060);
+                            lossRealArr.push(1888);
+                            premiumPredictArr.push(null); // 真实数据 传入 null 即可
+                            lossPredictArr.push(null);
+                        }
+                    }
+
+                    // 初始化图例组件
+                    legendData = ['保费收入', '定损支出', '保费收入预测', '定损支出预测'];
+
+                    series.push({
+                        name: '保费收入',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'solid' },
+                        data: premiumRealArr,
+                    });
+                    series.push({
+                        name: '保费收入预测',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'dotted' },
+                        data: premiumPredictArr,
+                    });
+                    series.push({
+                        name: '定损支出',
+                        type: 'line',
+                        itemStyle: {  color: '#F56C6C' },
+                        lineStyle: { width: 2, type: 'solid' },
+                        data: lossRealArr,
+                    });
+                    series.push({
+                        name: '定损支出预测',
+                        type: 'line',
+                        itemStyle: {  color: '#F56C6C' },
+                        lineStyle: { width: 2, type: 'dotted' },
+                        data: lossPredictArr,
+                    });
+
+                    /**
+                     * 修改 提示框浮层内容 格式器函数
+                     * 因为多出 保费收入预测 定损支出预测 的标签是（重复的）
+                     */
+                    formatter = function formatter(params) {
+                        return params.map(val => {
+                            // 数据不为 null 的时候才渲染标签
+                            if (val.data !== null) {
+                                return `${val.marker}${val.seriesName}:${val.data}<br>`;
+
+                            } else {
+                                
+                                return '';
+                            }
+                        }).join('');
+                    }
+
+                } else {
+                    // 全是 真实数据 或者 预测数据 的情况 （全是 实线 或 虚线）
+                    let isPredict = false; // 是否预测数据
+
+                    // 初始化是否虚线 （预测数据）
+                    if (nowTimestamp < startTimestamp) {
+                        isPredict = true;
+
+                        // 初始化图例组件
+                        legendData = ['保费收入预测', '定损支出预测'];
+                    }
+
+                    let premiumTemArr = []; // 保费 临时数据
+                    let lossTemArr = []; // 损金额 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                        premiumTemArr.push(1200); // 保费
+                        lossTemArr.push(2300); // 定损
+                    }
+
+                    series.push({
+                        name: isPredict ? '保费收入预测' : '保费收入',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
+                        data: premiumTemArr,
+                    });
+                    series.push({
+                        name: isPredict ? '定损支出预测' : '定损支出',
+                        type: 'line',
+                        itemStyle: {  color: '#F56C6C' },
+                        lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
+                        data: lossTemArr,
+                    });
+                }
+            }
+
+            /**
+             * 初始化 图标 按月分析 
+             */
+            let initChartsByMonth = () => {
+
+            }
+
+            /**
+             * 一共有六种情况
+             * 按照时间段分 有三种情况
+             * 【一】 全是 真实 数据的情况 （全部是今天之前）
+             * 【二】 全是 预测 数据的情况 （全部是今天之后）
+             * 【三】 既有 真实 又有 预测 数据的情况
+             * 按照统计时间分 有两种情况
+             * 【一】 按日分析
+             * 【二】 按月分析
+             */
+            if (this.analyzeTimeSection === 'data') {
+                initChartsByData(); // 初始化 图标 按日分析 
+            } else if (this.analyzeTimeSection === 'month') {
+                initChartsByMonth(); // 初始化 图标 按月分析 
+            }
 
             // 开始绘制图表
-            echartsOption.tooltip.formatter = formatter;
+            formatter ? echartsOption.tooltip.formatter = formatter : '';
             echartsOption.xAxis.data = xAxisData;
+            echartsOption.legend.data = legendData;
             echartsOption.series = series;
             this.mountPremiumLossCharts.setOption(echartsOption);
         },
