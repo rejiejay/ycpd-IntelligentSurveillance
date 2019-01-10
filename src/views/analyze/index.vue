@@ -74,13 +74,43 @@
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
 
-    <!-- 图表部分（注意用到了DOM渲染，不可随便在这个元素下改东西） -->
+    <!-- 图表分析部分（注意用到了DOM渲染，不可随便在这个元素下改东西） -->
     <div class="analyze-charts" id="analyze-charts">
         <div class="charts-premium-loss" id="charts-premium-loss" style="height: 300px;"></div>
-        <div style="height: 30px;"></div>
+        <div style="height: 45px;"></div>
         <div class="analyze-charts-proportion" id="analyze-charts-proportion" style="height: 300px;"></div>
     </div>
 
+    <!-- 表单统计部分 -->
+    <div class="analyze-statistics">
+    <div class="analyze-statistics-title">表单统计</div>
+        <el-table
+            :data="statistics"
+            border
+            style="width: 100%"
+        >
+            <el-table-column
+                prop="date"
+                label="时间"
+            ></el-table-column>
+            <el-table-column
+                prop="premium"
+                label="保费收入（万元）"
+            ></el-table-column>
+            <el-table-column
+                prop="loss"
+                label="定损金额（万元）"
+            ></el-table-column>
+            <el-table-column
+                prop="proportion"
+                label="产保比（%）"
+            ></el-table-column>
+            <el-table-column
+                prop="type"
+                label="数据类型"
+            ></el-table-column>
+        </el-table>
+    </div>
 </div>
 </template>
 
@@ -144,6 +174,25 @@ export default {
                     lable: '网点一',
                 }
             ],
+
+            /**
+             * 表单统计
+             */
+            statistics: [
+                {
+                    date: '2018年1月',
+                    premium: '111',
+                    loss: '222',
+                    proportion: '33%',
+                    type: '时间数据',
+                }, {
+                    date: '汇总',
+                    premium: '6342',
+                    loss: '4299',
+                    proportion: '23%',
+                    type: '含预测数据',
+                }
+            ],
         } 
     },
 
@@ -159,7 +208,7 @@ export default {
             // 不渲染新的DOM元素, 图标初始化后的数据会有重复数据的
             document.getElementById('analyze-charts').innerHTML = `
                 <div class="charts-premium-loss" id="charts-premium-loss" style="height: 300px;"></div>
-                <div style="height: 30px;"></div>
+                <div style="height: 45px;"></div>
                 <div class="analyze-charts-proportion" id="analyze-charts-proportion" style="height: 300px;"></div>
             `;
 
@@ -1077,6 +1126,18 @@ $black4: #C0C4CC;
 // 图表部分
 .analyze-charts {
     padding: 15px;
+}
+
+// 表单统计
+.analyze-statistics {
+    padding: 15px;
+    
+    .analyze-statistics-title {
+        font-size: 18px;
+        font-weight: bold;
+        padding-bottom: 15px;
+        color: $black1;
+    }
 }
 
 </style>
