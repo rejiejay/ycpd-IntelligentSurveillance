@@ -28,7 +28,7 @@
     }
 }
 
-// fiexd 修复 src\views\monitor\sub-company.vue 文件夹下的样式问题
-.company-operate-left .el-date-editor .el-range-separator {
+ // fiexd 修复 src\views\monitor\sub-company.vue 文件夹下的样式问题
+.el-date-editor .el-range-separator, {
     width: 24px;
 }

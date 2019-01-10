@@ -228,10 +228,15 @@ export default {
              * 因为多出 保费收入预测 定损支出预测 的标签是（重复的）
              */
             let bothFormatter =  function formatter(params) {
+                // 如果是交叉点的位置
+                if (params[0].data !== null && params[1].data !== null && params[2].data !== null && params[3].data !== null ) {
+                    return `${params[0].marker}${params[0].seriesName}: ${params[0].data}<br>${params[2].marker}${params[2].seriesName}: ${params[2].data}<br>`;
+                }
+
                 return params.map(val => {
                     // 数据不为 null 的时候才渲染标签
                     if (val.data !== null) {
-                        return `${val.marker}${val.seriesName}:${val.data}<br>`;
+                        return `${val.marker}${val.seriesName}: ${val.data}<br>`;
 
                     } else {
                         
@@ -591,10 +596,15 @@ export default {
              * 因为多出 产保比 产保比预测 的标签是（重复的）
              */
             let bothFormatter =  function formatter(params) {
+                // 如果是交叉点的位置
+                if (params[0].data !== null && params[1].data !== null) {
+                    return `${params[0].marker}${params[0].seriesName}: ${params[0].data}`;
+                }
+
                 return params.map(val => {
                     // 数据不为 null 的时候才渲染标签
                     if (val.data !== null) {
-                        return `${val.marker}${val.seriesName}:${val.data}<br>`;
+                        return `${val.marker}${val.seriesName}: ${val.data}%<br>`;
 
                     } else {
                         
@@ -607,7 +617,11 @@ export default {
             let nowDayTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth(), nowTimestamp.getDate()).getTime(); // 精确到日
             let nowMonthTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth()).getTime(); // 精确到月
             // 提示框浮层内容 格式器
-            let formatter = null;
+            let formatter = function formatter(params) {
+                return params.map(val => {
+                    return `${val.marker}${val.seriesName}: ${val.data}%<br>`;
+                }).join('');
+            };
             let legendData = ['产保比'];
             // x 轴的数据
             let xAxisData = [];
@@ -618,7 +632,7 @@ export default {
             let echartsOption = {
                 title: {
                     text: '产保比',
-                    subtext: '单位：万元',
+                    subtext: '单位：%',
                 },
                 tooltip: { // 提示框组件。
                     trigger: 'axis', // 触发类型: 坐标轴触发
@@ -630,6 +644,11 @@ export default {
                 },
                 yAxis: { // y 轴
                     type: 'value', // 数值轴，适用于连续数据。
+                    axisLabel: {
+                        show: true,
+                        interval: 'auto',
+                        formatter: '{value} %'
+                    },
                 },
                 grid: { // 直角坐标系内绘图网格
                     top: '60',
@@ -672,19 +691,19 @@ export default {
 
                         if (nowDayTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
-                            proportionRealArr.push(1020);
-                            proportionPredictArr.push(1020);
+                            proportionRealArr.push(67);
+                            proportionPredictArr.push(67);
 
                         } else if (thisMapTimestamp > nowDayTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
                             // 预测数据的时候 真实数据是 null
                             proportionRealArr.push(null);
                             // 预测数据
-                            proportionPredictArr.push(1020);
+                            proportionPredictArr.push(67);
 
                         } else {
                             // 表示真实数据的情况
-                            proportionRealArr.push(2060);
+                            proportionRealArr.push(43);
                             //真实数据的情况 预测数据传入 null 即可
                             proportionPredictArr.push(null);
                         }
@@ -729,7 +748,7 @@ export default {
 
                     // 初始化 系列列表数据
                     for (let i = 0; i <= differDay; i++) { // 循环相差几天
-                        proportionTemArr.push(1200); // 产保比
+                        proportionTemArr.push(50); // 产保比
                     }
 
                     series.push({
@@ -788,19 +807,19 @@ export default {
 
                         if (nowMonthTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
-                            proportionRealArr.push(1020);
-                            proportionPredictArr.push(1020);
+                            proportionRealArr.push(30);
+                            proportionPredictArr.push(30);
 
                         } else if (thisMapTimestamp > nowMonthTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
                             // 预测数据的时候 真实数据是 null
                             proportionRealArr.push(null);
                             // 预测数据
-                            proportionPredictArr.push(1020);
+                            proportionPredictArr.push(30);
 
                         } else {
                             // 表示真实数据的情况
-                            proportionRealArr.push(2060);
+                            proportionRealArr.push(40);
                             //真实数据的情况 预测数据传入 null 即可
                             proportionPredictArr.push(null);
                         }
@@ -845,7 +864,7 @@ export default {
 
                     // 初始化 系列列表数据
                     for (let i = 0; i <= differMonth; i++) { // 循环相差几月
-                        proportionTemArr.push(1200); // 产保比
+                        proportionTemArr.push(50); // 产保比
                     }
 
                     series.push({
@@ -1130,7 +1149,7 @@ $black4: #C0C4CC;
 
 // 表单统计
 .analyze-statistics {
-    padding: 15px;
+    padding: 15px 15px 35px 15px;
     
     .analyze-statistics-title {
         font-size: 18px;
