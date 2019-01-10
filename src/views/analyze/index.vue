@@ -156,6 +156,7 @@ export default {
          * 初始化 图表
          */
         initAnalyzeCharts: function initAnalyzeCharts() {
+            // 不渲染新的DOM元素, 图标初始化后的数据会有重复数据的
             document.getElementById('analyze-charts').innerHTML = `
                 <div class="charts-premium-loss" id="charts-premium-loss" style="height: 300px;"></div>
                 <div style="height: 30px;"></div>
@@ -172,12 +173,29 @@ export default {
         initPremiumLossCharts: function initPremiumLossCharts() {
             const mountPremiumLossCharts = echarts.init(document.getElementById('charts-premium-loss'));
             const _this = this;
+            /**
+             * 修改 提示框浮层内容 格式器函数
+             * 就是 既有真实数据 又有预测数据的 提示框浮层函数
+             * 因为多出 保费收入预测 定损支出预测 的标签是（重复的）
+             */
+            let bothFormatter =  function formatter(params) {
+                return params.map(val => {
+                    // 数据不为 null 的时候才渲染标签
+                    if (val.data !== null) {
+                        return `${val.marker}${val.seriesName}:${val.data}<br>`;
+
+                    } else {
+                        
+                        return '';
+                    }
+                }).join('');
+            }
             // 现在的时间戳
             let nowTimestamp = new Date(); 
-            nowTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth(), nowTimestamp.getDate()).getTime();
+            let nowDayTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth(), nowTimestamp.getDate()).getTime(); // 精确到日
+            let nowMonthTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth()).getTime(); // 精确到月
             // 提示框浮层内容 格式器
             let formatter = null;
-            // 图例组件
             let legendData = ['保费收入', '定损支出'];
             // x 轴的数据
             let xAxisData = [];
@@ -232,7 +250,7 @@ export default {
                 xAxisData = xAxisTemArr;
 
                 // 既有 真实 又有 预测 数据的情况 （既有 实线 也有 虚线）
-                if (nowTimestamp > startTimestamp && nowTimestamp < endTimestamp) {
+                if (nowDayTimestamp > startTimestamp && nowDayTimestamp < endTimestamp) {
                     let premiumRealArr = []; // 保费 真实 临时数据
                     let lossRealArr = []; // 损金额 真实 临时数据
                     let premiumPredictArr = []; // 保费 真实 临时数据
@@ -242,14 +260,14 @@ export default {
                     for (let i = 0; i <= differDay; i++) { // 循环相差几天
                         let thisMapTimestamp = startTimestamp + (i * (1000 * 60 * 60 * 24)); // 当前数组循环的时间戳
 
-                        if (nowTimestamp === thisMapTimestamp) { 
+                        if (nowDayTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
                             premiumRealArr.push(1020);
                             lossRealArr.push(3010);
                             premiumPredictArr.push(1020);
                             lossPredictArr.push(3010);
 
-                        } else if (thisMapTimestamp > nowTimestamp) {
+                        } else if (thisMapTimestamp > nowDayTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
                             // 预测数据的时候 真实数据是 null
                             premiumRealArr.push(null);
@@ -301,20 +319,8 @@ export default {
 
                     /**
                      * 修改 提示框浮层内容 格式器函数
-                     * 因为多出 保费收入预测 定损支出预测 的标签是（重复的）
                      */
-                    formatter = function formatter(params) {
-                        return params.map(val => {
-                            // 数据不为 null 的时候才渲染标签
-                            if (val.data !== null) {
-                                return `${val.marker}${val.seriesName}:${val.data}<br>`;
-
-                            } else {
-                                
-                                return '';
-                            }
-                        }).join('');
-                    }
+                    formatter = bothFormatter;
 
                 } else {
                     // 全是 真实数据 或者 预测数据 的情况 （全是 实线 或 虚线）
@@ -358,10 +364,146 @@ export default {
              * 初始化 图标 按月分析 
              */
             let initChartsByMonth = () => {
-                let startTimestamp = _this.startDataTime.getTime(); // 开始时间
-                let endTimestamp = _this.endDataTime.getTime(); // 结束时间
-                let differMonth = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24 * 30); // 相差几个月
+                let startTimestamp = _this.startMonthTime.getTime(); // 开始时间戳
+                let endTimestamp = _this.endMonthTime.getTime(); // 结束时间戳
+                
+                /**
+                 * 计算相差几个月
+                 */
+                let endTimeMonth = (_this.endMonthTime.getFullYear() * 12) + (_this.endMonthTime.getMonth() + 1); // 结束一共多少个月
+                let startTimeMonth = (_this.startMonthTime.getFullYear() * 12) + (_this.startMonthTime.getMonth() + 1); // 开始一共多少个月
+                let differMonth = endTimeMonth - startTimeMonth; // 相差几个月
+                let xAxisTemArr = []; // x 轴 临时数据
+                
+                // 初始化 x 轴的数据
+                for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                    /**
+                     * 当前循环的时间
+                     */
+                    let thisMapFullYear = Math.floor( (startTimeMonth + i) / 12); // 当前循环的年份
+                    let thisMapMonth = ((startTimeMonth + i) % 12) - 1; // 当前循环的(月份 - 1)
+                    let thisMapTime = new Date(thisMapFullYear, thisMapMonth);
+                    
+                    xAxisTemArr.push(`${thisMapTime.getFullYear()}年${thisMapTime.getMonth() + 1}月`);
+                }
 
+                // 初始化到 x 轴
+                xAxisData = xAxisTemArr;
+
+                // 既有 真实 又有 预测 数据的情况 （既有 实线 也有 虚线）
+                if (nowTimestamp > startTimestamp && nowTimestamp < endTimestamp) {
+                    let premiumRealArr = []; // 保费 真实 临时数据
+                    let lossRealArr = []; // 损金额 真实 临时数据
+                    let premiumPredictArr = []; // 保费 真实 临时数据
+                    let lossPredictArr = []; // 损金额 真实 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                        /**
+                         * 获取当前循环的时间戳
+                         */
+                        let thisMapFullYear = Math.floor( (startTimeMonth + i) / 12); // 当前循环的年份
+                        let thisMapMonth = ((startTimeMonth + i) % 12) - 1; // 当前循环的(月份 - 1)
+                        let thisMapTimestamp = new Date(thisMapFullYear, thisMapMonth).getTime(); // 当前循环的时间戳
+
+                        if (nowMonthTimestamp === thisMapTimestamp) { 
+                            // 两个时间点交错 （今天）
+                            premiumRealArr.push(1020);
+                            lossRealArr.push(3010);
+                            premiumPredictArr.push(1020);
+                            lossPredictArr.push(3010);
+
+                        } else if (thisMapTimestamp > nowMonthTimestamp) {
+                            // 如果循环的时间 大于现在的时间 表示预测数据
+                            // 预测数据的时候 真实数据是 null
+                            premiumRealArr.push(null);
+                            lossRealArr.push(null);
+                            // 预测数据
+                            premiumPredictArr.push(1020);
+                            lossPredictArr.push(3010);
+                        } else {
+                            // 表示真实数据的情况
+                            premiumRealArr.push(2060);
+                            lossRealArr.push(1888);
+                            //真实数据的情况 预测数据传入 null 即可
+                            premiumPredictArr.push(null);
+                            lossPredictArr.push(null);
+                        }
+                    }
+
+                    // 初始化图例组件
+                    legendData = ['保费收入', '定损支出', '保费收入预测', '定损支出预测'];
+
+                    series.push({
+                        name: '保费收入',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'solid' },
+                        data: premiumRealArr,
+                    });
+                    series.push({
+                        name: '保费收入预测',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'dotted' },
+                        data: premiumPredictArr,
+                    });
+                    series.push({
+                        name: '定损支出',
+                        type: 'line',
+                        itemStyle: {  color: '#F56C6C' },
+                        lineStyle: { width: 2, type: 'solid' },
+                        data: lossRealArr,
+                    });
+                    series.push({
+                        name: '定损支出预测',
+                        type: 'line',
+                        itemStyle: {  color: '#F56C6C' },
+                        lineStyle: { width: 2, type: 'dotted' },
+                        data: lossPredictArr,
+                    });
+
+                    /**
+                     * 修改 提示框浮层内容 格式器函数
+                     */
+                    formatter = bothFormatter;
+
+                } else {
+                    // 全是 真实数据 或者 预测数据 的情况 （全是 实线 或 虚线）
+                    let isPredict = false; // 是否预测数据
+
+                    // 初始化是否虚线 （预测数据）
+                    if (nowTimestamp < startTimestamp) {
+                        isPredict = true;
+
+                        // 初始化图例组件
+                        legendData = ['保费收入预测', '定损支出预测'];
+                    }
+
+                    let premiumTemArr = []; // 保费 临时数据
+                    let lossTemArr = []; // 损金额 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                        premiumTemArr.push(1200); // 保费
+                        lossTemArr.push(2300); // 定损
+                    }
+
+                    series.push({
+                        name: isPredict ? '保费收入预测' : '保费收入',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
+                        data: premiumTemArr,
+                    });
+                    series.push({
+                        name: isPredict ? '定损支出预测' : '定损支出',
+                        type: 'line',
+                        itemStyle: {  color: '#F56C6C' },
+                        lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
+                        data: lossTemArr,
+                    });
+                }
             }
 
             /**
@@ -639,10 +781,6 @@ $black4: #C0C4CC;
 // 图表部分
 .analyze-charts {
     padding: 15px;
-
-    .charts-premium-loss {
-        height: 300px;
-    }
 }
 
 </style>
