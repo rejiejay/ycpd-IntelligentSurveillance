@@ -598,7 +598,7 @@ export default {
             let bothFormatter =  function formatter(params) {
                 // 如果是交叉点的位置
                 if (params[0].data !== null && params[1].data !== null) {
-                    return `${params[0].marker}${params[0].seriesName}: ${params[0].data}`;
+                    return `${params[0].marker}${params[0].seriesName}: ${params[0].data}%`;
                 }
 
                 return params.map(val => {

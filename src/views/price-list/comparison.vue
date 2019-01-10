@@ -233,6 +233,13 @@ export default {
         },
 
         /**
+         * 分页改变的时候处理函数
+         */
+        pageChangeHandle: function pageChangeHandle(item) {
+            console.log(item);
+        },
+
+        /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填
          */
