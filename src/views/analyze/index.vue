@@ -535,6 +535,302 @@ export default {
          */
         initProportionCharts: function initProportionCharts() {
             const mountProportionCharts = echarts.init(document.getElementById('analyze-charts-proportion'));
+            const _this = this;
+            /**
+             * 修改 提示框浮层内容 格式器函数
+             * 就是 既有真实数据 又有预测数据的 提示框浮层函数
+             * 因为多出 产保比 产保比预测 的标签是（重复的）
+             */
+            let bothFormatter =  function formatter(params) {
+                return params.map(val => {
+                    // 数据不为 null 的时候才渲染标签
+                    if (val.data !== null) {
+                        return `${val.marker}${val.seriesName}:${val.data}<br>`;
+
+                    } else {
+                        
+                        return '';
+                    }
+                }).join('');
+            }
+            // 现在的时间戳
+            let nowTimestamp = new Date(); 
+            let nowDayTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth(), nowTimestamp.getDate()).getTime(); // 精确到日
+            let nowMonthTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth()).getTime(); // 精确到月
+            // 提示框浮层内容 格式器
+            let formatter = null;
+            let legendData = ['产保比'];
+            // x 轴的数据
+            let xAxisData = [];
+            // 系列列表
+            let series = [];
+
+            // 公共配置
+            let echartsOption = {
+                title: {
+                    text: '产保比',
+                    subtext: '单位：万元',
+                },
+                tooltip: { // 提示框组件。
+                    trigger: 'axis', // 触发类型: 坐标轴触发
+                },
+                xAxis: { // x 轴
+                    type: 'category', // 坐标轴 类型 （category: 类目轴，适用于离散的类目数据，为该类型时必须通过 data 设置类目数据。）
+                    name: '日期', // 坐标轴 昵称
+                    splitLine: {show: true},
+                },
+                yAxis: { // y 轴
+                    type: 'value', // 数值轴，适用于连续数据。
+                },
+                grid: { // 直角坐标系内绘图网格
+                    top: '60',
+                    left: '15', // grid 组件离容器左侧的距离。
+                    right: '15',
+                    bottom: '0',
+                    containLabel: true, // grid 区域是否包含坐标轴的刻度标签。
+                },
+            }
+
+            /**
+             * 初始化 图标 按日分析 
+             */
+            let initChartsByData = () => {
+                let startTimestamp = _this.startDataTime.getTime(); // 开始时间
+                let endTimestamp = _this.endDataTime.getTime(); // 结束时间
+                let differDay = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
+                let xAxisTemArr = []; // x 轴 临时数据
+                
+                // 初始化 x 轴的数据
+                for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                    let mapTemDate = new Date(startTimestamp + (i * (1000 * 60 * 60 * 24)) ); // 数组循环的时间
+                    let Month = mapTemDate.getMonth() + 1;
+                    let nowDate = mapTemDate.getDate();
+                    
+                    xAxisTemArr.push(`${Month}月${nowDate}日`);
+                }
+
+                // 初始化到 x 轴
+                xAxisData = xAxisTemArr;
+
+                // 既有 真实 又有 预测 数据的情况 （既有 实线 也有 虚线）
+                if (nowDayTimestamp > startTimestamp && nowDayTimestamp < endTimestamp) {
+                    let proportionRealArr = []; // 产保比 真实 临时数据
+                    let proportionPredictArr = []; // 产保比 真实 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                        let thisMapTimestamp = startTimestamp + (i * (1000 * 60 * 60 * 24)); // 当前数组循环的时间戳
+
+                        if (nowDayTimestamp === thisMapTimestamp) { 
+                            // 两个时间点交错 （今天）
+                            proportionRealArr.push(1020);
+                            proportionPredictArr.push(1020);
+
+                        } else if (thisMapTimestamp > nowDayTimestamp) {
+                            // 如果循环的时间 大于现在的时间 表示预测数据
+                            // 预测数据的时候 真实数据是 null
+                            proportionRealArr.push(null);
+                            // 预测数据
+                            proportionPredictArr.push(1020);
+
+                        } else {
+                            // 表示真实数据的情况
+                            proportionRealArr.push(2060);
+                            //真实数据的情况 预测数据传入 null 即可
+                            proportionPredictArr.push(null);
+                        }
+                    }
+
+                    // 初始化图例组件
+                    legendData = ['产保比', '产保比预测'];
+
+                    series.push({
+                        name: '产保比',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'solid' },
+                        data: proportionRealArr,
+                    });
+                    series.push({
+                        name: '产保比预测',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'dotted' },
+                        data: proportionPredictArr,
+                    });
+
+                    /**
+                     * 修改 提示框浮层内容 格式器函数
+                     */
+                    formatter = bothFormatter;
+
+                } else {
+                    // 全是 真实数据 或者 预测数据 的情况 （全是 实线 或 虚线）
+                    let isPredict = false; // 是否预测数据
+
+                    // 初始化是否虚线 （预测数据）
+                    if (nowTimestamp < startTimestamp) {
+                        isPredict = true;
+
+                        // 初始化图例组件
+                        legendData = ['产保比预测'];
+                    }
+
+                    let proportionTemArr = []; // 产保比 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                        proportionTemArr.push(1200); // 产保比
+                    }
+
+                    series.push({
+                        name: isPredict ? '产保比预测' : '产保比',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
+                        data: proportionTemArr,
+                    });
+                }
+            }
+
+            /**
+             * 初始化 图标 按月分析 
+             */
+            let initChartsByMonth = () => {
+                let startTimestamp = _this.startMonthTime.getTime(); // 开始时间戳
+                let endTimestamp = _this.endMonthTime.getTime(); // 结束时间戳
+                
+                /**
+                 * 计算相差几个月
+                 */
+                let endTimeMonth = (_this.endMonthTime.getFullYear() * 12) + (_this.endMonthTime.getMonth() + 1); // 结束一共多少个月
+                let startTimeMonth = (_this.startMonthTime.getFullYear() * 12) + (_this.startMonthTime.getMonth() + 1); // 开始一共多少个月
+                let differMonth = endTimeMonth - startTimeMonth; // 相差几个月
+                let xAxisTemArr = []; // x 轴 临时数据
+                
+                // 初始化 x 轴的数据
+                for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                    /**
+                     * 当前循环的时间
+                     */
+                    let thisMapFullYear = Math.floor( (startTimeMonth + i) / 12); // 当前循环的年份
+                    let thisMapMonth = ((startTimeMonth + i) % 12) - 1; // 当前循环的(月份 - 1)
+                    let thisMapTime = new Date(thisMapFullYear, thisMapMonth);
+                    
+                    xAxisTemArr.push(`${thisMapTime.getFullYear()}年${thisMapTime.getMonth() + 1}月`);
+                }
+
+                // 初始化到 x 轴
+                xAxisData = xAxisTemArr;
+
+                // 既有 真实 又有 预测 数据的情况 （既有 实线 也有 虚线）
+                if (nowTimestamp > startTimestamp && nowTimestamp < endTimestamp) {
+                    let proportionRealArr = []; // 产保比 真实 临时数据
+                    let proportionPredictArr = []; // 产保比 真实 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                        /**
+                         * 获取当前循环的时间戳
+                         */
+                        let thisMapFullYear = Math.floor( (startTimeMonth + i) / 12); // 当前循环的年份
+                        let thisMapMonth = ((startTimeMonth + i) % 12) - 1; // 当前循环的(月份 - 1)
+                        let thisMapTimestamp = new Date(thisMapFullYear, thisMapMonth).getTime(); // 当前循环的时间戳
+
+                        if (nowMonthTimestamp === thisMapTimestamp) { 
+                            // 两个时间点交错 （今天）
+                            proportionRealArr.push(1020);
+                            proportionPredictArr.push(1020);
+
+                        } else if (thisMapTimestamp > nowMonthTimestamp) {
+                            // 如果循环的时间 大于现在的时间 表示预测数据
+                            // 预测数据的时候 真实数据是 null
+                            proportionRealArr.push(null);
+                            // 预测数据
+                            proportionPredictArr.push(1020);
+
+                        } else {
+                            // 表示真实数据的情况
+                            proportionRealArr.push(2060);
+                            //真实数据的情况 预测数据传入 null 即可
+                            proportionPredictArr.push(null);
+                        }
+                    }
+
+                    // 初始化图例组件
+                    legendData = ['产保比', '产保比预测'];
+
+                    series.push({
+                        name: '产保比',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'solid' },
+                        data: proportionRealArr,
+                    });
+                    series.push({
+                        name: '产保比预测',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: 'dotted' },
+                        data: proportionPredictArr,
+                    });
+
+                    /**
+                     * 修改 提示框浮层内容 格式器函数
+                     */
+                    formatter = bothFormatter;
+
+                } else {
+                    // 全是 真实数据 或者 预测数据 的情况 （全是 实线 或 虚线）
+                    let isPredict = false; // 是否预测数据
+
+                    // 初始化是否虚线 （预测数据）
+                    if (nowTimestamp < startTimestamp) {
+                        isPredict = true;
+
+                        // 初始化图例组件
+                        legendData = ['产保比预测'];
+                    }
+
+                    let proportionTemArr = []; // 产保比 临时数据
+
+                    // 初始化 系列列表数据
+                    for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                        proportionTemArr.push(1200); // 产保比
+                    }
+
+                    series.push({
+                        name: isPredict ? '产保比预测' : '产保比',
+                        type: 'line',
+                        itemStyle: { color: '#67C23A' },
+                        lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
+                        data: proportionTemArr,
+                    });
+                }
+            }
+
+            /**
+             * 一共有六种情况
+             * 按照时间段分 有三种情况
+             * 【一】 全是 真实 数据的情况 （全部是今天之前）
+             * 【二】 全是 预测 数据的情况 （全部是今天之后）
+             * 【三】 既有 真实 又有 预测 数据的情况
+             * 按照统计时间分 有两种情况
+             * 【一】 按日分析
+             * 【二】 按月分析
+             */
+            if (this.analyzeTimeSection === 'data') {
+                initChartsByData(); // 初始化 图标 按日分析 
+            } else if (this.analyzeTimeSection === 'month') {
+                initChartsByMonth(); // 初始化 图标 按月分析 
+            }
+
+            // 开始绘制图表
+            formatter ? echartsOption.tooltip.formatter = formatter : '';
+            echartsOption.xAxis.data = xAxisData;
+            echartsOption.legend = {data: legendData};
+            echartsOption.series = series;
+            mountProportionCharts.setOption(echartsOption);
         },
 
         /**
