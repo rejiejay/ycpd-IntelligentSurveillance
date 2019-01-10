@@ -69,16 +69,18 @@
             ></el-option>
         </el-select>
 
-        <el-button icon="el-icon-search" type="primary">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
         <el-button icon="el-icon-download" type="success">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
 
-    <!-- 图表部分 -->
-    <div class="analyze-charts">
-        <div class="charts-premium-loss" id="charts-premium-loss"></div>
-        <div class="analyze-charts-proportion" id="analyze-charts-proportion"></div>
+    <!-- 图表部分（注意用到了DOM渲染，不可随便在这个元素下改东西） -->
+    <div class="analyze-charts" id="analyze-charts">
+        <div class="charts-premium-loss" id="charts-premium-loss" style="height: 300px;"></div>
+        <div style="height: 30px;"></div>
+        <div class="analyze-charts-proportion" id="analyze-charts-proportion" style="height: 300px;"></div>
     </div>
+
 </div>
 </template>
 
@@ -142,24 +144,33 @@ export default {
                     lable: '网点一',
                 }
             ],
-
-            mountPremiumLossCharts: null, // 保费收入/定损支出 echarts图表实例
-            mountProportionCharts: null, // 产保比 echarts图表实例
         } 
     },
 
 	mounted: function mounted() {
-        this.mountPremiumLossCharts = echarts.init(document.getElementById('charts-premium-loss'));
-        this.mountProportionCharts = echarts.init(document.getElementById('analyze-charts-proportion'));
-        this.initPremiumLossCharts(); // 初始化 保费收入/定损支出 图表
-        this.initProportionCharts(); // 初始化 产保比 图表
+        this.initAnalyzeCharts(); // 初始化 图表
     },
 
 	methods: {
         /**
+         * 初始化 图表
+         */
+        initAnalyzeCharts: function initAnalyzeCharts() {
+            document.getElementById('analyze-charts').innerHTML = `
+                <div class="charts-premium-loss" id="charts-premium-loss" style="height: 300px;"></div>
+                <div style="height: 30px;"></div>
+                <div class="analyze-charts-proportion" id="analyze-charts-proportion" style="height: 300px;"></div>
+            `;
+
+            this.initPremiumLossCharts(); // 初始化 保费收入/定损支出 图表
+            this.initProportionCharts(); // 初始化 产保比 图表
+        },
+
+        /**
          * 初始化 保费收入/定损支出 图表
          */
         initPremiumLossCharts: function initPremiumLossCharts() {
+            const mountPremiumLossCharts = echarts.init(document.getElementById('charts-premium-loss'));
             const _this = this;
             // 现在的时间戳
             let nowTimestamp = new Date(); 
@@ -181,9 +192,6 @@ export default {
                 },
                 tooltip: { // 提示框组件。
                     trigger: 'axis', // 触发类型: 坐标轴触发
-                },
-                legend: { // 图例组件。
-                    data: ['保费收入', '定损支出', '保费收入预测', '定损支出预测']
                 },
                 xAxis: { // x 轴
                     type: 'category', // 坐标轴 类型 （category: 类目轴，适用于离散的类目数据，为该类型时必须通过 data 设置类目数据。）
@@ -207,8 +215,8 @@ export default {
              */
             let initChartsByData = () => {
                 let startTimestamp = _this.startDataTime.getTime(); // 开始时间
-                let endDataTimestamp = _this.endDataTime.getTime(); // 结束时间
-                let differDay = (endDataTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
+                let endTimestamp = _this.endDataTime.getTime(); // 结束时间
+                let differDay = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
                 let xAxisTemArr = []; // x 轴 临时数据
                 
                 // 初始化 x 轴的数据
@@ -224,7 +232,7 @@ export default {
                 xAxisData = xAxisTemArr;
 
                 // 既有 真实 又有 预测 数据的情况 （既有 实线 也有 虚线）
-                if (nowTimestamp > startTimestamp && nowTimestamp < endDataTimestamp) {
+                if (nowTimestamp > startTimestamp && nowTimestamp < endTimestamp) {
                     let premiumRealArr = []; // 保费 真实 临时数据
                     let lossRealArr = []; // 损金额 真实 临时数据
                     let premiumPredictArr = []; // 保费 真实 临时数据
@@ -243,15 +251,18 @@ export default {
 
                         } else if (thisMapTimestamp > nowTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
-                            premiumRealArr.push(null); // 预测数据 传入 null 即可
+                            // 预测数据的时候 真实数据是 null
+                            premiumRealArr.push(null);
                             lossRealArr.push(null);
+                            // 预测数据
                             premiumPredictArr.push(1020);
                             lossPredictArr.push(3010);
                         } else {
-                            // 表示真实数据
+                            // 表示真实数据的情况
                             premiumRealArr.push(2060);
                             lossRealArr.push(1888);
-                            premiumPredictArr.push(null); // 真实数据 传入 null 即可
+                            //真实数据的情况 预测数据传入 null 即可
+                            premiumPredictArr.push(null);
                             lossPredictArr.push(null);
                         }
                     }
@@ -347,6 +358,9 @@ export default {
              * 初始化 图标 按月分析 
              */
             let initChartsByMonth = () => {
+                let startTimestamp = _this.startDataTime.getTime(); // 开始时间
+                let endTimestamp = _this.endDataTime.getTime(); // 结束时间
+                let differMonth = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24 * 30); // 相差几个月
 
             }
 
@@ -369,22 +383,28 @@ export default {
             // 开始绘制图表
             formatter ? echartsOption.tooltip.formatter = formatter : '';
             echartsOption.xAxis.data = xAxisData;
-            echartsOption.legend.data = legendData;
+            echartsOption.legend = {data: legendData};
             echartsOption.series = series;
-            this.mountPremiumLossCharts.setOption(echartsOption);
+            mountPremiumLossCharts.setOption(echartsOption);
         },
 
         /**
          * 初始化 产保比 图表
          */
         initProportionCharts: function initProportionCharts() {
-            let myChart = this.mountProportionCharts;
+            const mountProportionCharts = echarts.init(document.getElementById('analyze-charts-proportion'));
         },
 
         /**
          * 开始时间（日） 处理函数
          */
         startDataHandle: function startDataHandle(date) {
+            // 如果是清空操作
+            if (!date) {
+                // 不需要做任何处理
+                return false;
+            }
+
             // 判断 结束日期 是否为空
             if (!this.endDataTime) {
                 // 为空不需要做任何处理
@@ -417,6 +437,12 @@ export default {
          * 结束时间（日） 处理函数
          */
         endDataHandle: function endDataHandle(date) {
+            // 如果是清空操作
+            if (!date) {
+                // 不需要做任何处理
+                return false;
+            }
+
             // 判断 开始日期 是否为空
             if (!this.startDataTime) {
                 // 为空不需要做任何处理
@@ -449,6 +475,12 @@ export default {
          * 开始时间（月） 处理函数
          */
         startMonthHandle: function startMonthHandle(date) {
+            // 如果是清空操作
+            if (!date) {
+                // 不需要做任何处理
+                return false;
+            }
+            
             // 判断 结束日期 是否为空
             if (!this.endMonthTime) {
                 // 为空不需要做任何处理
@@ -481,6 +513,12 @@ export default {
          * 结束时间（月） 处理函数
          */
         endMonthHandle: function endMonthHandle(date) {
+            // 如果是清空操作
+            if (!date) {
+                // 不需要做任何处理
+                return false;
+            }
+            
             // 判断 开始日期 是否为空
             if (!this.startMonthTime) {
                 // 为空不需要做任何处理
@@ -507,6 +545,26 @@ export default {
                     type: 'warning'
                 });
             }
+        },
+
+        /**
+         * 通过条件查询
+         */
+        searchByConditions: function searchByConditions() {
+            // 判断是否为空
+            if (this.analyzeTimeSection === 'data') {
+                // 按日分析
+                if (!this.startDataTime || !this.endDataTime) {
+                    return this.$alert('查询的日期不能为空', '查询条件有误');
+                }
+            } else {
+                // 按月分析
+                if (!this.startMonthTime || !this.endMonthTime) {
+                    return this.$alert('查询的日期不能为空', '查询条件有误');
+                }
+            }
+
+            this.initAnalyzeCharts(); // 初始化 图表
         },
 
         /**
