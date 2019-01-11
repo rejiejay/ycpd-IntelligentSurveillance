@@ -276,8 +276,8 @@ export default {
                     label: '车行星级一',
                 }
             ],
-            contactName: '汤俊猛', // 联系人
-            contactPhone: '13924593603', // 联系电话
+            contactName: '', // 联系人
+            contactPhone: '', // 联系电话
             brand: '', // 品牌
             parCompany: '', // 上级集团
             subCompanyName: '', // 支公司
