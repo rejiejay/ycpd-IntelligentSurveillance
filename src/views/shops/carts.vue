@@ -38,6 +38,8 @@
         </div>
 
         <div class="manage-operate-right">
+            <el-button icon="el-icon-download" type="text">下载模板</el-button>
+            <el-button icon="el-icon-tickets" type="primary" plain>上传清单</el-button>
             <el-button icon="el-icon-plus" type="primary" @click="addHandle">新增</el-button>
         </div>
     </div>
@@ -62,6 +64,11 @@
             <el-table-column
                 prop="shopsType"
                 label="车行类型"
+                width="120"
+            ></el-table-column>
+            <el-table-column
+                prop="shopsRate"
+                label="车行星级"
                 width="120"
             ></el-table-column>
             <el-table-column
@@ -118,6 +125,11 @@
                 prop="teamManager"
                 label="团队经理"
                 width="120"
+            ></el-table-column>
+            <el-table-column
+                prop="remark"
+                label="备注"
+                width="240"
             ></el-table-column>
             <el-table-column
                 fixed="right"
@@ -179,7 +191,8 @@ export default {
                 {
                     shopsNo: '122', // 车行编码
                     shopsName: '车行一', // 车行名称
-                    shopsType: '车行类型一', // 车行类型
+                    shopsType: '车行类型一', // 车行星级
+                    shopsRate: '一星', // 车行星级
                     isCooperate: '合作', // 是否合作
                     address: '深圳市龙岗区龙岗街道新生社区深惠路1420号J', // 地址
                     contactName: '汤俊猛', // 联系人
@@ -191,6 +204,7 @@ export default {
                     linkCode: '44033H100011、440321100126', // 渠道代码
                     team: '团队一', // 团队名称
                     teamManager: '团队经理', // 团队经理
+                    remark: '', // 备注
                 }
             ],
 
