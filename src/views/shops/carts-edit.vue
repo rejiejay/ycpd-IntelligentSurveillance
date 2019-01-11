@@ -138,27 +138,84 @@
             <el-col :span="24">
                 <div class="details-form-item">
                     <div class="form-item-title">网点地址</div>
-                    <el-input placeholder="请输入网点地址" v-model="address"></el-input>
+                    <!-- 这里需要百度地图模糊地址查询的功能 -->
+                    <div @click="mapInputHandle" :class="`form-item-map ${ (address && longitude && latitude) ? 'item-succeed-map' : 'item-search-map'}`">
+                        <el-input readonly :prefix-icon="`${ (address && longitude && latitude) ? 'el-icon-circle-check-outline' : 'el-icon-search'}`" placeholder="请输入网点地址" v-model="address"></el-input>
+                    </div>
                 </div>
             </el-col>
         </el-row>
+    </div>
+
+    <!-- 地图选择模态框 -->
+    <ModalByZindex 
+        class="baidu-map-modal"
+        :isShow="isBaiduMapModalShow" 
+        :zindex="9999" 
+        @clickShade="isBaiduMapModalShow = false"
+    >
+        <div class="map-modal-container">
+
+            <div class="map-modal-title flex-center">
+                <div class="modal-title-left flex-rest">选择网店地址</div>
+                <div class="modal-title-right" @click="isBaiduMapModalShow = false;"><i class="el-icon-close"></i></div>
+            </div>
+
+            <div class="map-modal-input">
+                <el-input prefix-icon="el-icon-search" placeholder="请输入网点地址" v-model="addressSearch"></el-input>
+                
+                <!-- 搜索列表 -->
+                <div class="input-search-list">
+                </div>
+            </div>
+
+            <div class="map-modal-main">
+                <div class="map-modal-main" id="BaiduMap"></div>
+            </div>
+
+            <div class="map-modal-operate flex-start-center">
+                <div class="modal-operate-left flex-rest"></div>
+                <div class="modal-operate-right flex-start-center">
+                    <el-button type="info" plain>取消</el-button>
+                    <div style="width: 15px;"></div>
+                    <el-button type="primary">保存</el-button>
+                </div>
+            </div>
+        </div>
+    </ModalByZindex>
+
+    <div class="carts-details-operate flex-center">
+        <div class="details-operate-container flex-start">
+            <el-button type="info" plain>取消</el-button>
+            <div style="width: 45px;"></div>
+            <el-button type="primary">保存</el-button>
+        </div>
     </div>
 </div>
 </template>
 
 <script>
+// 组件类
+import ModalByZindex from '@/components/ModalByZindex';
 
 export default {
     name: 'carts-details',
 
+    components: { ModalByZindex },
+
 	data: function data() { 
         return {
+            clientWidth: document.body.offsetWidth || document.documentElement.clientWidth || window.innerWidth, // 设备的宽度
+            clientHeight: document.body.offsetHeight || document.documentElement.clientHeight || window.innerHeight, // 设备高度
+
             /**
              * 页面状态
              * @param {string} add 新增
              * @param {string} edit 编辑
              */
             pageType: 'add',
+            
+            mountBaiduMap: new BMap.Map('BaiduMap'), // 百度地图实例 
 
             shopsNo: '', // 车行编码
             shopsName: '', // 车行名称
@@ -203,11 +260,36 @@ export default {
             ],
             contactName: '汤俊猛', // 联系人
             contactPhone: '13924593603', // 联系电话
+            brand: '', // 品牌
+            parCompany: '', // 上级集团
+            subCompanyName: '', // 支公司
+            subCompanyNameOptions: [
+                {
+                    value: '支公司一',
+                    label: '支公司一',
+                }
+            ],
+            team: '', // 团队
+            teamOptions: [
+                {
+                    value: '团队一',
+                    label: '团队一',
+                }
+            ],
+            linkCode: '', // 渠道代码
+            remark: '', // 备注
+
+            address: '', // 地址
+            addressSearch: '', // 地址模糊搜索
+            longitude: '', // 经度
+            latitude: '', // 纬度
+            isBaiduMapModalShow: true, // 百度地图选择模态框
         }
     },
 
 	mounted: function mounted() {
-        this.initPageData();
+        this.initPageData(); // 初始化页面数据
+        this.initBaiduMap(); // 初始化百度地图
     },
 
 	methods: {
@@ -220,6 +302,22 @@ export default {
             if (this.$route.query.id) {
                 this.pageType = 'edit';
             }
+        },
+
+        /**
+         * 初始化百度地图
+         */
+        initBaiduMap: function initBaiduMap() {
+            this.mountBaiduMap = new BMap.Map('BaiduMap'); // 创建地图实例  
+            this.mountBaiduMap.centerAndZoom(new BMap.Point(114.059560, 22.542860), 13); // 初始化地图，设置中心点坐标(深圳福田) 和地图级别  
+            this.mountBaiduMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+        },
+
+        /**
+         * 地图输入点击
+         */
+        mapInputHandle: function mapInputHandle() {
+            this.isBaiduMapModalShow = true;
         },
 
         /**
@@ -240,7 +338,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss">
 $black1: #303133;
 $black2: #606266;
 $black3: #909399;
@@ -253,8 +351,8 @@ $black4: #C0C4CC;
     font-weight: normal;
 }
 
-.carts-details-form {
-    padding: 15px;
+.carts-details .carts-details-form {
+    padding: 15px 15px 0px 15px;
 
     .details-form-item {
         padding: 7.5px;
@@ -269,6 +367,55 @@ $black4: #C0C4CC;
     .el-select {
         width: 100%;
     }
+}
+
+// 地图选择模态框
+.carts-details .baidu-map-modal {
+    .modal-container {
+        width: 70%;
+    }
+
+    .map-modal-title {
+        padding: 0px 15px;
+        height: 45px;
+        font-size: 16px;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+
+        .modal-title-right {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-title-right:hover {
+            color: #F56C6C;
+        }
+    }
+
+    .map-modal-main {
+        padding: 15px;
+
+        #BaiduMap {
+            height: 300px;
+        }
+    }
+
+    .map-modal-input {
+        padding: 15px 15px 0px 15px;
+    }
+
+    .input-search-list {
+    }
+
+    .map-modal-operate {
+        border-top: 1px solid #ddd;
+        padding: 15px;
+        height: 45;
+    }
+}
+
+.carts-details .carts-details-operate {
+    padding: 15px 15px 35px 15px;
 }
 
 </style>

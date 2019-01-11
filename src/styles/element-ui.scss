@@ -32,3 +32,17 @@
 .el-date-editor .el-range-separator, {
     width: 24px;
 }
+
+ // fiexd 修复 src\views\shops\carts-edit.vue 文件夹下的地图样式问题
+.carts-details {
+
+    // 地图未填写完成显示蓝色
+    .carts-details-form .item-succeed-map .el-input__icon {
+        color: #67C23A;
+    }
+
+    // 地图未填写的时候显示红色
+    .carts-details-form .item-search-map .el-input__icon {
+        color: #F56C6C;
+    }
+}
