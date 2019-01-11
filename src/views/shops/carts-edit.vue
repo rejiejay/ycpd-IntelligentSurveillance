@@ -139,7 +139,7 @@
                 <div class="details-form-item">
                     <div class="form-item-title">网点地址</div>
                     <!-- 这里需要百度地图模糊地址查询的功能 -->
-                    <div @click="mapInputHandle" :class="`form-item-map ${ (address && longitude && latitude) ? 'item-succeed-map' : 'item-search-map'}`">
+                    <div @click="this.isBaiduMapModalShow = true" :class="`form-item-map ${ (address && longitude && latitude) ? 'item-succeed-map' : 'item-search-map'}`">
                         <el-input readonly :prefix-icon="`${ (address && longitude && latitude) ? 'el-icon-circle-check-outline' : 'el-icon-search'}`" placeholder="请输入网点地址" v-model="address"></el-input>
                     </div>
                 </div>
@@ -157,15 +157,30 @@
         <div class="map-modal-container">
 
             <div class="map-modal-title flex-center">
-                <div class="modal-title-left flex-rest">选择网店地址</div>
+                <div class="modal-title-left flex-rest">选择网点地址</div>
                 <div class="modal-title-right" @click="isBaiduMapModalShow = false;"><i class="el-icon-close"></i></div>
             </div>
 
-            <div class="map-modal-input">
-                <el-input prefix-icon="el-icon-search" placeholder="请输入网点地址" v-model="addressSearch"></el-input>
+            <div :class="`map-modal-input ${ (addressSearch && longitude && latitude) ? 'item-succeed-map' : 'item-search-map'}`">
+                <el-input 
+                    @focus="isInputAddress = true"
+                    @blur="isInputAddress = false"
+                    :prefix-icon="`${ (addressSearch && longitude && latitude) ? 'el-icon-circle-check-outline' : 'el-icon-search'}`"
+                    placeholder="请输入网点地址" 
+                    v-model="addressSearch"
+                ></el-input>
                 
                 <!-- 搜索列表 -->
-                <div class="input-search-list">
+                <div class="input-search-list" v-if="addressSearchResult.length > 0">
+                    <div class="search-list-container">
+                        <div class="input-search-item"
+                            v-for="(item, key) in addressSearchResult"
+                            :key="key"
+                            @click="selectSearchAddress(item)"
+                        >
+                            {{item.address}}
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -280,11 +295,52 @@ export default {
             remark: '', // 备注
 
             address: '', // 地址
-            addressSearch: '', // 地址模糊搜索
             longitude: '', // 经度
             latitude: '', // 纬度
             isBaiduMapModalShow: true, // 百度地图选择模态框
+            addressSearch: '', // 地址模糊搜索
+            isInputAddress: false, // 是否正在输入地址
+            addressSearchResult: [], // 地址模糊搜索结果列表
         }
+    },
+
+    watch: {
+        /**
+         * 地址搜索
+         */
+        addressSearch: function addressSearch(newAddressSearch, oldAddressSearch) {
+            const _this = this;
+
+            // 只有在输入的时候才进行检索
+            if (this.isInputAddress === false) {
+                // 否则阻止以下的执行
+                return false;
+            }
+
+            // 在输入的时候，清空经纬度
+            this.longitude = ''; // 经度
+            this.latitude = ''; // 纬度
+
+            // 实例化 用于位置检索、周边检索和范围检索的类
+            let baiduMapLocalSearch = new BMap.LocalSearch(
+                this.mountBaiduMap.getCenter(), // 检索区域, 设置为 目前的地图实例可视区域的中心
+                {
+                    renderOptions: { // 结果呈现设置
+                        map: this.mountBaiduMap, // 展现结果的地图实例。当指定此参数后，搜索结果的标注、线路等均会自动添加到此地图上
+                    }
+                }
+            );
+
+            baiduMapLocalSearch.search(newAddressSearch);
+            // 因为是异步的，所以获取结果需要时间
+            baiduMapLocalSearch.setSearchCompleteCallback(function() {
+                let localResult = baiduMapLocalSearch.getResults();
+
+                if (localResult && localResult.Gq) {
+                    _this.addressSearchResult = localResult.Gq;
+                }
+            });
+        },
     },
 
 	mounted: function mounted() {
@@ -314,10 +370,41 @@ export default {
         },
 
         /**
-         * 地图输入点击
+         * 选中搜索结果的其中一个地址
          */
-        mapInputHandle: function mapInputHandle() {
-            this.isBaiduMapModalShow = true;
+        selectSearchAddress: function selectSearchAddress(item) {
+            this.addressSearchResult = []; // 清空首胜结果
+
+            this.addressSearch = item.address; // 渲染到 搜索框
+            this.longitude = item.point.lng; // 设置 经度
+            this.latitude = item.point.lat; // 设置 纬度
+            this.renderMarkerBy(item.point.lng, item.point.lat, item.title, item.address); // 标注到地图位置上 并且设置为地图中心
+        },
+
+        /**
+         * 根据 经纬度 标注到地图位置上 并且设置为地图中心 弹出信息窗口(如果存在)
+         * @param {string} longitude
+         */
+        renderMarkerBy: function renderMarkerBy(longitude, latitude, title, address) {
+            let myPoint = new BMap.Point(longitude, latitude);
+
+            this.mountBaiduMap.setCenter(myPoint);
+            this.mountBaiduMap.clearOverlays(); // 清除所有遮罩物
+            this.mountBaiduMap.addOverlay(new BMap.Marker(myPoint)); // 创建标注
+
+            if (title && address) {
+                // 创建信息窗口对象    
+                let infoWindow = new BMap.InfoWindow(
+                    address, 
+                    {    
+                        width : 100,     // 信息窗口宽度 
+                        height: 22,     // 信息窗口高度    
+                        title : title  // 信息窗口标题   
+                    }
+                );
+                // 打开信息窗口
+                this.mountBaiduMap.openInfoWindow(infoWindow, myPoint); 
+            }
         },
 
         /**
@@ -405,6 +492,26 @@ $black4: #C0C4CC;
     }
 
     .input-search-list {
+        padding-top: 5px;
+
+        .search-list-container {
+            border-top: 1px solid #ddd;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+
+        .input-search-item {
+            border-bottom: 1px solid #ddd;
+            padding-left: 15px;
+            line-height: 35px;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .input-search-item:hover {
+            color: #409EFF;
+        }
     }
 
     .map-modal-operate {
