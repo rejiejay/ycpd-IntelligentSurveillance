@@ -20,7 +20,7 @@
         </div>
 
         <div class="manage-operate-right">
-            <el-button icon="el-icon-plus" type="primary" @click="addHandle">新增</el-button>
+            <el-button icon="el-icon-plus" type="primary" @click="jumpToRouter('/shops/subcompany/details')">新增</el-button>
         </div>
     </div>
 
@@ -54,6 +54,11 @@
             <el-table-column
                 prop="leadershipPhone"
                 label="分管领导电话"
+                min-width="120"
+            ></el-table-column>
+            <el-table-column
+                prop="adminCode"
+                label="管理员代码"
                 min-width="120"
             ></el-table-column>
             <el-table-column
@@ -121,6 +126,7 @@ export default {
                     leadershipCode: '', // 分管领导代码
                     leadershipName: '', // 分管领导姓名
                     leadershipPhone: '', // 分管领导电话
+                    adminCode: '', // 管理员代码
                     adminName: '', // 管理员姓名
                     adminPhone: '', // 管理员电话
                     remark: '', // 备注
@@ -150,12 +156,6 @@ export default {
          */
         clearConditions: function clearConditions() {
             this.subCompanySection = null;
-        },
-
-        /**
-         * 新增一个支公司
-         */
-        addHandle: function addHandle() {
         },
 
         /**
