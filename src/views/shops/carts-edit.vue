@@ -139,7 +139,7 @@
                 <div class="details-form-item">
                     <div class="form-item-title">网点地址</div>
                     <!-- 这里需要百度地图模糊地址查询的功能 -->
-                    <div @click="this.isBaiduMapModalShow = true" :class="`form-item-map ${ (address && longitude && latitude) ? 'item-succeed-map' : 'item-search-map'}`">
+                    <div @click="isBaiduMapModalShow = true" :class="`form-item-map ${ (address && longitude && latitude) ? 'item-succeed-map' : 'item-search-map'}`">
                         <el-input readonly :prefix-icon="`${ (address && longitude && latitude) ? 'el-icon-circle-check-outline' : 'el-icon-search'}`" placeholder="请输入网点地址" v-model="address"></el-input>
                     </div>
                 </div>
@@ -191,9 +191,12 @@
             <div class="map-modal-operate flex-start-center">
                 <div class="modal-operate-left flex-rest"></div>
                 <div class="modal-operate-right flex-start-center">
-                    <el-button type="info" plain>取消</el-button>
+                    <el-button type="info" plain @click="isBaiduMapModalShow = false">取消</el-button>
                     <div style="width: 15px;"></div>
-                    <el-button type="primary">保存</el-button>
+                    <el-button 
+                        :type="(addressSearch && longitude && latitude) ? 'primary' : ''" 
+                        @click="saveAddressHandle"
+                    >保存</el-button>
                 </div>
             </div>
         </div>
@@ -297,7 +300,7 @@ export default {
             address: '', // 地址
             longitude: '', // 经度
             latitude: '', // 纬度
-            isBaiduMapModalShow: true, // 百度地图选择模态框
+            isBaiduMapModalShow: false, // 百度地图选择模态框
             addressSearch: '', // 地址模糊搜索
             isInputAddress: false, // 是否正在输入地址
             addressSearchResult: [], // 地址模糊搜索结果列表
@@ -364,9 +367,29 @@ export default {
          * 初始化百度地图
          */
         initBaiduMap: function initBaiduMap() {
+            const _this = this;
             this.mountBaiduMap = new BMap.Map('BaiduMap'); // 创建地图实例  
             this.mountBaiduMap.centerAndZoom(new BMap.Point(114.059560, 22.542860), 13); // 初始化地图，设置中心点坐标(深圳福田) 和地图级别  
             this.mountBaiduMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+
+            // 绑定点击事件
+            this.mountBaiduMap.addEventListener("click", function(event) {   
+                let thisLongitude = event.point.lng; // 经度
+                let thisLatitude = event.point.lat; // 纬度
+
+                // 逆地址解析
+                let baiduMapGeocoder = new BMap.Geocoder(); // 实例化 用于获取用户的地址解析的类。
+                // 根据坐标得到地址描述 
+                baiduMapGeocoder.getLocation(new BMap.Point(thisLongitude, thisLatitude), function(result){      
+                    if (result) {
+                        // 如果得到地址
+                        _this.longitude = result.point.lng; // 设置 经度
+                        _this.latitude = result.point.lat; // 设置 纬度
+                        _this.addressSearch = result.address; // 设置 模糊搜索的地址
+                        _this.renderMarkerBy(result.point.lng, result.point.lat, result.business, result.address); // 标注到地图位置上 并且设置为地图中心 弹出信息窗口(如果存在) 
+                    }
+                });
+            });
         },
 
         /**
@@ -405,6 +428,19 @@ export default {
                 // 打开信息窗口
                 this.mountBaiduMap.openInfoWindow(infoWindow, myPoint); 
             }
+        },
+
+        /**
+         * 保存选择的地址
+         */
+        saveAddressHandle: function saveAddressHandle() {
+            if (!this.longitude || !this.latitude || !this.addressSearch) {
+                // 其中一个地址不存在都不可以保存
+                return alert('请选择网点地址!');
+            }
+
+            this.address = this.addressSearch;
+            this.isBaiduMapModalShow = false; // 关闭 百度地图选择模态框
         },
 
         /**
