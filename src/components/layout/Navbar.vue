@@ -22,7 +22,8 @@
                         {{ item.meta.title }}
                     </span>
                     
-                    <a v-else @click.prevent="handleLink(item)">
+                    <!-- <a v-else @click.prevent="handleLink(item)"> 这个点击容易出问题，没有这个需求，删掉这个即可 -->
+                    <a v-else>
                         {{ item.meta.title }}
                     </a>
                 </el-breadcrumb-item>

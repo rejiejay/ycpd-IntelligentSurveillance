@@ -115,17 +115,29 @@ export const constantRouterMap = [
             path: 'carts',
             name: 'carts',
             component: () => import('@/views/shops/carts'),
-            meta: { title: '网点管理', icon: 'regionsite', noCache: true }
+            meta: { title: '车行管理', icon: 'regionsite', noCache: false }
         }, {
             path: 'subcompany',
             name: 'subsidiary-company-manage',
             component: () => import('@/views/shops/sub-company'),
-            meta: { title: '支公司管理', icon: 'subcompany', noCache: true }
+            meta: { title: '支公司管理', icon: 'subcompany', noCache: false }
         }, {
             path: 'team',
             name: 'team-manage',
             component: () => import('@/views/shops/team'),
-            meta: { title: '团队管理', icon: 'team', noCache: true }
+            meta: { title: '团队管理', icon: 'team', noCache: false }
+        }],
+    }, {
+        path: '/shops/carts',
+        component: Layout,
+        name: 'shops',
+        hidden: true,
+        meta: { title: '车商管理', icon: 'shops' },
+        children: [{
+            path: 'details',
+            name: 'carts-edit',
+            component: () => import('@/views/shops/carts-edit'),
+            meta: { title: '新增/编辑车行', icon: 'regionsite', noCache: false }
         }],
     },
 
