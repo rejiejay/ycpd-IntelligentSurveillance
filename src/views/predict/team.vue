@@ -1,13 +1,13 @@
-<!-- 预测设置 -->
+<!-- 车商管理 -->
 <template>
-<div class="predict">
+<div class="predict-team">
 </div>
 </template>
 
 <script>
 
 export default {
-    name: 'predict',
+    name: 'predict-team',
 
 	data: function data() { 
         return { } 

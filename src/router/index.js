@@ -169,21 +169,21 @@ export const constantRouterMap = [
      * 预测设置
      */
     {
-        path: '/setting',
-        redirect: '/setting/predict',
+        path: '/predict',
+        redirect: '/predict/subcompany',
         component: Layout,
-        name: 'setting',
+        name: 'predict',
         hidden: false,
         meta: { title: '预测设置', icon: 'predict' },
         children: [{
             path: 'subcompany',
-            name: 'setting-sub-company',
-            component: () => import('@/views/setting/sub-company'),
+            name: 'predict-sub-company',
+            component: () => import('@/views/predict/sub-company'),
             meta: { title: '支公司数据设置', icon: 'subcompany', noCache: true }
         }, {
             path: 'team',
-            name: 'setting-team',
-            component: () => import('@/views/setting/team'),
+            name: 'predict-team',
+            component: () => import('@/views/predict/team'),
             meta: { title: '团队数据设置', icon: 'team', noCache: true }
         }],
     },

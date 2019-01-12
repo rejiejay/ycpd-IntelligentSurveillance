@@ -1,13 +1,13 @@
 <!-- 支公司数据设置 -->
 <template>
-<div class="setting-sub-company">
+<div class="predict-sub-company">
 </div>
 </template>
 
 <script>
 
 export default {
-    name: 'setting-sub-company',
+    name: 'predict-sub-company',
 
 	data: function data() { 
         return { } 
