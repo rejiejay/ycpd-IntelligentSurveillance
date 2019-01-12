@@ -1,21 +1,217 @@
-<!-- 统计分析 -->
+<!-- 预警日志 -->
 <template>
-<div class="analyze">
+<div class="consolelog">
+
+    <!-- 顶部操作按钮 -->
+    <div class="consolelog-operate flex-start-bottom">
+        <div class="team-operate-left flex-rest">
+            <el-date-picker
+                v-model="startendTime"
+                type="daterange"
+                align="left"
+                unlink-panels
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                :picker-options="startendTimeOptions"
+            ></el-date-picker>
+
+            <el-select v-model="warnNameSection" placeholder="选择预警名称">
+                <el-option
+                    v-for="item in warnNameOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                ></el-option>
+            </el-select>
+
+            <el-select v-model="warnPeopleSection" placeholder="选择预警人">
+                <el-option
+                    v-for="item in warnPeopleOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                ></el-option>
+            </el-select>
+
+            <el-select v-model="warnStatusSection" placeholder="选择预警状态">
+                <el-option
+                    v-for="item in warnStatusOptions"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                ></el-option>
+            </el-select>
+
+            <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
+            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
+        </div>
+    </div>
+
+    <!-- 表单部分 -->
+    <div class="consolelog-table">
+        <el-table
+            :data="logs"
+            border
+            style="width: 100%"
+        >
+            <el-table-column
+                prop="SMSsendingTime"
+                label="预警短信发送时间"
+            ></el-table-column>
+            <el-table-column
+                prop="warnName"
+                label="预警名称"
+            ></el-table-column>
+            <el-table-column
+                prop="warnRule"
+                label="预警规则"
+            ></el-table-column>
+            <el-table-column
+                prop="warnPeople"
+                label="被预警人"
+            ></el-table-column>
+            <el-table-column
+                prop="warnStatus"
+                label="预警状态"
+            ></el-table-column>
+        </el-table>
+    </div>
+
+    <!-- 分页部分 -->
+    <div class="consolelog-pagination flex-center">
+        <el-pagination
+            :current-page="currentPage"
+            :page-size="pageSize"
+            :total="pageTotal"
+            @current-change="pageChangeHandle"
+            layout="sizes, prev, pager, next, jumper"
+        ></el-pagination>
+    </div>
 </div>
 </template>
 
 <script>
 
 export default {
-    name: 'analyze',
+    name: 'consolelog',
 
 	data: function data() { 
-        return { } 
+        // 选择时间段 左边选项列表选项
+        let startendTimeOptions = {
+            shortcuts: [
+                {
+                    text: '今天',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24);
+                        picker.$emit('pick', [start, end]);
+                    }
+                },{
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }
+            ]
+        }
+
+        return {
+            startendTime: [ // 开始结束时间
+                new Date(new Date().getTime() - 3600 * 1000 * 24),
+                new Date(),
+            ],
+            startendTimeOptions: startendTimeOptions, // 开始结束时间 左边选项
+
+            warnNameSection: '', // 预警名称
+            warnNameOptions: [
+                {
+                    value: '预警名称一',
+                    label: '预警名称一',
+                }
+            ],
+
+            warnPeopleSection: '', // 预警人
+            warnPeopleOptions: [
+                {
+                    value: '预警人一',
+                    label: '预警人一',
+                }
+            ],
+
+            warnStatusSection: '', // 预警状态
+            warnStatusOptions: [
+                {
+                    value: '预警状态一',
+                    label: '预警状态一',
+                }
+            ],
+
+            // 预警表单
+            logs: [
+                {
+                    SMSsendingTime: '', // 预警短信发送时间
+                    warnName: '', // 预警名称
+                    warnRule: '', // 预警规则
+                    warnPeople: '', // 被预警人
+                    warnStatus: '', // 预警状态
+                }
+            ],
+
+            /**
+             * 分页相关
+             */
+            currentPage: 1, // 当前页码
+            pageSize: 20, // 一个页面多少数据
+            pageTotal: 1, // 一共多少条数据 
+        } 
     },
 
 	mounted: function mounted() {},
 
 	methods: {
+        /**
+         * 通过条件查询
+         */
+        searchByConditions: function searchByConditions() {
+        },
+
+        /**
+         * 清空查询条件
+         */
+        clearConditions: function clearConditions() {
+            this.subCompanySection = null;
+            this.monthSection = null;
+        },
+
+        /**
+         * 分页改变的时候处理函数
+         */
+        pageChangeHandle: function pageChangeHandle(item) {
+            console.log(item);
+        },
+
         /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填
@@ -39,5 +235,32 @@ $black1: #303133;
 $black2: #606266;
 $black3: #909399;
 $black4: #C0C4CC;
+
+.consolelog {
+    position: relative;
+    color: $black2;
+    font-size: 14px;
+    font-weight: normal;
+}
+
+// 顶部操作按钮
+.consolelog-operate {
+    padding: 15px;
+
+    .el-date-editor,
+    .el-select {
+        margin-right: 15px;
+    }
+}
+
+// 表单部分
+.consolelog-table {
+    padding: 15px;
+}
+
+// 分页
+.pconsolelog-pagination {
+    padding: 15px 15px 35px 15px;
+}
 
 </style>
