@@ -2,6 +2,6 @@
 module.exports = {
     url: {
         // 请求源
-        origin: 'http://necrsserver.api2.hotgz.com/v1',
+        origin: 'http://cdimms.api2.hotgz.com/cdimms/server/index',
     },
 };

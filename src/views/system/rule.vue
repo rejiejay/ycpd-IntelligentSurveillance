@@ -1,13 +1,13 @@
-<!-- 车商管理 -->
+<!-- 预警规则设置 -->
 <template>
-<div class="carts-manage">
+<div class="system-rule">
 </div>
 </template>
 
 <script>
 
 export default {
-    name: 'carts-manage',
+    name: 'system-rule',
 
 	data: function data() { 
         return { } 
@@ -39,5 +39,12 @@ $black1: #303133;
 $black2: #606266;
 $black3: #909399;
 $black4: #C0C4CC;
+
+.system-rule {
+    position: relative;
+    color: $black2;
+    font-size: 14px;
+    font-weight: normal;
+}
 
 </style>
