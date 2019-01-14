@@ -231,7 +231,48 @@ export const constantRouterMap = [
             component: () => import('@/views/system/rule'),
             meta: { title: ' 预警规则设置', icon: 'rule', noCache: true }
         }],
-    },
+    }, {
+        path: '/system/user',
+        component: Layout,
+        name: 'system-user-edit',
+        hidden: true,
+        meta: { title: '系统设置', icon: 'shops' },
+        children: [{
+            path: 'details',
+            name: 'user-edit',
+            component: () => import('@/views/system/user-edit'),
+            meta: { title: '新增/编辑用户', icon: 'systemuser', noCache: false }
+        }],
+    }, {
+        path: '/system/roles',
+        component: Layout,
+        name: 'system-roles',
+        hidden: true,
+        meta: { title: '系统设置', icon: 'shops' },
+        children: [{
+            path: 'details',
+            name: 'roles-edit',
+            component: () => import('@/views/system/roles-edit'),
+            meta: { title: '菜单配置', icon: 'roles', noCache: false }
+        }, {
+            path: 'staff',
+            name: 'roles-staff',
+            component: () => import('@/views/system/roles-staff'),
+            meta: { title: '人员配置', icon: 'roles', noCache: false }
+        }],
+    }, {
+        path: '/system/rule',
+        component: Layout,
+        name: 'system-rule-edit',
+        hidden: true,
+        meta: { title: '系统设置', icon: 'shops' },
+        children: [{
+            path: 'details',
+            name: 'rule-edit',
+            component: () => import('@/views/system/rule-edit'),
+            meta: { title: '新增/编辑预警规则', icon: 'rule', noCache: false }
+        }],
+    }, 
 
     // 当过滤失败的情况下, 直接跳转到 404 页面
     { path: '*', redirect: '/404', hidden: true },
