@@ -1,7 +1,114 @@
 <!-- 预警规则设置/新增编辑 -->
 <template>
-<div class="user-edit">
-    <div class="user-edit-form">
+<div class="rule-edit">
+    <div class="rule-edit-form">
+        <el-row>
+            <el-col :span="8">
+                <div class="details-form-item">
+                    <div class="form-item-title">预警名称</div>
+                    <el-input placeholder="请输入预警名称" v-model="ruleName"></el-input>
+                </div>
+            </el-col>
+
+            <el-col :span="8">
+                <div class="details-form-item">
+                    <div class="form-item-title">预警指标</div>
+                    <el-select v-model="ruleStandardSection" placeholder="预警指标">
+                        <el-option
+                            v-for="item in ruleStandardOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+
+            <el-col :span="8">
+                <div class="details-form-item">
+                    <div class="form-item-title">预警对象</div>
+                    <el-select v-model="ruleTargetSection" placeholder="预警对象">
+                        <el-option
+                            v-for="item in ruleTargetOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="8">
+                <div class="details-form-item">
+                    <div class="form-item-title">预警范围</div>
+                    <el-select v-model="ruleRangeSection" placeholder="预警范围">
+                        <el-option
+                            v-for="item in ruleRangeOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+
+            <el-col :span="16">
+                <div class="details-form-item">
+                    <div class="form-item-title">预警通知人</div>
+                    <el-select v-model="ruleInfoPeopleSection" multiple placeholder="预警通知人">
+                        <el-option
+                            v-for="item in ruleInfoPeopleOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="8">
+                <div class="details-form-item">
+                    <div class="form-item-title">通知时间</div>
+                    <el-select v-model="ruleRangeSection" placeholder="通知时间">
+                        <el-option label="每天" value="每天"></el-option>
+                        <el-option label="每三天" value="每三天"></el-option>
+                        <el-option label="每周" value="每周"></el-option>
+                        <el-option label="每月" value="每月"></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+
+            <el-col :span="16">
+                <div class="details-form-item">
+                    <div class="form-item-title">通知有效期</div>
+                    <el-row>
+                        <el-col :span="11">
+                            <el-select v-model="ruleValiditySection" placeholder="通知有效期">
+                                <el-option label="永久" value="永久"></el-option>
+                                <el-option label="自定义" value="自定义"></el-option>
+                            </el-select>
+                        </el-col>
+                        <el-col :span="1"><div>&nbsp;</div></el-col>
+                        <el-col :span="12">
+                            <el-date-picker
+                                v-model="startendTime"
+                                type="daterange"
+                                align="right"
+                                unlink-panels
+                                range-separator="至"
+                                start-placeholder="开始日期"
+                                end-placeholder="结束日期"
+                                :picker-options="startendTimeOptions"
+                            ></el-date-picker>
+                        </el-col>
+                    </el-row>
+                </div>
+            </el-col>
+        </el-row>
     </div>
 
     <div class="user-edit-operate flex-center">
@@ -20,7 +127,79 @@ export default {
     name: 'user-edit',
 
 	data: function data() { 
+        // 选择时间段 左边选项列表选项
+        let startendTimeOptions = {
+            shortcuts: [
+                {
+                    text: '最近一周',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近一个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }, {
+                    text: '最近三个月',
+                    onClick(picker) {
+                        const end = new Date();
+                        const start = new Date();
+                        start.setTime(start.getTime() + 3600 * 1000 * 24 * 90);
+                        picker.$emit('pick', [start, end]);
+                    }
+                }
+            ]
+        }
+
         return {
+            ruleName: '', // 预警名称
+            ruleStandardSection: '', // 预警指标
+            ruleStandardOptions: [
+                {
+                    value: '预警指标一',
+                    lable: '预警指标一',
+                }
+            ],
+
+            ruleTargetSection: '', // 预警对象
+            ruleTargetOptions: [
+                {
+                    value: '预警指标一',
+                    lable: '预警指标一',
+                }
+            ],
+
+            ruleRangeSection: '', // 预警范围
+            ruleRangeOptions: [
+                {
+                    value: '预警指标一',
+                    lable: '预警指标一',
+                }
+            ],
+
+            ruleInfoPeopleSection: '', // 预警通知人
+            ruleInfoPeopleOptions: [
+                {
+                    value: '预警指标一',
+                    lable: '预警指标一',
+                }
+            ],
+
+            ruleRangeSection: '', // 通知时间
+            ruleValiditySection: '', // 通知有效期
+
+            startendTime: [ // 通知有效期
+                new Date(new Date().getTime() - 3600 * 1000 * 24),
+                new Date(),
+            ],
+            startendTimeOptions: startendTimeOptions, // 通知有效期 左边选项
         }
     },
 
@@ -64,15 +243,15 @@ $black2: #606266;
 $black3: #909399;
 $black4: #C0C4CC;
 
-.carts-details {
+.rule-edit {
     position: relative;
     color: $black2;
     font-size: 14px;
     font-weight: normal;
 }
 
-.carts-details .carts-details-form {
-    padding: 15px 15px 0px 15px;
+.rule-edit .rule-edit-form {
+    padding: 15px;
 
     .details-form-item {
         padding: 7.5px;
@@ -84,77 +263,13 @@ $black4: #C0C4CC;
         }
     }
 
+    .el-range-editor,
     .el-select {
         width: 100%;
     }
 }
 
-// 地图选择模态框
-.carts-details .baidu-map-modal {
-    .modal-container {
-        width: 70%;
-    }
-
-    .map-modal-title {
-        padding: 0px 15px;
-        height: 45px;
-        font-size: 16px;
-        font-weight: bold;
-        border-bottom: 1px solid #ddd;
-
-        .modal-title-right {
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .modal-title-right:hover {
-            color: #F56C6C;
-        }
-    }
-
-    .map-modal-main {
-        padding: 15px;
-
-        #BaiduMap {
-            height: 300px;
-        }
-    }
-
-    .map-modal-input {
-        padding: 15px 15px 0px 15px;
-    }
-
-    .input-search-list {
-        padding-top: 5px;
-
-        .search-list-container {
-            border-top: 1px solid #ddd;
-            border-left: 1px solid #ddd;
-            border-right: 1px solid #ddd;
-        }
-
-        .input-search-item {
-            border-bottom: 1px solid #ddd;
-            padding-left: 15px;
-            line-height: 35px;
-            cursor: pointer;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .input-search-item:hover {
-            color: #409EFF;
-        }
-    }
-
-    .map-modal-operate {
-        border-top: 1px solid #ddd;
-        padding: 15px;
-        height: 45;
-    }
-}
-
-.carts-details .carts-details-operate {
+.rule-edit .rule-edit-operate {
     padding: 15px 15px 35px 15px;
 }
 
