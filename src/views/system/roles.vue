@@ -1,4 +1,4 @@
-<!-- 车商管理 -->
+<!-- 角色设置 -->
 <template>
 <div class="system-roles">
     <!-- 顶部操作按钮 -->
@@ -58,10 +58,10 @@
             <el-table-column
                 fixed="right"
                 label="操作"
-                width="160"
+                width="120"
             >
                 <template slot-scope="scope">
-                    <el-button @click="modifierStaffHandle(scope.row)" type="text" size="small">人员配置</el-button>
+                    <!-- <el-button @click="modifierStaffHandle(scope.row)" type="text" size="small">人员配置</el-button> -->
                     <el-button @click="modifierDetailsHandle(scope.row)" type="text" size="small">菜单配置</el-button>
                 </template>
             </el-table-column>
@@ -137,16 +137,8 @@ export default {
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
-            this.startendTime = [
-                new Date(new Date().getTime() - 3600 * 1000 * 24 * 31),
-                new Date(),
-            ];
-
-            this.subCompanySection = null;
-            this.teamSection = null;
-            this.regionSection = null;
-            this.minProportion = null;
-            this.maxProportion = null;
+            this.rolesCodeSection = null;
+            this.rolesNameSection = null;
         },
 
         /**
