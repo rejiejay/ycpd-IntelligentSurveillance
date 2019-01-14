@@ -5,7 +5,7 @@
         <el-row>
             <el-col :span="12">
                 <div class="details-form-item">
-                    <div class="form-item-title">车行编码</div>
+                    <div class="form-item-title">用户类型</div>
                     <el-select v-model="userTypeSection" placeholder="用户类型">
                         <el-option
                             v-for="item in userTypeOptions"
