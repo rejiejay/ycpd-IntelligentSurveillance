@@ -2,6 +2,103 @@
 <template>
 <div class="user-edit">
     <div class="user-edit-form">
+        <el-row>
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">车行编码</div>
+                    <el-select v-model="userTypeSection" placeholder="用户类型">
+                        <el-option
+                            v-for="item in userTypeOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">用户归属</div>
+                    <el-input placeholder="请输入用户归属" v-model="userBelong"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">用户姓名</div>
+                    <el-input placeholder="请输入用户姓名" v-model="userRealName"></el-input>
+                </div>
+            </el-col>
+
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">用户代码</div>
+                    <el-input placeholder="请输入用户代码" v-model="userCode"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">登录名</div>
+                    <el-input placeholder="请输入登录名" v-model="userName"></el-input>
+                </div>
+            </el-col>
+
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">登录密码</div>
+                    <el-input placeholder="请输入登录密码" v-model="password"></el-input>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">手机号码</div>
+                    <el-input placeholder="请输入手机号码" v-model="phone"></el-input>
+                </div>
+            </el-col>
+
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">角色</div>
+                    <el-select v-model="rolesSection" placeholder="角色">
+                        <el-option
+                            v-for="item in rolesOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+        </el-row>
+
+        <el-row>
+            <el-col :span="12">
+                <div class="details-form-item">
+                    <div class="form-item-title">状态</div>
+                    <el-select v-model="userStatusSection" placeholder="状态">
+                        <el-option
+                            v-for="item in userStatusOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        ></el-option>
+                    </el-select>
+                </div>
+            </el-col>
+
+            <el-col :span="12">
+                <div class="details-form-item"></div>
+            </el-col>
+        </el-row>
     </div>
 
     <div class="user-edit-operate flex-center">
@@ -21,6 +118,41 @@ export default {
 
 	data: function data() { 
         return {
+            userTypeSection: '', // 用户类型
+            userTypeOptions: [
+                {
+                    value: '用户类型一',
+                    lable: '用户类型一',
+                }
+            ],
+
+            userBelong: '', // 用户归属
+
+            userRealName: '', // 用户姓名
+            userCode: '', // 用户代码
+            userName: '', // 登录名
+            password: '', // 用户密码
+            phone: '', // 手机号
+
+            rolesSection: '', // 角色
+            rolesOptions: [
+                {
+                    value: '角色一',
+                    lable: '角色一',
+                }
+            ],
+
+            userStatusSection: '', // 用户状态
+            userStatusOptions: [
+                {
+                    value: '有效',
+                    lable: '有效',
+                }, {
+                    value: '注销',
+                    lable: '注销',
+                }
+            ],
+
         }
     },
 
@@ -64,14 +196,14 @@ $black2: #606266;
 $black3: #909399;
 $black4: #C0C4CC;
 
-.carts-details {
+.user-edit {
     position: relative;
     color: $black2;
     font-size: 14px;
     font-weight: normal;
 }
 
-.carts-details .carts-details-form {
+.user-edit-form {
     padding: 15px 15px 0px 15px;
 
     .details-form-item {
@@ -89,72 +221,7 @@ $black4: #C0C4CC;
     }
 }
 
-// 地图选择模态框
-.carts-details .baidu-map-modal {
-    .modal-container {
-        width: 70%;
-    }
-
-    .map-modal-title {
-        padding: 0px 15px;
-        height: 45px;
-        font-size: 16px;
-        font-weight: bold;
-        border-bottom: 1px solid #ddd;
-
-        .modal-title-right {
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        .modal-title-right:hover {
-            color: #F56C6C;
-        }
-    }
-
-    .map-modal-main {
-        padding: 15px;
-
-        #BaiduMap {
-            height: 300px;
-        }
-    }
-
-    .map-modal-input {
-        padding: 15px 15px 0px 15px;
-    }
-
-    .input-search-list {
-        padding-top: 5px;
-
-        .search-list-container {
-            border-top: 1px solid #ddd;
-            border-left: 1px solid #ddd;
-            border-right: 1px solid #ddd;
-        }
-
-        .input-search-item {
-            border-bottom: 1px solid #ddd;
-            padding-left: 15px;
-            line-height: 35px;
-            cursor: pointer;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .input-search-item:hover {
-            color: #409EFF;
-        }
-    }
-
-    .map-modal-operate {
-        border-top: 1px solid #ddd;
-        padding: 15px;
-        height: 45;
-    }
-}
-
-.carts-details .carts-details-operate {
+.user-edit-operate {
     padding: 15px 15px 35px 15px;
 }
 

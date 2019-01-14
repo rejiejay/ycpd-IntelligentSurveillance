@@ -50,7 +50,7 @@
         </div>
     
         <div class="user-operate-right">
-            <el-button icon="el-icon-plus" type="primary">添加用户</el-button>
+            <el-button icon="el-icon-plus" type="primary" @click="jumpToRouter('/system/user/details')">添加用户</el-button>
         </div>
     </div>
     
@@ -223,6 +223,9 @@ export default {
          * 修改一个项
          */
         modifierHandle: function modifierHandle(item) {
+            this.jumpToRouter('/system/user/details' , {
+                id: null,
+            })
         },
 
         /**
