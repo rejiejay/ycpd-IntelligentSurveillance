@@ -13,16 +13,9 @@
                 ></el-option>
             </el-select>
 
-            <el-select v-model="rolesNameSection" placeholder="角色名称">
-                <el-option
-                    v-for="item in rolesNameOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                ></el-option>
-            </el-select>
+            <el-input v-model="rolesName" type="text" :clearable="true" placeholder="角色名称"></el-input>
 
-            <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="queryRoleList">查询</el-button>
             <el-button icon="el-icon-download" type="success">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
@@ -73,16 +66,16 @@
     <div class="system-roles-pagination flex-center">
         <el-pagination
             :current-page="currentPage"
-            :page-size="pageSize"
-            :total="pageTotal"
+            :page-count="pageCount"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
 </template>
 
 <script>
+import { queryRoleListUsingPOST, queryRoleCodeListUsingGET } from "@/api/system/roles";
 
 export default {
     name: 'system-roles',
@@ -91,46 +84,96 @@ export default {
         return {
             rolesCodeSection: '', // 角色代码
             rolesCodeOptions: [
-                {
-                    value: '角色代码一',
-                    lable: '角色代码一',
-                }
+                // {
+                //     value: '角色代码一',
+                //     lable: '角色代码一',
+                // }
             ],
 
-            rolesNameSection: '', // 角色名称
-            rolesNameOptions: [
-                {
-                    value: '角色名称一',
-                    lable: '角色名称一',
-                }
-            ],
+            rolesName: '', // 角色名称
 
             // 角色列表
             rolesList: [
-                {
-                    rolesCode: '', // 角色代码
-                    rolesName: '', // 角色名称
-                    rolesDes: '', // 角色简介
-                    rolesLabel: '', // 有效标注
-                }
+                // {
+                //     rolesCode: '', // 角色代码
+                //     rolesName: '', // 角色名称
+                //     rolesDes: '', // 角色简介
+                //     rolesLabel: '', // 有效标注
+                // }
             ],
 
             /**
              * 分页相关
              */
             currentPage: 1, // 当前页码
-            pageSize: 20, // 一个页面多少数据
-            pageTotal: 1, // 一共多少条数据 
+            pageCount: 1, // 一共多少页
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        this.queryRoleList();
+        this.initRolesCode()
+        
+    },
 
 	methods: {
         /**
-         * 通过条件查询
+         * 角色代码下拉框
          */
-        searchByConditions: function searchByConditions() {
+        initRolesCode: function initRolesCode() {
+            const _this  = this;
+
+            queryRoleCodeListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.rolesCodeOptions = data.map(item => {
+                        return {
+                            value: item,
+                            lable: item,
+                        }
+                    });
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 请求角色列表
+         */
+        queryRoleList: function queryRoleList() {
+            const _this  = this;
+
+            let roleCode = this.rolesCodeSection ? this.rolesCodeSection : null;
+            let rolesName = this.rolesName ? this.rolesName : null;
+
+            queryRoleListUsingPOST(this.currentPage, roleCode, rolesName)
+            .then(val => {
+                let data = val.data;
+
+                // 初始化一共多少条数据
+                _this.pageCount = data.pageSize; 
+
+                // 初始化角色列表
+                if (data.roles && data.roles instanceof Array && data.roles.length > 0) {
+                    _this.rolesList = data.roles.map(item => {
+                        let newItem = {};
+                        newItem.id = item.id;
+                        newItem.rolesCode = item.roleCode;
+                        newItem.rolesName = item.roleName;
+                        newItem.rolesDes = item.roleDetail;
+                        newItem.rolesLabel = item.state === 0 ? '正常' : '禁用';
+
+                        return newItem;
+                    });
+
+                } else {
+                    _this.rolesList = [];
+
+                }
+
+            }, error => console.log(error))
         },
 
         /**
@@ -145,23 +188,22 @@ export default {
          * 人员配置
          */
         modifierStaffHandle: function modifierStaffHandle(item) {
-            this.jumpToRouter('/system/roles/staff', {id: ''});
-            console.log(item);
+            this.jumpToRouter('/system/roles/staff', {id: item.id});
         },
 
         /**
          * 菜单配置
          */
         modifierDetailsHandle: function modifierDetailsHandle(item) {
-            this.jumpToRouter('/system/roles/details', {id: ''});
-            console.log(item);
+            this.jumpToRouter('/system/roles/details', {id: item.id});
         },
 
         /**
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryRoleList();
         },
 
         /**
@@ -199,6 +241,11 @@ $black4: #C0C4CC;
     padding: 15px;
 
     .el-select {
+        margin-right: 15px;
+    }
+
+    .el-input {
+        width: 140px;
         margin-right: 15px;
     }
 }

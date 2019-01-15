@@ -186,6 +186,7 @@ export default {
                             let data = response.data;
 
                             window.sessionStorage.setItem('cdimmstoken', data.token);
+                            window.localStorage.setItem('cdimmsuser', JSON.stringify(data.user));
                             window.localStorage.setItem('cdimmsusername', data.user.userName);
 
                             /**
