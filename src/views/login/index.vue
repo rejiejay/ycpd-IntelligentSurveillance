@@ -191,7 +191,101 @@ export default {
                              */
                             let roles = [];
                             data.map(val => {
+                                // 监控预警
+                                if (val.urlName === '监控预警' && val.children.length > 0) {
+                                    roles.push('/monitor');
+                                    val.children.map(chil => {
+                                        if (chil === '车行监控') {
+                                            roles.push('/monitor/carts');
+                                        }
+                                        if (chil === '团队监控') {
+                                            roles.push('/monitor/team');
+                                        }
+                                        if (chil === '支公司监控') {
+                                            roles.push('/monitor/subcompany');
+                                        }
+                                    });
+                                }
+                                
+                                // 统计分析
+                                if (val.urlName === '统计分析') {
+                                    roles.push('/analyze');
+                                    roles.push('/analyze/index');
+                                }
+
+                                // 清单明细
+                                if (val.urlName === '清单明细' && val.children.length > 0) {
+                                    roles.push('/detailedlist');
+
+                                    val.children.map(chil => {
+                                        if (chil === '保费明细') {
+                                            roles.push('/detailedlist/comparison');
+                                        }
+                                        if (chil === '定损明细') {
+                                            roles.push('/detailedlist/premium');
+                                        }
+                                        if (chil === '产保比明细') {
+                                            roles.push('/detailedlist/loss');
+                                        }
+                                    });
+                                }
+
+                                // 车商管理
+                                if (val.urlName === '车商管理' && val.children.length > 0) {
+                                    roles.push('/shops');
+
+                                    val.children.map(chil => {
+                                        if (chil === '车行管理') {
+                                            roles.push('/shops/carts');
+                                        }
+                                        if (chil === '支公司管理') {
+                                            roles.push('/shops/subcompany');
+                                        }
+                                        if (chil === '团队管理') {
+                                            roles.push('/shops/team');
+                                        }
+                                    });
+                                }
+
+                                // 预测设置
+                                if (val.urlName === '预测设置' && val.children.length > 0) {
+                                    roles.push('/predict');
+
+                                    val.children.map(chil => {
+                                        if (chil === '支公司数据设置') {
+                                            roles.push('/predict/subcompany');
+                                        }
+                                        if (chil === '团队数据设置') {
+                                            roles.push('/predict/team');
+                                        }
+                                    });
+                                }
+                                
+                                // 预警日志
+                                if (val.urlName === '预警日志') {
+                                    roles.push('/consolelog');
+                                    roles.push('/consolelog/index');
+                                }
+
+                                // 系统设置
+                                if (val.urlName === '系统设置' && val.children.length > 0) {
+                                    roles.push('/system');
+
+                                    val.children.map(chil => {
+                                        if (chil === '用户管理') {
+                                            roles.push('/system/user');
+                                        }
+                                        if (chil === '角色设置') {
+                                            roles.push('/system/roles');
+                                        }
+                                        if (chil === '预警规则设置') {
+                                            roles.push('/system/rule');
+                                        }
+                                    });
+                                }
                             });
+
+                            window.localStorage.setItem('cdimmsroles', JSON.stringify(data.user.roles));
 
                             // 页面页面跳转， 如果存在 重定向页面优先跳转到重定向页面
                             _this.$router.push({ path: _this.redirect || '/' });
