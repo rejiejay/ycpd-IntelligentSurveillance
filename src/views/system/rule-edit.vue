@@ -72,7 +72,7 @@
         <el-row>
             <el-col :span="8">
                 <div class="details-form-item">
-                    <div class="form-item-title">通知时间</div>
+                    <div class="form-item-title">通知时间<span>ps：每月1日 09:00 短信通知</span></div>
                     <el-select v-model="ruleRangeSection" placeholder="通知时间">
                         <el-option label="每天" value="每天"></el-option>
                         <el-option label="每三天" value="每三天"></el-option>
@@ -260,6 +260,12 @@ $black4: #C0C4CC;
             padding-bottom: 10px;
             font-size: 14px;
             color: $black1;
+
+            span {
+                padding-left: 15px;
+                font-size: 12px;
+                color: $black4;
+            }
         }
     }
 

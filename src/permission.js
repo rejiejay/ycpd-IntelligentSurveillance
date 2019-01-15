@@ -20,7 +20,7 @@ router.beforeEach((to, from, next) => {
     /**
      * 判断是否获取到 token
      */
-    if (window.sessionStorage.necrstoken) {
+    if (window.sessionStorage.cdimmstoken) {
         
         /**
          * 获取到 token 的情况下, 访问的路径是 login 的情况下, 重定向到 首页

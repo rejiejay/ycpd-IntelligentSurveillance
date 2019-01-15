@@ -56,7 +56,7 @@ apibasics.interceptors.request.use(
         myLoading.show(); // 每个请求出去的时候, 显示加载框（主要用来防止UI重复点击提交）
 
         // 让每个请求携带自定义token
-        config.headers['token'] = window.sessionStorage.necrstoken ? window.sessionStorage.necrstoken : 'null';
+        config.headers['token'] = window.sessionStorage.cdimmstoken ? window.sessionStorage.cdimmstoken : 'null';
 
         return config;
     },

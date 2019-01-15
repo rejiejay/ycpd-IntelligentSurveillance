@@ -7,7 +7,7 @@ import config from '@/config';
  */
 export function getBaseToken() {
     return axios({
-        url: `${config.url.origin}/necrs/server/index`,
+        url: `${config.url.origin}/cdimms/server/index`,
         method: 'get',
     });
 }
@@ -20,37 +20,14 @@ export function getBaseToken() {
  */
 export function postLogin(username, password, loginToken) {
     return axios({
-        url: `${config.url.origin}/necrs/server/loginByPC`,
+        url: `${config.url.origin}/cdimms/server/loginByPC`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
-            name: username,
-            password: password,
+            userName: username,
+            passwd: password,
             token: loginToken,
         }
-    });
-}
-
-/**
- * 校验滑动图片距离是否正确
- * @param {string} checkoutToken 获取人机验证码图片返回的对应 token
- * @param {string} jigsawMovepx 移动的距离
- */
-export function checkImage(checkoutToken, jigsawMovepx) {
-    return axios({
-        url: `${config.url.origin}/necrs/server/checkImage?token=${checkoutToken}&xWidth=${Math.floor(jigsawMovepx)}`,
-        method: 'get',
-    });
-}
-
-/**
- * 获取人机验证码图片
- * @param {string} baseToken 使用当前页面的基础token获取人机验证码图片
- */
-export function reqCheckImage(baseToken) {
-    return axios({
-        url: `${config.url.origin}/necrs/server/reqCheckImage?token=${baseToken}&width=360&height=160`,
-        method: 'get',
     });
 }
 
@@ -59,7 +36,7 @@ export function reqCheckImage(baseToken) {
  */
 export function getlogout() {
     return apibasics({
-        url: `${config.url.origin}/necrs/server/logout`,
+        url: `${config.url.origin}/cdimms/server/logout`,
         method: 'get'
     });
 }

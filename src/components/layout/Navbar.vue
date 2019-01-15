@@ -70,7 +70,7 @@ export default {
              */
             levelList: null,
 
-            username: window.localStorage.necrsusername ? window.localStorage.necrsusername : '',
+            username: window.localStorage.cdimmsusername ? window.localStorage.cdimmsusername : '',
         }
     },
 
@@ -107,7 +107,7 @@ export default {
         logout() {
             getlogout()
             .then(res => {
-                window.sessionStorage.removeItem('necrstoken');
+                window.sessionStorage.removeItem('cdimmstoken');
                 this.$router.push('/login');
                 location.reload(); // 为了重新实例化vue-router对象 避免bug
 
