@@ -75,6 +75,7 @@
 </template>
 
 <script>
+// 请求类
 import { queryRoleListUsingPOST, queryRoleCodeListUsingGET } from "@/api/system/roles";
 
 export default {
@@ -188,14 +189,14 @@ export default {
          * 人员配置
          */
         modifierStaffHandle: function modifierStaffHandle(item) {
-            this.jumpToRouter('/system/roles/staff', {id: item.id});
+            this.jumpToRouter('/system/roles/staff', {rolesName: item.rolesName});
         },
 
         /**
          * 菜单配置
          */
         modifierDetailsHandle: function modifierDetailsHandle(item) {
-            this.jumpToRouter('/system/roles/details', {id: item.id});
+            this.jumpToRouter('/system/roles/details', {rolesName: item.rolesName});
         },
 
         /**

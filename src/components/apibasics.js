@@ -87,24 +87,6 @@ apibasics.interceptors.response.use(
         const res = response.data;
         
         myLoading.close(); // 关闭加载框
-
-        // 网络错误的情况
-        if (response.status === 0 && response.statusText === 'error') {
-            return Promise.reject('网络错误, 请检查你的网络');
-        }
-
-        // 登录过期的情况
-        if (response.status === 444) {
-            Router.push({ path: '/login' });
-            return Promise.reject('登录过期, 请重新登录');
-        }
-    
-        // 服务器正在升级或异常
-        if (response.status === 502) {
-            // 跳转等正在升级页面
-            Router.push({ path: '/404' });
-            return Promise.reject('服务器正在升级或异常,请稍后再试!');
-        } 
         
         /**
          * 判断拦截的是否有 1000 没有的情况表示失败
@@ -129,8 +111,29 @@ apibasics.interceptors.response.use(
     /**
      * 服务器返回错误的情况
      */
-    (error, da, addd) => {
+    error => {
         myLoading.close(); // 关闭加载框
+
+        let response = error.response;
+
+        // 网络错误的情况
+        if (response.status === 0 && response.statusText === 'error') {
+            return Promise.reject('网络错误, 请检查你的网络');
+        }
+
+        // 登录过期的情况
+        if (response.status === 444) {
+            window.sessionStorage.removeItem('cdimmstoken');
+            Router.push({ path: '/login' });
+            return Promise.reject('登录过期, 请重新登录');
+        }
+    
+        // 服务器正在升级或异常
+        if (response.status === 502) {
+            // 跳转等正在升级页面
+            Router.push({ path: '/404' });
+            return Promise.reject('服务器正在升级或异常,请稍后再试!');
+        } 
         
         console.error(`服务器错误: ${error}`); // for debug
 
