@@ -111,7 +111,12 @@ export default {
                 this.$router.push('/login');
                 location.reload(); // 为了重新实例化vue-router对象 避免bug
 
-            }).catch(error => console.error(error)); // 一般都不会报错
+            }).catch(error => { // 一般都不会报错， 报错也跳转到登录页
+                window.sessionStorage.removeItem('cdimmstoken');
+                this.$router.push('/login');
+                location.reload(); // 为了重新实例化vue-router对象 避免bug
+                console.error(error)
+            });
         },
         
         /**

@@ -1,6 +1,6 @@
 <!-- 侧边栏的一个项 -->
 <template>
-<div v-if="!item.hidden && item.children && rolesHandle(item.roles)" class="menu-wrapper"><!-- 侧边栏存在 children 的时候 并且 不是隐藏的时候才显示 -->
+<div v-if="!item.hidden && item.children && rolesHandle(item)" class="menu-wrapper"><!-- 侧边栏存在 children 的时候 并且 不是隐藏的时候才显示 -->
 
     <!-- 只有一个子列表的情况 -->
     <template v-if="
@@ -24,7 +24,7 @@
             <item v-if="item.meta" :icon="item.meta.icon" :title="item.meta.title" />
         </template>
 
-        <template v-for="child in item.children" v-if="!child.hidden">
+        <template v-for="child in item.children" v-if="!child.hidden && rolesChildHandle(item, child)">
             <sidebar-item class="nest-menu" 
                 v-if="child.children && child.children.length > 0"
                 :is-nest="true"
@@ -81,31 +81,54 @@ export default {
     methods: {
         /**
          * 权限管理 处理函数
-         * @param {array} roles 权限列表
          */
-        rolesHandle: function rolesHandle(roles) {
-            // 先判断是否传进来这个值
-            if (!roles) {
-                // 如果 没有值, 表示 不做权限这一块, 返回true 表示有权限
-                return true
-            }
+        rolesHandle: function rolesHandle(item) {
+            // 判断是否有权限
+            if (window.localStorage.cdimmsroles) {
+                let roles = JSON.parse(window.localStorage.cdimmsroles);
 
-            // 有值的情况表示做权限管理, 此时先判断是否数组
-            if (roles instanceof Array === false) {
-                alert('路由权限必须为数组'); // 弹出提示即可
+                // 在确认做权限管理的情况下, 进行权限过滤
+                let isFilter = false; // 是否过滤到权限(默认未过滤)
+                roles.map(val => {
+                    // 过滤成功
+                    if (val === item.path) {
+                        isFilter = true;
+                    }
+                });
+
+                return isFilter
+            
+            } else {
                 return false
+
             }
+        },
 
-            // 在确认做权限管理的情况下, 进行权限过滤
-            let isFilter = false; // 是否过滤到权限(默认未过滤)
-            roles.map(val => {
-                // 过滤成功
-                if (val === window.sessionStorage.necrstoken) {
-                    isFilter = true;
-                }
-            });
+        /**
+         * 子权限管理 处理函数
+         */
+        rolesChildHandle: function rolesChildHandle(item, child) {
+            let myPath = `${item.path}/${child.path}`;
 
-            return isFilter
+            // 判断是否有权限
+            if (window.localStorage.cdimmsroles) {
+                let roles = JSON.parse(window.localStorage.cdimmsroles);
+
+                // 在确认做权限管理的情况下, 进行权限过滤
+                let isFilter = false; // 是否过滤到权限(默认未过滤)
+                roles.map(val => {
+                    // 过滤成功
+                    if (val === myPath) {
+                        isFilter = true;
+                    }
+                });
+
+                return isFilter
+            
+            } else {
+                return false
+
+            }
         },
 
         /**

@@ -26,12 +26,27 @@ export const constantRouterMap = [
     { path: '/404', component: () => import('@/views/404'), hidden: true },
 
     /**
+     * 预览页
+     */
+    {
+        path: '/preview',
+        alias: [ '/' ],
+        component: Layout,
+        redirect: '/preview/index',
+        name: 'preview',
+        hidden: true,
+        children: [{
+            path: 'preview',
+            component: () => import('@/views/preview'),
+        }],
+    },
+
+    /**
      * 监控预警
      */
     {
         path: '/monitor',
         component: Layout,
-        alias: [ '/' ],
         redirect: '/monitor/carts',
         name: 'monitor',
         hidden: false,
@@ -39,7 +54,6 @@ export const constantRouterMap = [
         meta: { title: '监控预警', icon: 'monitor' },
         children: [{
             path: 'carts',
-            alias: [ '/' ],
             component: () => import('@/views/monitor/carts'),
             name: 'monitor-carts',
             meta: { title: '车行监控', icon: 'carts', noCache: true, /** noCache 如果设置为true，则不会被 <keep-alive> 缓存(默认 false) */ }
