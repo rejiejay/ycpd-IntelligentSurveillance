@@ -92,8 +92,8 @@ export default {
             baseToken: '', // 登录的token （登录之前的 token 都是用到这个，例如：滑动图片的高度）
 
             loginForm: {
-                username: '',
-                password: '',
+                username: window.sessionStorage.loginFormUsername ? window.sessionStorage.loginFormUsername : '',
+                password: window.sessionStorage.loginFormPassword ? window.sessionStorage.loginFormPassword : '',
             },
 
             loginRules: {
@@ -122,14 +122,6 @@ export default {
     },
 
     mounted: function () {
-        if (window.location.hostname === 'localhost') {
-            this.loginForm = {
-                username: 'admin',
-                password: 'admin123',
-            }
-        }
-
-
         this.getToken(); // 获取登录用的token
     },
 
@@ -181,6 +173,8 @@ export default {
                 // 判断校验是否成功
                 if (valid) {
                     this.loading = true; // 将按钮 设置为 登录中 防止重复提交
+                    window.sessionStorage.setItem('loginFormUsername', _this.loginForm.username);
+                    window.sessionStorage.setItem('loginFormPassword', _this.loginForm.password);
 
                     postLogin( _this.loginForm.username, _this.loginForm.password, _this.baseToken)
                     .then(res => {
@@ -304,7 +298,27 @@ export default {
                             alert('非法请求，跳转到登陆页!');
                             _this.getToken(); // 获取登录用的token
 
-                        } 
+                        } else if (response.code === 1002) {
+                            alert('用户名不能为空!');
+                            _this.getToken();
+
+                        } else if (response.code === 1003) {
+                            alert('密码不能为空!');
+                            _this.getToken();
+
+                        } else if (response.code === 1004) {
+                            alert('登陆异常,请重新登陆!');
+                            _this.getToken();
+
+                        } else if (response.code === 1005) {
+                            alert('该用户不是系统用户!');
+                            _this.getToken();
+
+                        } else if (response.code === 1006) {
+                            alert('登陆异常,请重新登陆!');
+                            _this.getToken();
+
+                        }
                     })
                     .catch(error => alert(`请求登录失败, 原因：${JSON.stringify(error)}`));
 

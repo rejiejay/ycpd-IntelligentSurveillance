@@ -41,7 +41,7 @@ router.beforeEach((to, from, next) => {
 
         } else {
             // 不在白名单的情况 重定向到登录页
-            next(`/login?redirect=${to.path}`);
+            next('/login');
             NProgress.done();
 
         }
