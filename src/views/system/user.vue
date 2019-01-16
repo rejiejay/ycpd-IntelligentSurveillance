@@ -16,8 +16,8 @@
 
             <el-select v-model="userBelongSection" placeholder="用户归属">
                 <el-option
-                    v-for="item in userBelongOptions"
-                    :key="item.value"
+                    v-for="(item, key) in userBelongOptions"
+                    :key="key"
                     :label="item.label"
                     :value="item.value"
                 ></el-option>
@@ -28,8 +28,8 @@
 
             <el-select v-model="rolesSection" placeholder="选择角色">
                 <el-option
-                    v-for="item in rolesOptions"
-                    :key="item.value"
+                    v-for="(item, key) in rolesOptions"
+                    :key="key"
                     :label="item.label"
                     :value="item.value"
                 ></el-option>
@@ -44,7 +44,7 @@
                 ></el-option>
             </el-select>
 
-            <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryUserList();">查询</el-button>
             <el-button icon="el-icon-download" type="success">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
@@ -109,16 +109,17 @@
     <div class="system-user-pagination flex-center">
         <el-pagination
             :current-page="currentPage"
-            :page-size="pageSize"
-            :total="pageTotal"
+            :page-count="pageCount"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
 </template>
 
 <script>
+// 请求类
+import { queryUserListUsingPOST, queryCompanyListUsingGET, queryRoleListUsingGET } from "@/api/system/user";
 
 export default {
     name: 'system-user',
@@ -128,17 +129,26 @@ export default {
             userTypeSection: '', // 用户类型
             userTypeOptions: [
                 {
-                    value: '用户类型一',
-                    lable: '用户类型一',
+                    value: '0',
+                    label: '系统管理员',
+                }, {
+                    value: '1',
+                    label: '分公司管理员',
+                }, {
+                    value: '2',
+                    label: '支公司管理员',
+                }, {
+                    value: '3',
+                    label: '团队经理',
                 }
             ],
 
             userBelongSection: '', // 用户归属
             userBelongOptions: [
-                {
-                    value: '用户归属一',
-                    lable: '用户归属一',
-                }
+                // {
+                //     value: '用户归属一',
+                //     label: '用户归属一',
+                // }
             ],
 
             userName: '', // 用户姓名
@@ -146,20 +156,20 @@ export default {
 
             rolesSection: '', // 角色
             rolesOptions: [
-                {
-                    value: '角色一',
-                    lable: '角色一',
-                }
+                // {
+                //     value: '角色一',
+                //     label: '角色一',
+                // }
             ],
 
             userStatusSection: '', // 用户状态
             userStatusOptions: [
                 {
-                    value: '有效',
-                    lable: '有效',
+                    value: '0',
+                    label: '有效',
                 }, {
-                    value: '注销',
-                    lable: '注销',
+                    value: '1',
+                    label: '注销',
                 }
             ],
 
@@ -182,41 +192,131 @@ export default {
              * 分页相关
              */
             currentPage: 1, // 当前页码
-            pageSize: 20, // 一个页面多少数据
-            pageTotal: 1, // 一共多少条数据 
+            pageCount: 1, // 一共多少页
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        this.queryUserList(); // 获取用户列表
+        this.queryCompanyList(); // 用户归属下拉框
+        this.queryRoleList(); // 用户角色下拉框
+    },
 
 	methods: {
         /**
-         * 通过条件查询
+         * 获取用户列表
          */
-        searchByConditions: function searchByConditions() {
+        queryUserList: function queryUserList() {
+            const _this  = this;
+
+            let userType = this.userTypeSection ? this.userTypeSection : ''; // 用户类型
+            let bcName = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
+            let staffName = this.userName ? this.userName : ''; // 用户姓名
+            let staffCode = this.userCode ? this.userCode : ''; // 用户代码
+            let roleName = this.rolesSection ? this.rolesSection : ''; // 角色
+            let state = this.userStatusSection ? this.userStatusSection : ''; // 状态
+
+            queryUserListUsingPOST(this.currentPage, userType, bcName, staffName, staffCode, roleName, state)
+            .then(val => {
+                let data = val.data;
+
+                // 初始化一共多少条数据
+                _this.pageCount = data.pageSize; 
+
+                // 初始化用户列表
+                if (data.users && data.users instanceof Array && data.users.length > 0) {
+                    _this.userList = data.users.map(item => {
+                        let newItem = {};
+
+                        // 初始化用户类型
+                        if (item.userType === 0) {
+                            newItem.userType = '系统管理员';
+                        } else if (item.userType === 1) {
+                            newItem.userType = '分公司管理员';
+                        } else if (item.userType === 2) {
+                            newItem.userType = '支公司管理员';
+                        } else if (item.userType === 3) {
+                            newItem.userType = '团队经理';
+                        }
+
+                        newItem.userBelong = item.bcName; // 用户归属
+                        newItem.userRealName = item.staffName; // 用户姓名
+                        newItem.userCode = item.staffCode; // 员工代码
+                        newItem.userName = item.userName; // 用户姓名
+                        newItem.phone = item.phone; // 手机号
+                        newItem.roles = item.roleName; // 角色
+                        newItem.status = item.state === 0 ? '正常' : '禁用'; // 状态
+
+                        return newItem;
+                    });
+
+                } else {
+                    _this.userList = [];
+
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 用户归属下拉框
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.userBelongOptions = data.map(item => ({
+                        value: item,
+                        label: item,
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 用户归属下拉框
+         */
+        queryRoleList: function queryRoleList() {
+            const _this  = this;
+
+            queryRoleListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.rolesOptions = data.map(item => ({
+                        value: item,
+                        label: item,
+                    }));
+                }
+
+            }, error => console.log(error))
         },
 
         /**
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
-            this.startendTime = [
-                new Date(new Date().getTime() - 3600 * 1000 * 24 * 31),
-                new Date(),
-            ];
-
-            this.subCompanySection = null;
-            this.teamSection = null;
-            this.regionSection = null;
-            this.minProportion = null;
-            this.maxProportion = null;
+            this.userTypeSection = null;
+            this.userBelongSection = null;
+            this.userName = null;
+            this.userCode = null;
+            this.rolesSection = null;
+            this.userStatusSection = null;
+            this.currentPage = 1;
         },
 
         /**
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryUserList();
         },
 
         /**

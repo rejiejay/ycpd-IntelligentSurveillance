@@ -15,7 +15,7 @@
 
             <el-input v-model="rolesName" type="text" :clearable="true" placeholder="角色名称"></el-input>
 
-            <el-button icon="el-icon-search" type="primary" @click="queryRoleList">查询</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryRoleList();">查询</el-button>
             <el-button icon="el-icon-download" type="success">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
@@ -60,7 +60,6 @@
             </el-table-column>
         </el-table>
     </div>
-
     
     <!-- 分页部分 -->
     <div class="system-roles-pagination flex-center">
@@ -87,7 +86,7 @@ export default {
             rolesCodeOptions: [
                 // {
                 //     value: '角色代码一',
-                //     lable: '角色代码一',
+                //     label: '角色代码一',
                 // }
             ],
 
@@ -132,7 +131,7 @@ export default {
                     _this.rolesCodeOptions = data.map(item => {
                         return {
                             value: item,
-                            lable: item,
+                            label: item,
                         }
                     });
                 }
@@ -183,6 +182,7 @@ export default {
         clearConditions: function clearConditions() {
             this.rolesCodeSection = null;
             this.rolesNameSection = null;
+            this.currentPage = 1;
         },
 
         /**

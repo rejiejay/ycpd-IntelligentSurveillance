@@ -164,7 +164,7 @@ export default {
             ruleStandardOptions: [
                 {
                     value: '预警指标一',
-                    lable: '预警指标一',
+                    label: '预警指标一',
                 }
             ],
 
@@ -172,7 +172,7 @@ export default {
             ruleTargetOptions: [
                 {
                     value: '预警指标一',
-                    lable: '预警指标一',
+                    label: '预警指标一',
                 }
             ],
 
@@ -180,7 +180,7 @@ export default {
             ruleRangeOptions: [
                 {
                     value: '预警指标一',
-                    lable: '预警指标一',
+                    label: '预警指标一',
                 }
             ],
 
@@ -188,7 +188,7 @@ export default {
             ruleInfoPeopleOptions: [
                 {
                     value: '预警指标一',
-                    lable: '预警指标一',
+                    label: '预警指标一',
                 }
             ],
 

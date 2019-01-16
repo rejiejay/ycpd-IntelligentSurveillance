@@ -122,7 +122,7 @@ export default {
             userTypeOptions: [
                 {
                     value: '用户类型一',
-                    lable: '用户类型一',
+                    label: '用户类型一',
                 }
             ],
 
@@ -138,7 +138,7 @@ export default {
             rolesOptions: [
                 {
                     value: '角色一',
-                    lable: '角色一',
+                    label: '角色一',
                 }
             ],
 
@@ -146,10 +146,10 @@ export default {
             userStatusOptions: [
                 {
                     value: '有效',
-                    lable: '有效',
+                    label: '有效',
                 }, {
                     value: '注销',
-                    lable: '注销',
+                    label: '注销',
                 }
             ],
 

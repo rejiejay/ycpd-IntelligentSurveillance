@@ -155,7 +155,7 @@ export default {
             subCompanyOptions: [
                 {
                     value: '支公司一',
-                    lable: '支公司一',
+                    label: '支公司一',
                 }
             ],
 
@@ -163,7 +163,7 @@ export default {
             teamOptions: [
                 {
                     value: '业务团队一',
-                    lable: '业务团队一',
+                    label: '业务团队一',
                 }
             ],
 

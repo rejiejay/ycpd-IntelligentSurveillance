@@ -157,21 +157,21 @@ export default {
             subCompanyOptions: [
                 {
                     value: '支公司一',
-                    lable: '支公司一',
+                    label: '支公司一',
                 }
             ],
             teamSection: null, // 业务团队
             teamOptions: [
                 {
                     value: '业务团队一',
-                    lable: '业务团队一',
+                    label: '业务团队一',
                 }
             ],
             regionSection: null, // 网点
             regionOptions: [
                 {
                     value: '网点一',
-                    lable: '网点一',
+                    label: '网点一',
                 }
             ],
 

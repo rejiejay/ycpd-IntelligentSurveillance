@@ -138,7 +138,7 @@ export default {
             subCompanyOptions: [
                 {
                     value: '支公司一',
-                    lable: '支公司一',
+                    label: '支公司一',
                 }
             ],
 

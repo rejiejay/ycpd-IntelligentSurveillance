@@ -404,13 +404,13 @@ export default {
                 //     title: '深圳市宝创汽车贸易有限公司',
                 //     address: '广东省深圳市龙岗区宝荷大道171号',
                 //     isSigned: false,
-                //     lable: '已签约',
+                //     label: '已签约',
                 //     rate: 4,
                 // }, {
                 //     title: '深圳市宝创汽车贸易有限公司',
                 //     address: '广东省深圳市龙岗区宝荷大道171号',
                 //     isSigned: true,
-                //     lable: '已签约',
+                //     label: '已签约',
                 //     rate: 3,
                 // }
             ],
@@ -424,45 +424,45 @@ export default {
             subcompanyList: [
                 {
                     value: '支公司一',
-                    lable: '支公司一',
+                    label: '支公司一',
                 }
             ],
             team: '', // 团队
             teamList: [
                 {
                     value: '团队一',
-                    lable: '团队一',
+                    label: '团队一',
                 }
             ],
             salesman: '', // 业务员
             salesmanList: [
                 {
                     value: '业务员一',
-                    lable: '业务员一',
+                    label: '业务员一',
                 }
             ],
             carts: '', // 车行
             cartsList: [
                 {
                     value: '车行一',
-                    lable: '车行一',
+                    label: '车行一',
                 }
             ],
             cooperation: '', // 是否合作
             cooperationList: [
                 {
                     value: '合作',
-                    lable: '合作',
+                    label: '合作',
                 }, {
                     value: '不合作',
-                    lable: '不合作',
+                    label: '不合作',
                 }
             ],
             regionType: '', // 网点类型
             regionTypeList: [
                 {
                     value: '网点类型一',
-                    lable: '网点类型一',
+                    label: '网点类型一',
                 }
             ],
             isFilterParticularCase: false, // 是否过滤特殊案件

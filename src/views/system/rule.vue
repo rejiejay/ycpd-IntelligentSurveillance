@@ -102,7 +102,7 @@ export default {
             warningStandardOptions: [
                 {
                     value: '预警指标一',
-                    lable: '预警指标一',
+                    label: '预警指标一',
                 }
             ],
 
@@ -110,7 +110,7 @@ export default {
             warningTargetOptions: [
                 {
                     value: '预警对象一',
-                    lable: '预警对象一',
+                    label: '预警对象一',
                 }
             ],
 
