@@ -271,7 +271,7 @@ export default {
                 }, error => {
                     console.log(error)
                     _this.$router.back(-1);
-                })
+                });
             }
         },
 

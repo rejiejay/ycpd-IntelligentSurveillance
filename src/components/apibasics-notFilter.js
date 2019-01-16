@@ -88,24 +88,7 @@ apibasics.interceptors.response.use(
         
         myLoading.close(); // 关闭加载框
         
-        /**
-         * 判断拦截的是否有 1000 没有的情况表示失败
-         */
-        if (res.code !== 1000) {
-            // 不是 1000 的情况下, 直接报出错误
-
-            Message({
-                message: res.message,
-                type: 'error',
-                duration: 5 * 1000
-            });
-
-            return Promise.reject('error');
-
-        } else {
-            return response.data;
-
-        }
+        return res;
     },
 
     /**

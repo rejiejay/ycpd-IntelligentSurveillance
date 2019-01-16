@@ -255,7 +255,7 @@ export default {
 
                 }
 
-            }, error => console.log(error))
+            }, error => console.log(error));
         },
 
         /**
@@ -324,7 +324,7 @@ export default {
          */
         modifierHandle: function modifierHandle(item) {
             this.jumpToRouter('/system/user/details' , {
-                id: null,
+                userName: item.userName,
             })
         },
 

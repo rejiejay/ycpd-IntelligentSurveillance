@@ -82,16 +82,17 @@
     <div class="system-rule-pagination flex-center">
         <el-pagination
             :current-page="currentPage"
-            :page-size="pageSize"
-            :total="pageTotal"
+            :page-count="pageCount"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
 </template>
 
 <script>
+// 请求类
+import { queryAlarmRuleListUsingPOST } from "@/api/system/rule";
 
 export default {
     name: 'system-rule',
@@ -132,14 +133,29 @@ export default {
              * 分页相关
              */
             currentPage: 1, // 当前页码
-            pageSize: 20, // 一个页面多少数据
-            pageTotal: 1, // 一共多少条数据 
+            pageCount: 1, // 一共多少页
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        this.queryAlarmRuleList(); // 获取告警规则列表
+    },
 
 	methods: {
+        /**
+         * 获取告警规则列表
+         */
+        queryAlarmRuleList: function queryAlarmRuleList() {
+            const _this  = this;
+
+            queryAlarmRuleListUsingPOST(this.currentPage)
+            .then(val => {
+                let data = val.data;
+                console.log(data);
+
+            }, error => console.log(error));
+        },
+
         /**
          * 通过条件查询
          */
