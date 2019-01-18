@@ -124,7 +124,7 @@
             v-model="search" 
             clearable
         >
-            <el-button slot="append" icon="el-icon-search"></el-button>
+            <el-button slot="append" icon="el-icon-search" @click="listToSearch(search)"></el-button>
         </el-input>
 
         <div class="carts-search-results" v-if="searchResults.length > 0">
@@ -134,6 +134,7 @@
                     v-for="(item, key) in searchResults" 
                     :style="`${key !== (searchResults.length - 1) ? 'border-bottom: 1px solid #ddd;' : ''}`"
                     :key="key"
+                    @click="selectListBySearch(item.id)"
                 >
                     <div class="results-item-left flex-rest">
                         <div class="item-left-title">{{item.title}}</div>
@@ -142,6 +143,7 @@
                             <div :class="`left-lable-item ${item.isSigned ? 'signed-contract' : 'not-signed-contract'}`">{{item.isSigned ? "已签约" : "未签约"}}</div>
                             <el-rate
                                 v-model="item.rate"
+                                :max="item.ratemax"
                                 disabled
                                 :colors="['#F56C6C', '#F56C6C', '#F56C6C']"
                                 disabled-void-color="#ddd"
@@ -335,7 +337,7 @@ import percentage_80 from '@/assets/baidu_map/percentage_80.svg';
 import percentage_90 from '@/assets/baidu_map/percentage_90.svg';
 import percentage_100 from '@/assets/baidu_map/percentage_100.svg';
 // 请求类
-import { countStoreInfoUsingGET, listStoreToMapUsingGET, listByIdUsingGET } from "@/api/monitor/carts";
+import { countStoreInfoUsingGET, listStoreToMapUsingGET, listByIdUsingGET, listStoreToSearchUsingGET } from "@/api/monitor/carts";
 
 export default {
     name: 'monitor-carts',
@@ -409,12 +411,14 @@ export default {
                 //     isSigned: false,
                 //     label: '已签约',
                 //     rate: 4,
+                //     ratemax: 4,
                 // }, {
                 //     title: '深圳市宝创汽车贸易有限公司',
                 //     address: '广东省深圳市龙岗区宝荷大道171号',
                 //     isSigned: true,
                 //     label: '已签约',
                 //     rate: 3,
+                //     ratemax: 3,
                 // }
             ],
 
@@ -503,6 +507,15 @@ export default {
         } 
     },
 
+    watch: {
+        /**
+         * 搜索框搜索
+         */
+        search: function search(newsearch, oldsearch) {
+            this.listToSearch(newsearch); // 每次搜索框改变的时候都调用一下
+        },
+    },
+
 	mounted: function mounted() {
         // this.initBaiduMap(); // 初始化百度地图
         this.initCountStoreInfo(); // 初始化 合作网点（统计：合作网点数，为合作网点数，新增网点，签约率）
@@ -510,6 +523,83 @@ export default {
     },
 
 	methods: {
+        /**
+         * 搜索框查询车行列表
+         */
+        listToSearch: function listToSearch(newsearch) {
+            const _this = this;
+
+            listStoreToSearchUsingGET(newsearch)
+             .then(val => {
+                let data = val.data;
+
+                if (newsearch === '' || !data || data instanceof Array === false || data.length <= 0) {
+                    _this.searchResults = [];
+                    return false;
+                }
+
+                _this.renderBaiduMapData(data);
+
+                _this.searchResults = data.map(val => {
+                    let newItem = {};
+
+                    newItem.id = val.id; // 车行唯一标识
+                    newItem.title = val.networkName; // 车行名称
+                    newItem.address = val.address; // 车行名称
+                    newItem.isSigned = val.isJoin === 1 ? true : false; // 是否合作
+                    newItem.label = val.networkType === 0 ? '4S店' : '修理厂'; // 网点名称
+
+                    let myStar = _this.starToRate(data.star);
+                    newItem.rate = myStar.rate;
+                    newItem.ratemax = myStar.ratemax;
+
+                    return newItem
+                });
+
+
+            }, error => console.log(error));
+        },
+
+        /**
+         * 点击搜索的下拉列表
+         */
+        selectListBySearch: function selectListBySearch(id) {
+            let newCartsMaplist = this.cartsMaplist.concat([]);
+
+            this.cartsMaplist = newCartsMaplist.map(val => {
+                if (val.id === id) {
+                    val.isSelected = true;
+                }
+                return val;
+            });
+            this.getStoreById(id);
+            this.initBaiduMap(); // 初始化百度地图
+        },
+
+
+        /**
+         * 根据数据库的数据渲染百度地图
+         */
+        renderBaiduMapData: function renderBaiduMapData(params) {
+            this.cartsMaplist = params.map(val => {
+                let newItem = {};
+
+                newItem.id = val.id; // 车行唯一标识
+                newItem.title = val.networkName; // 车行名称
+                newItem.address = val.address; // 车行地址
+                newItem.isSelected = false; // 是否被选中
+                newItem.isCooperate = val.isJoin === 1 ? true : false; // 是否合作
+                newItem.lossAmount = val.materialfee; // 定损金额
+                newItem.premiumAmount = val.sumpremium; // 保费金额
+                newItem.longitude = val.longitude; // 经度
+                newItem.latitude = val.latitude; // 纬度
+
+                return newItem
+            });
+
+            this.initBaiduMap(); // 初始化百度地图
+        },
+
         /**
          * 初始化 合作网点（统计：合作网点数，为合作网点数，新增网点，签约率）
          */
@@ -559,24 +649,7 @@ export default {
                     return false;
                 }
 
-                _this.cartsMaplist = data.map(val => {
-                    let newItem = {};
-
-                    newItem.id = val.id; // 车行唯一标识
-                    newItem.title = val.networkName; // 车行名称
-                    newItem.title = val.networkName; // 车行名称
-                    newItem.address = val.address; // 车行地址
-                    newItem.isSelected = false; // 是否被选中
-                    newItem.isCooperate = val.isJoin === 1 ? true : false; // 是否合作
-                    newItem.lossAmount = val.materialfee; // 定损金额
-                    newItem.premiumAmount = val.sumpremium; // 保费金额
-                    newItem.longitude = val.longitude; // 经度
-                    newItem.latitude = val.latitude; // 纬度
-
-                    return newItem
-                });
-
-                _this.initBaiduMap(); // 初始化百度地图
+                _this.renderBaiduMapData(data);
 
             }, error => console.log(error));
         },
@@ -997,7 +1070,12 @@ $black4: #C0C4CC;
         
         .search-results-container {
             background: #fff;
+            border: 1px solid #fff;
             padding: 0px 10px 0px 10px;
+        }
+
+        .search-results-container:hover {
+            border: 1px solid #67C23A;
         }
 
         .search-results-item {

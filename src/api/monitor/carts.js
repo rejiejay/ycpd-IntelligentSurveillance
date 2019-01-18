@@ -1,4 +1,5 @@
 import apibasics from '@/components/apibasics';
+import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 
 /**
@@ -96,7 +97,7 @@ export function listByIdUsingGET(id) {
  * @param {string} searchParam 车行唯一标识
  */
 export function listStoreToSearchUsingGET(searchParam) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/storeMap/listToSearch?searchParam=${searchParam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
