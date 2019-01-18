@@ -30,17 +30,6 @@ export function queryUserListUsingPOST(currentPage, userType, bcName, staffName,
 }
 
 /**
- * 用户归属下拉框
- */
-export function queryCompanyListUsingGET() {
-    return apibasics({
-        url: `${config.url.origin}/cdimms/server/user/queryCompanyList`,
-        method: 'get',
-        headers: {'Content-Type': 'application/json'},
-    });
-}
-
-/**
  * 用户角色下拉框
  */
 export function queryRoleListUsingGET() {

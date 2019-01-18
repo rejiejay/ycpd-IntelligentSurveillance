@@ -119,7 +119,8 @@
 
 <script>
 // 请求类
-import { queryUserListUsingPOST, queryCompanyListUsingGET, queryRoleListUsingGET } from "@/api/system/user";
+import { queryUserListUsingPOST, queryRoleListUsingGET } from "@/api/system/user";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
     name: 'system-user',

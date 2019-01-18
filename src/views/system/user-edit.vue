@@ -161,8 +161,10 @@
 
 <script>
 // 请求类
-import { queryCompanyListUsingGET, queryRoleListUsingGET } from "@/api/system/user";
+import { queryRoleListUsingGET } from "@/api/system/user";
 import { existUserUsingGET, queryUserUsingGET, addUserUsingPOST, modifyUserUsingPOST } from "@/api/system/user-edit";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
     name: 'user-edit',
@@ -195,7 +197,7 @@ export default {
                 }
             ],
 
-            userBelongSection: '', // 用户归属
+            userBelongSection: '', // 用户归属 就是支公司
             userBelongOptions: [
                 // {
                 //     value: '用户归属一',
@@ -244,6 +246,15 @@ export default {
         }
     },
 
+    watch: {
+        /**
+         * 当用户归属 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        userBelongSection: function userBelongSection(newUserBelongSection) {
+            this.queryTeamByBcId(newUserBelongSection);
+        }
+    },
+
 	mounted: function mounted() {
         this.initPageData(); // 初始化页面数据
 
@@ -252,6 +263,17 @@ export default {
     },
 
 	methods: {
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+            }, error => console.log(error))
+        },
+
         /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填
