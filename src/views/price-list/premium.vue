@@ -46,7 +46,7 @@
         <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
 
         <el-button icon="el-icon-search" type="primary" @click="listPremiu">查询</el-button>
-        <el-button icon="el-icon-download" type="success">导出</el-button>
+        <el-button icon="el-icon-download" type="success" @click="exportPremium">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
 
@@ -107,7 +107,7 @@
 
 <script>
 // 请求类
-import { listPremiumUsingGET } from "@/api/price-list/premium";
+import { listPremiumUsingGET, exportPremiumUsingGET } from "@/api/price-list/premium";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 // 组件类
@@ -248,6 +248,22 @@ export default {
     },
 
 	methods: {
+        /**
+         * 导出
+         */
+        exportPremium: function exportPremium() {
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
+            let storeId = ''; // 这个是多余的
+            let bcId = this.subCompanySection ? this.subCompanySection : ''; 
+            let teamId = this.teamSection ? this.teamSection : ''; 
+            let networkName = this.regionSection ? this.regionSection : ''; 
+            let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
+            let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
+
+            window.location.href = exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium);
+        },
+
         /**
          * 支公司下拉选项
          */

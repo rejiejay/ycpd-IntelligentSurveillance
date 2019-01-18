@@ -9,8 +9,10 @@ npm install
 # 运行开发环境, 服务端端口热加载 at localhost:9528
 npm run dev
 
-# 项目打包 到 生产环境
+# 项目打包 到 测试环境
 npm run builddev
+120.79.36.217
+/home/cdimms/server
 
 # 项目打包 到 生产环境
 npm run build

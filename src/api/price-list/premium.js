@@ -31,3 +31,33 @@ export function listPremiumUsingGET(pageNo, pageSize, startDate, endDate, storeI
         headers: {'Content-Type': 'application/json'},
     });
 }
+
+/**
+ * 保费明细导出excel
+ * @param {String} startDate 开始时间
+ * @param {String} endDate 结束时间
+ * @param {String} storeId 车商ID
+ * @param {String} bcId 支公司
+ * @param {String} teamId 团队
+ * @param {String} networkName 车行
+ * @param {String} lowestSumpremium 最低保费
+ * @param {String} highestSumpremium 最高保费
+ */
+export function exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium) {
+    let urlparam = '';
+
+    urlparam += startDate ? `&startDate=${startDate}` : '';
+    urlparam += endDate ? `&endDate=${endDate}` : '';
+    urlparam += storeId ? `&storeId=${storeId}` : '';
+    urlparam += bcId ? `&bcId=${bcId}` : '';
+    urlparam += teamId ? `&teamId=${teamId}` : '';
+    urlparam += networkName ? `&networkName=${networkName}` : '';
+    urlparam += lowestSumpremium ? `&lowestSumpremium=${lowestSumpremium}` : '';
+    urlparam += highestSumpremium ? `&highestSumpremium=${highestSumpremium}` : '';
+
+    if (urlparam.indexOf('&') !== -1) {
+        urlparam = `?${urlparam.substr(1)}`;
+    }
+
+    return `${config.url.origin}/cdimms/server/premium/export${urlparam}`;
+}
