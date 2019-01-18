@@ -159,6 +159,13 @@ export default {
         }
 
         return {
+            /**
+             * 页面状态
+             * @param {string} add 新增
+             * @param {string} edit 编辑
+             */
+            pageType: 'add',
+            
             ruleName: '', // 预警名称
             ruleStandardSection: '', // 预警指标
             ruleStandardOptions: [
@@ -189,6 +196,9 @@ export default {
                 {
                     value: '预警指标一',
                     label: '预警指标一',
+                }, {
+                    value: '预警指标er',
+                    label: '预警指标er',
                 }
             ],
 

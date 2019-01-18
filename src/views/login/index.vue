@@ -316,7 +316,7 @@ export default {
                             _this.getToken();
 
                         } else if (response.code === 1006) {
-                            alert('登陆异常,请重新登陆!');
+                            alert('用户或密码不正确!');
                             _this.getToken();
 
                         }

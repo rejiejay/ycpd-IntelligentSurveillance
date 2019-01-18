@@ -40,7 +40,7 @@ export function queryUserUsingGET(userName) {
  * @param {number} state 状态
  */
 export function addUserUsingPOST(userType, bcId, teamId, staffName, staffCode, userName, passwd, phone, roleId, state) {
-    return apibasics({
+    return notFilter({
         url: `${config.url.origin}/cdimms/server/user/addUser`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -74,7 +74,7 @@ export function addUserUsingPOST(userType, bcId, teamId, staffName, staffCode, u
  * @param {number} state 状态
  */
 export function modifyUserUsingPOST(id, userType, bcId, teamId, staffName, staffCode, userName, passwd, phone, roleId, state) {
-    return apibasics({
+    return notFilter({
         url: `${config.url.origin}/cdimms/server/user/modifyUser`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

@@ -62,15 +62,15 @@
         <el-row>
             <el-col :span="12">
                 <div class="details-form-item">
-                    <div class="form-item-title">用户姓名</div>
-                    <el-input placeholder="请输入用户姓名" v-model="userRealName"></el-input>
+                    <div class="form-item-title">员工姓名</div>
+                    <el-input placeholder="请输入员工姓名" v-model="userRealName"></el-input>
                 </div>
             </el-col>
 
             <el-col :span="12">
                 <div class="details-form-item">
-                    <div class="form-item-title">用户代码</div>
-                    <el-input placeholder="请输入用户代码" v-model="userCode"></el-input>
+                    <div class="form-item-title">员工代码</div>
+                    <el-input placeholder="请输入员工代码" v-model="userCode"></el-input>
                 </div>
             </el-col>
         </el-row>
@@ -79,14 +79,27 @@
             <el-col :span="12">
                 <div class="details-form-item">
                     <div class="form-item-title">登录名</div>
-                    <el-input placeholder="请输入登录名" v-model="userName" @blur="existName"></el-input>
+                    <!-- <el-input placeholder="请输入登录名" v-model="userName" @blur="existName"></el-input> -->
+                    <el-input placeholder="请输入登录名" v-model="userName" ></el-input>
                 </div>
             </el-col>
 
             <el-col :span="12">
                 <div class="details-form-item">
-                    <div class="form-item-title">登录密码</div>
-                    <el-input placeholder="请输入登录密码" v-model="password"></el-input>
+                    <div class="form-item-title">新登录密码</div>
+                    
+                    <el-input placeholder="请输入新的密码" v-model="password" v-if="pageType === 'add'"></el-input>
+                    <el-row v-else>
+                        <el-col :span="18">
+                            <el-input placeholder="请输入新的密码" v-model="password" :disabled="!isChangePassword"></el-input>
+
+                        </el-col>
+                        <el-col :span="1">&nbsp;</el-col>
+                        <el-col :span="5">
+                            <el-button type="primary" v-if="!isChangePassword" @click="isChangePassword = true;">设置新密码</el-button>
+                            <el-button type="info" v-else @click="isChangePassword = false; password = '';">取消修改</el-button>
+                        </el-col>
+                    </el-row>
                 </div>
             </el-col>
         </el-row>
@@ -95,7 +108,8 @@
             <el-col :span="12">
                 <div class="details-form-item">
                     <div class="form-item-title">手机号码</div>
-                    <el-input placeholder="请输入手机号码" v-model="phone" @blur="existPhone"></el-input>
+                    <!-- <el-input placeholder="请输入手机号码" v-model="phone" @blur="existPhone"></el-input> -->
+                    <el-input placeholder="请输入手机号码" v-model="phone"></el-input>
                 </div>
             </el-col>
 
@@ -139,7 +153,7 @@
         <div class="details-operate-container flex-start">
             <el-button type="info" plain @click="$router.back(-1)">取消</el-button>
             <div style="width: 45px;"></div>
-            <el-button type="primary">保存</el-button>
+            <el-button type="primary" @click="submit">保存</el-button>
         </div>
     </div>
 </div>
@@ -148,13 +162,22 @@
 <script>
 // 请求类
 import { queryCompanyListUsingGET, queryRoleListUsingGET } from "@/api/system/user";
-import { existUserUsingGET, queryUserUsingGET } from "@/api/system/user-edit";
+import { existUserUsingGET, queryUserUsingGET, addUserUsingPOST, modifyUserUsingPOST } from "@/api/system/user-edit";
 
 export default {
     name: 'user-edit',
 
 	data: function data() { 
         return {
+            /**
+             * 页面状态
+             * @param {string} add 新增
+             * @param {string} edit 编辑
+             */
+            pageType: 'add',
+
+            userId: '', // 用户唯一标识
+
             userTypeSection: '', // 用户类型
             userTypeOptions: [
                 {
@@ -188,13 +211,16 @@ export default {
                 // }
             ],
 
-            userRealName: '', // 用户姓名
-            userCode: '', // 用户代码
+            userRealName: '', // 员工姓名
+            userCode: '', // 员工代码
             userName: '', // 登录名
-            isExistUser: true, // 是否存在登录名
             password: '', // 用户密码
+            isChangePassword: false, // 是否修改密码
             phone: '', // 手机号
-            isExistPhone: true, // 是否存在手机号码
+
+            // 不进行校验了
+            isExistUser: false, // 是否存在登录名
+            isExistPhone: false, // 是否存在手机号码
 
             rolesSection: '', // 角色
             rolesOptions: [
@@ -231,13 +257,26 @@ export default {
          * @param {object} query 携带的参数 非必填
          */
         initPageData: function initPageData() {
+            const _this = this;
+
             // 如果 页面状态 存在 userName 表示编辑状态
             let userName = this.$route.query.userName;
             if (userName) {
                 this.pageType = 'edit';
                 queryUserUsingGET(userName)
                 .then(val => {
-                    console.log(val)
+                    let data = val.data;
+
+                    _this.userId = data.id;
+                    _this.userTypeSection = `${data.userType}`;
+                    _this.userBelongSection = `${data.bcId}`;
+                    _this.teamSection = `${data.teamId}`;
+                    _this.userRealName = data.staffName;
+                    _this.userCode = data.staffCode;
+                    _this.userName = data.userName;
+                    _this.phone = data.phone;
+                    _this.rolesSection = `${data.roleId}`;
+                    _this.userStatusSection = `${data.state}`;
 
                 }, error => {
                     console.log(error)
@@ -258,8 +297,8 @@ export default {
 
                 if (data && data instanceof Array && data.length > 0) {
                     _this.userBelongOptions = data.map(item => ({
-                        value: item,
-                        label: item,
+                        value: item[0],
+                        label: item[1],
                     }));
                 }
 
@@ -278,8 +317,8 @@ export default {
 
                 if (data && data instanceof Array && data.length > 0) {
                     _this.rolesOptions = data.map(item => ({
-                        value: item,
-                        label: item,
+                        value: item[0],
+                        label: item[1],
                     }));
                 }
 
@@ -290,7 +329,7 @@ export default {
          * 判断添加用户时 手机号 是否已注册
          */
         existPhone: function existPhone() {
-            existUserUsingGET(this.userName)
+            existUserUsingGET(this.phone)
             .then(val => {
                 if (val.code === 1001) {
                     this.isExistPhone = false;
@@ -304,7 +343,7 @@ export default {
          * 判断添加用户时 用户名 是否已注册
          */
         existName: function existName() {
-            existUserUsingGET(this.phone)
+            existUserUsingGET(this.userName)
             .then(val => {
                 if (val.code === 1001) {
                     this.isExistUser = false;
@@ -312,6 +351,166 @@ export default {
                     this.isExistUser = true;
                 }
             }, error => console.log(error));
+        },
+
+        /**
+         * 提交
+         */
+        submit: function submit() {
+            const _this = this;
+
+            if (this.userTypeSection === '') {
+                return alert('用户类型 不能为空！');
+            }
+
+            if (this.userTypeSection === '2') {
+
+                if (this.userBelongSection === '') {
+                    return alert('用户归属 不能为空！');
+                }
+
+            }
+
+            if (this.userTypeSection === '3') {
+
+                if (this.userBelongSection === '') {
+                    return alert('用户归属 不能为空！');
+                }
+
+                if (this.teamSection === '') {
+                    return alert('业务团队 不能为空！');
+                }
+            }
+
+            if (this.userRealName === '') {
+                return alert('员工姓名 不能为空！');
+            }
+
+            if (this.userCode === '') {
+                return alert('员工代码 不能为空！');
+            }
+
+            if (this.userName === '') {
+                return alert('登录名 不能为空！');
+            }
+
+            if (this.isExistUser) {
+                return alert('登录名已被使用!');
+            }
+
+            // 判断是否修改密码
+            if (this.isChangePassword) {
+                if (this.password === '') {
+                    return alert('密码 不能为空！');
+                } else if (this.password <= 6)  {
+                    return alert('密码 不能为空！');
+                }
+            }
+
+            if (this.phone === '') {
+                return alert('手机号 不能为空！');
+
+            } else if (/^(?=\d{11}$)^1(?:3\d|4[57]|5[^4\D]|66|7[^249\D]|8\d|9[89])\d{8}$/.test(this.phone) === false) {
+                return alert('请输入正确的手机号码格式！');
+                
+            }
+
+            if (this.isExistPhone) {
+                return alert('手机号已被使用!');
+            }
+
+            if (this.rolesSection === '') {
+                return alert('手机号 不能为空！');
+            }
+
+            if (this.userStatusSection === '') {
+                return alert('手机号 不能为空！');
+            }
+
+            let userType = this.userTypeSection;
+            let bcId = '';
+            if (userType === '2' || userType === '3') {
+                bcId = this.userBelongSection;
+            }
+            let teamId = '';
+            if (userType === '3') {
+                teamId = this.teamSection;
+            }
+            let staffName = this.userRealName;
+            let staffCode = this.userCode;
+            let userName = this.userName;
+            let passwd = this.password;
+            let phone = this.phone;
+            let roleId = this.rolesSection;
+            let state = this.userStatusSection;
+
+            /**
+             * 新增的请求
+             */
+            let submitAdd = () => {
+                addUserUsingPOST(userType, bcId, teamId, staffName, staffCode, userName, passwd, phone, roleId, state)
+                .then(val => {
+                    hadndleRes(val); // 成功的处理
+
+                }, error => {
+                    console.log(error)
+                    _this.$router.back(-1);
+                });
+            }
+
+            /**
+             * 编辑的请求
+             */
+            let submitEdd = () => {
+                let userId = this.userId;
+                modifyUserUsingPOST(userId, userType, bcId, teamId, staffName, staffCode, userName, passwd, phone, roleId, state)
+                .then(val => {
+                    hadndleRes(val); // 成功的处理
+
+                }, error => {
+                    console.log(error)
+                    _this.$router.back(-1);
+                });
+            }
+
+            /**
+             * 成功
+             */
+            let hadndleRes = val => {
+                if (val.code === 1000) {
+                    _this.$message({
+                        message: `请求成功!`,
+                        type: 'success',
+                        duration: 5 * 1000
+                    });
+                    _this.$router.back(-1);
+
+                } else if (val.code === 1001) {
+                    return alert(`${_this.pageType === 'edit' ? '修改' : '添加'}用户异常`);
+                    
+                } else if (val.code === 1002) {
+                    return alert('用户名已注册');
+
+                } else if (val.code === 1003) {
+                    return alert('手机号已注册');
+
+                } else if (val.code === 1004) {
+                    return alert('属性不能为空');
+
+                } else {
+                    return alert(val.msg);
+
+                }
+            }
+
+            // 判断是新增还是编辑
+            if (this.pageType === 'add') {
+                submitAdd();
+
+            } else {
+                submitEdd();
+
+            }
         },
 
         /**
@@ -359,6 +558,10 @@ $black4: #C0C4CC;
     }
 
     .el-select {
+        width: 100%;
+    }
+
+    .el-button {
         width: 100%;
     }
 }

@@ -270,8 +270,8 @@ export default {
 
                 if (data && data instanceof Array && data.length > 0) {
                     _this.userBelongOptions = data.map(item => ({
-                        value: item,
-                        label: item,
+                        value: item[1],
+                        label: item[1],
                     }));
                 }
 
@@ -290,8 +290,8 @@ export default {
 
                 if (data && data instanceof Array && data.length > 0) {
                     _this.rolesOptions = data.map(item => ({
-                        value: item,
-                        label: item,
+                        value: item[1],
+                        label: item[1],
                     }));
                 }
 
