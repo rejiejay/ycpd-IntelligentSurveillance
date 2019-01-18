@@ -163,7 +163,7 @@
     <ModalByZindex 
         class="filter-modal"
         :isShow="isFilterModalShow" 
-        :zindex="9999" 
+        :zindex="3" 
         @clickShade="isFilterModalShow = false"
     >
         <div class="modal-main-content">
@@ -212,26 +212,32 @@
             </div>
 
             <div class="modal-main-select flex-start">
-                <span @click="isSelectStoreModalShow = true">
-                    <el-input
-                        placeholder="请选择车行"
-                        readonly
-                        v-model="cartsLable"
-                    ></el-input>
-                </span>
-                <div style="width: 15px;"></div>
-                <el-select v-model="cooperation" placeholder="请选择是否合作">
+                <el-select v-model="regionType" placeholder="请选择网点类型">
                     <el-option
-                        v-for="item in cooperationList"
+                        v-for="item in regionTypeList"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value"
                     ></el-option>
                 </el-select>
                 <div style="width: 15px;"></div>
-                <el-select v-model="regionType" placeholder="请选择网点类型">
+                <el-select 
+                    v-model="cartsStore" 
+                    filterable 
+                    :filter-method="selectCartsStoreSearch"
+                    placeholder="请选择车行"
+                >
                     <el-option
-                        v-for="item in regionTypeList"
+                        v-for="item in cartsStoreList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    ></el-option>
+                </el-select>
+                <div style="width: 15px;"></div>
+                <el-select v-model="coperation" placeholder="请选择是否合作">
+                    <el-option
+                        v-for="item in coperationList"
                         :key="item.value"
                         :label="item.label"
                         :value="item.value"
@@ -315,55 +321,6 @@
             </div>
         </div>
     </ModalByZindex>
-
-    <!-- 选择车行模态框 -->
-    <ModalByZindex 
-        class="select-store-modal"
-        :isShow="isSelectStoreModalShow" 
-        :zindex="99999" 
-        @clickShade="isSelectStoreModalShow = false"
-    >
-        <div class="map-modal-container">
-            <div class="map-modal-title flex-center">
-                <div class="modal-title-left flex-rest">选择车行地址</div>
-                <div class="modal-title-right" @click="isBaiduMapModalShow = false;"><i class="el-icon-close"></i></div>
-            </div>
-
-            <div class="map-modal-input">
-                <el-input 
-                    @focus="isInputAddress = true"
-                    @blur="isInputAddress = false"
-                    :prefix-icon="`${ cartsId ? 'el-icon-circle-check-outline' : 'el-icon-search'}`"
-                    placeholder="请输入网点地址" 
-                    v-model="cartsSearch"
-                ></el-input>
-                
-                <!-- 搜索列表 -->
-                <div class="input-search-list" v-if="cartsSearchList.length > 0">
-                    <div class="search-list-container">
-                        <div class="input-search-item"
-                            v-for="(item, key) in cartsSearchList"
-                            :key="key"
-                        >
-                            {{item.label}}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="map-modal-operate flex-start-center">
-                <div class="modal-operate-left flex-rest"></div>
-                <div class="modal-operate-right flex-start-center">
-                    <el-button type="info" plain @click="isSelectStoreModalShow = false;">取消</el-button>
-                    <div style="width: 15px;"></div>
-                    <el-button 
-                        :type="cartsId ? 'primary' : ''" 
-                        @click="cartsIdHandle"
-                    >保存</el-button>
-                </div>
-            </div>
-        </div>
-    </ModalByZindex>
 </div>
 </template>
 
@@ -388,6 +345,7 @@ import percentage_100 from '@/assets/baidu_map/percentage_100.svg';
 import { countStoreInfoUsingGET, listStoreToMapUsingGET, listByIdUsingGET, listStoreToSearchUsingGET } from "@/api/monitor/carts";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
+import { queryStoreSelectUsingPOST } from "@/api/store";
 
 export default {
     name: 'monitor-carts',
@@ -475,7 +433,7 @@ export default {
             /**
              * 筛选
              */
-            isFilterModalShow: false, // 是否显示筛选模态框
+            isFilterModalShow: true, // 是否显示筛选模态框
             startendTime: [ // 开始结束时间
                 initStartTime,
                 initEndTime,
@@ -501,31 +459,49 @@ export default {
             //         label: '业务员一',
             //     }
             // ],
-            isSelectStoreModalShow: false, // 是否显示选择车行模态框
-            cartsId: '', // 选中车行的唯一标识
-            cartsLable: '', // 选中车行的描述
-            cartsSearch: '', // 车行搜索
-            cartsSearchList: [
-                {
-                    value: '车行一',
-                    label: '车行一',
-                }
-            ],
-            cooperation: '', // 是否合作
-            cooperationList: [
-                {
-                    value: '合作',
-                    label: '合作',
-                }, {
-                    value: '不合作',
-                    label: '不合作',
-                }
-            ],
             regionType: '', // 网点类型
             regionTypeList: [
                 {
-                    value: '网点类型一',
-                    label: '网点类型一',
+                    value: '0',
+                    label: '4S店',
+                }, {
+                    value: '1',
+                    label: '修理厂',
+                }, {
+                    value: '2',
+                    label: '二网',
+                }, {
+                    value: '3',
+                    label: '二手车行',
+                }, {
+                    value: '4',
+                    label: '续保',
+                }, {
+                    value: '5',
+                    label: '非车险',
+                }, {
+                    value: '6',
+                    label: '网络销售',
+                }, {
+                    value: '7',
+                    label: '其他',
+                }
+            ],
+            cartsStore: '', // 请选择车行
+            cartsStoreList: [
+                // {
+                //     value: '车行一',
+                //     label: '车行一',
+                // }
+            ],
+            coperation: '', // 是否合作
+            coperationList: [
+                {
+                    value: '1',
+                    label: '合作',
+                }, {
+                    value: '0',
+                    label: '不合作',
                 }
             ],
             isFilterParticularCase: false, // 是否过滤特殊案件
@@ -582,9 +558,27 @@ export default {
         this.initListStoreToMap(); // 条件查询车商地图展示
 
         this.queryCompanyList(); // 支公司下拉选项
+        this.selectCartsStoreSearch(''); // 初始化 车行下拉列表
     },
 
 	methods: {
+        /**
+         * 选择车行搜索 车行下拉列表
+         */
+        selectCartsStoreSearch: function selectCartsStoreSearch(storeName) {
+            const _this  = this;
+            queryStoreSelectUsingPOST(storeName)
+            .then(val => {
+                let data = val.data;
+                console.log(val);
+
+                if (data && data instanceof Array && data.length > 0) {
+                    // 这里后台返回的数据同样不正确
+                }
+
+            }, error => console.log(error));
+        },
+
         /**
          * 支公司下拉选项
          */
@@ -976,7 +970,7 @@ export default {
 }
 </script>
 
-<style rel="stylesheet/scss" lang="scss" scoped>
+<style rel="stylesheet/scss" lang="scss">
 $black1: #303133;
 $black2: #606266;
 $black3: #909399;
@@ -1284,6 +1278,71 @@ $black4: #C0C4CC;
         .main-district-title {
             padding-bottom: 15px;
         }
+    }
+}
+
+// 选择车行模态框
+.select-store-modal {
+    .modal-container {
+        width: 450px;
+    }
+
+    .store-modal-title {
+        padding: 0px 15px;
+        height: 45px;
+        font-size: 16px;
+        font-weight: bold;
+        border-bottom: 1px solid #ddd;
+
+        .modal-title-right {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .modal-title-right:hover {
+            color: #F56C6C;
+        }
+    }
+
+    .store-modal-main {
+        padding: 15px;
+
+        #BaiduMap {
+            height: 300px;
+        }
+    }
+
+    .store-modal-input {
+        padding: 15px;
+    }
+
+    .input-search-list {
+        padding-top: 5px;
+
+        .search-list-container {
+            border-top: 1px solid #ddd;
+            border-left: 1px solid #ddd;
+            border-right: 1px solid #ddd;
+        }
+
+        .input-search-item {
+            border-bottom: 1px solid #ddd;
+            padding-left: 15px;
+            line-height: 35px;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .input-search-item:hover {
+            color: #409EFF;
+        }
+    }
+
+    .store-modal-operate {
+        border-top: 1px solid #ddd;
+        padding: 15px;
+        height: 45;
     }
 }
 

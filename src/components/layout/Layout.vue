@@ -130,6 +130,6 @@ export default {
         top: 0;
         height: 100%;
         position: absolute;
-        z-index: 999;
+        z-index: 2;
     }
 </style>
