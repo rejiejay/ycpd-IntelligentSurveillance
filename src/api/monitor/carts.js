@@ -57,3 +57,48 @@ export function listStoreToMapUsingGET(startDate, endDate, bcId, teamId, network
         headers: {'Content-Type': 'application/json'},
     });
 }
+
+/**
+ * 根据ID,查询车行详情信
+ * @param {string} id 车行唯一标识
+ */
+export function listByIdUsingGET(id) {
+	// /** 主键，UUID */ id;
+	// /** 网点编码 */ networkNo ;
+    // /** 网点名称 */ networkName ;
+    // /** 类型;0：4S店，1：修理厂 */ networkType ;
+    // /** 网点星级 */ star ;
+    // /** 是否合作;0：未合作 1：合作 */ isJoin ;
+    // /** 省 */ province ;
+    // /** 市 */ city ;
+    // /** 区/县 */ county ;
+    // /** 详细地址 */ address ;
+    // /** 经度 */ longitude ;
+    // /** 纬度 */ latitude ;
+    // /** 联系人 */ contact ;
+    // /** 电话 */ phone ;
+    // /** 品牌 */ brand ;
+    // /** 上级集团 */ superiorGroup ;
+    // /** 支公司id */ bcId ;
+    // /** 渠道代码 */ channelCode ;
+    // /** 团队id */ teamId ;
+    // /** 备注 */ remark ;
+    // /** Logo */ logo ;
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/storeMap/listById?id=${id}`,
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+    });
+}
+
+/**
+ * 搜索框查询车行列表
+ * @param {string} searchParam 车行唯一标识
+ */
+export function listStoreToSearchUsingGET(searchParam) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/storeMap/listToSearch?searchParam=${searchParam}`,
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+    });
+}

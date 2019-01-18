@@ -65,15 +65,16 @@
             <div class="sidebar-carts-main">
                 <div class="sidebar-carts-container">
 
-                    <div class="carts-main-title">深圳市龙岗区宝创汽车服务中心</div>
+                    <div class="carts-main-title">{{storenetworkName}}</div>
 
-                    <div class="carts-main-address">广东省深圳市龙岗区宝荷大道171号</div>
+                    <div class="carts-main-address">{{storeaddress}}</div>
 
                     <div class="carts-main-lable flex-start-bottom">
-                        <div class="main-lable-item">已签约</div>
-                        <div class="main-lable-item">4s店</div>
+                        <div class="main-lable-item">{{storeisJoin}}</div>
+                        <div class="main-lable-item">{{storenetworkType}}</div>
                         <el-rate
                             v-model="rate"
+                            :max="ratemax"
                             disabled
                             :colors="['#F56C6C', '#F56C6C', '#F56C6C']"
                             disabled-void-color="#ddd"
@@ -83,19 +84,19 @@
                     <div class="carts-main-details">
                         <div class="main-details-row flex-start">
                             <div class="details-row-left">机构：</div>
-                            <div class="details-row-right">南山支公司 — 业务一部</div>
+                            <div class="details-row-right">{{storesuperiorGroup}}</div>
                         </div>
-                        <div class="main-details-row flex-start">
+                        <div class="main-details-row flex-start" v-if="storenetworkNo">
                             <div class="details-row-left">送修码：</div>
-                            <div class="details-row-right">4403102349422</div>
+                            <div class="details-row-right">{{storenetworkNo}}</div>
                         </div>
                         <div class="main-details-row flex-start">
                             <div class="details-row-left">联系人：</div>
-                            <div class="details-row-right">张炳杰</div>
+                            <div class="details-row-right">{{storecontact}}</div>
                         </div>
                         <div class="main-details-row flex-start">
                             <div class="details-row-left">电话：</div>
-                            <div class="details-row-right">18927403415</div>
+                            <div class="details-row-right">{{storephone}}</div>
                         </div>
                         <div class="main-details-describe">
                             <div class="details-describe-content flex-start-center">
@@ -334,7 +335,7 @@ import percentage_80 from '@/assets/baidu_map/percentage_80.svg';
 import percentage_90 from '@/assets/baidu_map/percentage_90.svg';
 import percentage_100 from '@/assets/baidu_map/percentage_100.svg';
 // 请求类
-import { countStoreInfoUsingGET, listStoreToMapUsingGET } from "@/api/monitor/carts";
+import { countStoreInfoUsingGET, listStoreToMapUsingGET, listByIdUsingGET } from "@/api/monitor/carts";
 
 export default {
     name: 'monitor-carts',
@@ -374,6 +375,7 @@ export default {
             // 地图上的所有数据
             cartsMaplist: [
                 // {
+                //     id: '4028ba816856df53016856e344b40000',
                 //     title: '深圳市龙岗区宝创汽车服务中心',
                 //     address: '广东省深圳市龙岗区宝荷大道171号',
                 //     isSelected: false, // 是否被选中 （选中弹出 Label 标签）
@@ -383,20 +385,18 @@ export default {
                 //     longitude: 114.059560, // 经度
                 //     latitude: 22.542860, // 纬度
                 // }, 
-                // {lossAmount: 3, premiumAmount: 100, longitude: 114.049560, latitude: 22.542760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 10, premiumAmount: 100, longitude: 114.039660, latitude: 22.542660, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 17, premiumAmount: 100, longitude: 114.029760, latitude: 22.542560, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 28, premiumAmount: 100, longitude: 114.019860, latitude: 22.542460, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 41, premiumAmount: 100, longitude: 114.069960, latitude: 22.542360, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 52, premiumAmount: 100, longitude: 114.078560, latitude: 22.542260, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 63, premiumAmount: 100, longitude: 114.088360, latitude: 22.542160, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 74, premiumAmount: 100, longitude: 114.098260, latitude: 22.542960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 78, premiumAmount: 100, longitude: 114.118160, latitude: 22.541960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 89, premiumAmount: 100, longitude: 114.128660, latitude: 22.541860, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                // {lossAmount: 100, premiumAmount: 100, longitude: 114.138760, latitude: 22.541760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 3, premiumAmount: 100, longitude: 114.049560, latitude: 22.542760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 10, premiumAmount: 100, longitude: 114.039660, latitude: 22.542660, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 17, premiumAmount: 100, longitude: 114.029760, latitude: 22.542560, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 28, premiumAmount: 100, longitude: 114.019860, latitude: 22.542460, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 41, premiumAmount: 100, longitude: 114.069960, latitude: 22.542360, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 52, premiumAmount: 100, longitude: 114.078560, latitude: 22.542260, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 63, premiumAmount: 100, longitude: 114.088360, latitude: 22.542160, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 74, premiumAmount: 100, longitude: 114.098260, latitude: 22.542960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 78, premiumAmount: 100, longitude: 114.118160, latitude: 22.541960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 89, premiumAmount: 100, longitude: 114.128660, latitude: 22.541860, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
+                // {lossAmount: 100, premiumAmount: 100, longitude: 114.138760, latitude: 22.541760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号', id: '4028ba816856df53016856e344b40000'},
             ],
-
-            rate: 4, // 评分
 
             /**
              * 搜索
@@ -490,6 +490,16 @@ export default {
             signingRate: '', // 签约率
 
             storeId: '', // 车行信息唯一标识, 这个用来控制是否选中车行
+            storenetworkName: '', // 网点名称
+            storeaddress: '', // 网点地址
+            storeisJoin: '', // 是否合作
+            storenetworkType: '', // 网点名称
+            rate: 5, // 评分
+            ratemax: 5, // 最大
+            storesuperiorGroup: '', // 机构：
+            storenetworkNo: '', // 送修码
+            storecontact: '', // 联系人
+            storephone: '', // 电话
         } 
     },
 
@@ -552,6 +562,8 @@ export default {
                 _this.cartsMaplist = data.map(val => {
                     let newItem = {};
 
+                    newItem.id = val.id; // 车行唯一标识
+                    newItem.title = val.networkName; // 车行名称
                     newItem.title = val.networkName; // 车行名称
                     newItem.address = val.address; // 车行地址
                     newItem.isSelected = false; // 是否被选中
@@ -567,6 +579,84 @@ export default {
                 _this.initBaiduMap(); // 初始化百度地图
 
             }, error => console.log(error));
+        },
+
+        /**
+         * 星星转换为 数值
+         */
+        starToRate: function starToRate(star) {
+            let rate = 0;
+            let ratemax = 5;
+            if (star === '一星') {
+                rate = 1;
+            }
+            if (star === '二星') {
+                rate = 2;
+            }
+            if (star === '三星') {
+                rate = 3;
+            }
+            if (star === '四星') {
+                rate = 4;
+            }
+            if (star === '五星') {
+                rate = 5;
+            }
+            if (star === 'A级') {
+                rate = 1;
+                ratemax = 6;
+            }
+            if (star === 'B级') {
+                rate = 2;
+                ratemax = 6;
+            }
+            if (star === 'C级') {
+                rate = 3;
+                ratemax = 6;
+            }
+            if (star === 'D级') {
+                rate = 4;
+                ratemax = 6;
+            }
+            if (star === 'E级') {
+                rate = 5;
+                ratemax = 6;
+            }
+            if (star === 'F级') {
+                rate = 6;
+                ratemax = 6;
+            }
+            return {
+                rate: rate,
+                ratemax: ratemax
+            }
+        },
+
+        /**
+         * 根据ID,查询车行详情信
+         */
+        getStoreById: function getStoreById(id) {
+            const _this = this;
+
+            listByIdUsingGET(id)
+            .then(val => {
+                console.log(val)
+                let data = val.data;
+
+                _this.storeId = data.id; // 车商id
+                _this.storenetworkName = data.networkName; // 网点名称
+                _this.storeaddress = `${data.province}${data.city}${data.county}${data.address}`; // 网点地址
+                _this.storeisJoin = data.isJoin === 1 ? '已签约' : '未签约'; // 是否合作
+                _this.storenetworkType = data.networkType === 0 ? '4S店' : '修理厂'; // 网点名称
+                let myStar = _this.starToRate(data.star);
+                _this.rate = myStar.rate;
+                _this.ratemax = myStar.ratemax;
+                _this.storesuperiorGroup = data.superiorGroup; // 机构：
+                _this.storenetworkNo = data.networkNo; // 网点编码 这个就是 送修码
+                _this.storecontact = data.contact; // 联系人
+                _this.storephone = data.phone; // 电话
+                
+            }, error => console.log(error))
         },
 
         /**
@@ -674,6 +764,8 @@ export default {
 
                 // 绑定事件
                 baiduMapMarker.addEventListener("click", function () {
+                    _this.getStoreById(_this.cartsMaplist[key].id); // 根据ID,查询车行详情信
+
                     let newCartslist = _this.cartsMaplist.concat([]);
 
                     _this.mountBaiduMap.clearOverlays(); // 清除所有遮罩物
