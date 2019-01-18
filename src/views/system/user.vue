@@ -218,6 +218,20 @@ export default {
 
             queryUserListUsingPOST(this.currentPage, userType, bcName, staffName, staffCode, roleName, state)
             .then(val => {
+                if (val.code === 1001) {
+                    return alert('查询数据为空');
+                }
+                if (val.code === 1002) {
+                    return alert('当前页码查询为空');
+                }
+                if (val.code === 1003) {
+                    return alert('查询用户列表异常');
+                }
+
+                if (val.code !== 1000) {
+                    return alert(val.msg);
+                }
+
                 let data = val.data;
 
                 // 初始化一共多少条数据

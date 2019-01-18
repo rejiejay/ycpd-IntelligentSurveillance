@@ -18,7 +18,7 @@
                 <div class="sidebar-filter-container">
                     
                     <div class="filter-main-time flex-start">
-                        <div class="main-time flex-rest">2019-01-07 至 2019-01-09</div>
+                        <div class="main-time flex-rest">{{startendTimeLable ? startendTimeLable : '请选择筛选时间'}}</div>
 
                         <el-button type="danger" size="small" @click="isFilterModalShow = true">
                             <svg width="14" height="14" t="1546828811561" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1749" xmlns:xlink="http://www.w3.org/1999/xlink">
@@ -27,7 +27,7 @@
                         </el-button>
                     </div>
 
-                    <div class="filter-main-subcompany">南山支公司 - 合作</div>
+                    <div class="filter-main-subcompany" v-if="subcompanyLable">{{subcompanyLable}}</div>
                 </div>
             </div>
         </div>
@@ -42,23 +42,23 @@
                     <div class="regionsite-describe-content flex-start-center">
                         <div class="describe-content-item flex-rest">
                             <div style="border-right: 1px solid #ddd;">合作网点数</div>
-                            <div class="content-item-money" style="border-right: 1px solid #ddd;"><span>459</span>家</div>
+                            <div class="content-item-money" style="border-right: 1px solid #ddd;"><span>{{isJoinNum}}</span>家</div>
                         </div>
                         <div class="describe-content-item flex-rest">
-                            <div>定损金额</div>
-                            <div class="content-item-money"><span>1443</span>家</div>
+                            <div>未合作网点数</div>
+                            <div class="content-item-money"><span>{{isNotJoinNum}}</span>家</div>
                         </div>
                     </div>
                     <div class="regionsite-describe-tip flex-start-center">
-                        <div class="flex-rest">· 新增网点：<span style="color: #67C23A;">32</span></div>
-                        <div class="flex-rest">· 签约率：<span style="color: #67C23A;">22.92%</span></div>
+                        <div class="flex-rest">· 新增网点：<span style="color: #67C23A;">{{newAddStoreNum}}</span></div>
+                        <div class="flex-rest">· 签约率：<span style="color: #67C23A;">{{signingRate}}%</span></div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- 车行信息 -->
-        <div class="carts-sidebar-carts">
+        <div class="carts-sidebar-carts" v-if="storeId">
             
             <div class="sidebar-carts-title">车行信息</div>
 
@@ -319,6 +319,7 @@
 <script>
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
+import TimeConver from '@/utils/TimeConver';
 // 资源类
 import no_cooperate from '@/assets/baidu_map/no_cooperate.svg';
 import percentage_0 from '@/assets/baidu_map/percentage_0.svg';
@@ -332,6 +333,8 @@ import percentage_70 from '@/assets/baidu_map/percentage_70.svg';
 import percentage_80 from '@/assets/baidu_map/percentage_80.svg';
 import percentage_90 from '@/assets/baidu_map/percentage_90.svg';
 import percentage_100 from '@/assets/baidu_map/percentage_100.svg';
+// 请求类
+import { countStoreInfoUsingGET, listStoreToMapUsingGET } from "@/api/monitor/carts";
 
 export default {
     name: 'monitor-carts',
@@ -369,28 +372,28 @@ export default {
             },
 
             // 地图上的所有数据
-            cartslist: [
-                {
-                    title: '深圳市龙岗区宝创汽车服务中心',
-                    address: '广东省深圳市龙岗区宝荷大道171号',
-                    isSelected: false, // 是否被选中 （选中弹出 Label 标签）
-                    isCooperate: false, // 是否合作
-                    lossAmount: 14232, // 定损金额
-                    premiumAmount: 3244, // 保费金额
-                    longitude: 114.059560, // 经度
-                    latitude: 22.542860, // 纬度
-                }, 
-                {lossAmount: 3, premiumAmount: 100, longitude: 114.049560, latitude: 22.542760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 10, premiumAmount: 100, longitude: 114.039660, latitude: 22.542660, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 17, premiumAmount: 100, longitude: 114.029760, latitude: 22.542560, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 28, premiumAmount: 100, longitude: 114.019860, latitude: 22.542460, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 41, premiumAmount: 100, longitude: 114.069960, latitude: 22.542360, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 52, premiumAmount: 100, longitude: 114.078560, latitude: 22.542260, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 63, premiumAmount: 100, longitude: 114.088360, latitude: 22.542160, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 74, premiumAmount: 100, longitude: 114.098260, latitude: 22.542960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 78, premiumAmount: 100, longitude: 114.118160, latitude: 22.541960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 89, premiumAmount: 100, longitude: 114.128660, latitude: 22.541860, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
-                {lossAmount: 100, premiumAmount: 100, longitude: 114.138760, latitude: 22.541760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+            cartsMaplist: [
+                // {
+                //     title: '深圳市龙岗区宝创汽车服务中心',
+                //     address: '广东省深圳市龙岗区宝荷大道171号',
+                //     isSelected: false, // 是否被选中 （选中弹出 Label 标签）
+                //     isCooperate: false, // 是否合作
+                //     lossAmount: 14232, // 定损金额
+                //     premiumAmount: 3244, // 保费金额
+                //     longitude: 114.059560, // 经度
+                //     latitude: 22.542860, // 纬度
+                // }, 
+                // {lossAmount: 3, premiumAmount: 100, longitude: 114.049560, latitude: 22.542760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 10, premiumAmount: 100, longitude: 114.039660, latitude: 22.542660, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 17, premiumAmount: 100, longitude: 114.029760, latitude: 22.542560, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 28, premiumAmount: 100, longitude: 114.019860, latitude: 22.542460, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 41, premiumAmount: 100, longitude: 114.069960, latitude: 22.542360, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 52, premiumAmount: 100, longitude: 114.078560, latitude: 22.542260, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 63, premiumAmount: 100, longitude: 114.088360, latitude: 22.542160, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 74, premiumAmount: 100, longitude: 114.098260, latitude: 22.542960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 78, premiumAmount: 100, longitude: 114.118160, latitude: 22.541960, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 89, premiumAmount: 100, longitude: 114.128660, latitude: 22.541860, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
+                // {lossAmount: 100, premiumAmount: 100, longitude: 114.138760, latitude: 22.541760, isSelected: false, isCooperate: true, title: '深圳市龙岗区宝创汽车服务中心', address: '广东省深圳市龙岗区宝荷大道171号'},
             ],
 
             rate: 4, // 评分
@@ -419,7 +422,10 @@ export default {
              * 筛选
              */
             isFilterModalShow: false, // 是否显示筛选模态框
-            startendTime: '', // 开始结束时间
+            startendTime: [ // 开始结束时间
+                initStartTime,
+                initEndTime,
+            ],
             subcompany: '', // 支公司
             subcompanyList: [
                 {
@@ -472,14 +478,97 @@ export default {
             maxLoss: '', // 最高定损金额
             minProportion: '', // 最低定占比
             maxProportion: '', // 最高定占比
+
+            /**
+             * 筛选后展示的数据
+             */
+            startendTimeLable: `${TimeConver.dateToFormat(initStartTime)} 至 ${TimeConver.dateToFormat(initEndTime)}`,
+            subcompanyLable: '',
+            isJoinNum: '', // 合作网点数
+            isNotJoinNum: '', // 未合作网点数
+            newAddStoreNum: '', // 新增网点
+            signingRate: '', // 签约率
+
+            storeId: '', // 车行信息唯一标识, 这个用来控制是否选中车行
         } 
     },
 
 	mounted: function mounted() {
-        this.initBaiduMap(); // 初始化百度地图
+        // this.initBaiduMap(); // 初始化百度地图
+        this.initCountStoreInfo(); // 初始化 合作网点（统计：合作网点数，为合作网点数，新增网点，签约率）
+        this.initListStoreToMap(); // 条件查询车商地图展示
     },
 
 	methods: {
+        /**
+         * 初始化 合作网点（统计：合作网点数，为合作网点数，新增网点，签约率）
+         */
+        initCountStoreInfo: function initCountStoreInfo() {
+            const _this = this;
+
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
+
+            countStoreInfoUsingGET(startDate, endDate)
+            .then(val => {
+                let data = val.data;
+
+                _this.isJoinNum = data.isJoinNum;
+                _this.isNotJoinNum = data.isNotJoinNum;
+                _this.newAddStoreNum = data.newAddStoreNum;
+                _this.signingRate = data.signingRate;
+                
+            }, error => console.log(error));
+        },
+
+        /**
+         * 条件查询车商地图展示
+         */
+        initListStoreToMap: function initListStoreToMap() {
+            const _this = this;
+
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
+            let bcId = ''; 
+            let teamId = ''; 
+            let networkName = ''; 
+            let isJoin = ''; 
+            let networkType = ''; 
+            let lowestSumpremium = ''; 
+            let highestSumpremium = ''; 
+            let lowestMaterialfee = ''; 
+            let highestMaterialfee = ''; 
+            let lowestProportion = ''; 
+            let highestProportion = ''; 
+
+            listStoreToMapUsingGET(startDate, endDate, bcId, teamId, networkName, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion)
+            .then(val => {
+                let data = val.data;
+
+                if (!data || data instanceof Array === false || data.length <= 0) {
+                    return false;
+                }
+
+                _this.cartsMaplist = data.map(val => {
+                    let newItem = {};
+
+                    newItem.title = val.networkName; // 车行名称
+                    newItem.address = val.address; // 车行地址
+                    newItem.isSelected = false; // 是否被选中
+                    newItem.isCooperate = val.isJoin === 1 ? true : false; // 是否合作
+                    newItem.lossAmount = val.materialfee; // 定损金额
+                    newItem.premiumAmount = val.sumpremium; // 保费金额
+                    newItem.longitude = val.longitude; // 经度
+                    newItem.latitude = val.latitude; // 纬度
+
+                    return newItem
+                });
+
+                _this.initBaiduMap(); // 初始化百度地图
+
+            }, error => console.log(error));
+        },
+
         /**
          * 初始化百度地图
          */
@@ -516,7 +605,7 @@ export default {
             /**
              * 渲染地图上面的标注
              */
-            this.cartslist.map((val, key) => {
+            this.cartsMaplist.map((val, key) => {
                 let percentage = val.lossAmount / val.premiumAmount; // 定损金额/保费金额
                 // 图标
                 let baiduMapIcon = new BMap.Icon(
@@ -524,8 +613,12 @@ export default {
                     new BMap.Size(30, 45), // 尺寸大小
                 );
 
-                // 合作
-                if (val.isCooperate) {
+                /**
+                 * 判断是否 【合作】
+                 * 判断 percentage 是否 【有效】
+                 * 定损金额/保费金额 有误的时候会报错, 所以需要校验 percentage 是否 【有效】
+                 */
+                if (val.isCooperate && percentage >= 0 && percentage <= 1) {
                     let myImg = calculateImg(percentage); // 计算图片
                     baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(40, 48.5));
                 }
@@ -535,8 +628,12 @@ export default {
                 // 标记
                 let baiduMapMarker = new BMap.Marker(baiduMapPoint, { icon: baiduMapIcon });
 
-                // 文本内容
-                if (val.isCooperate) {
+                /**
+                 * 这里的目的是 渲染 【文本内容】
+                 * 需要 判断是否 【合作】
+                 * 需要 判断 percentage 是否 【有效】
+                 */
+                if (val.isCooperate && percentage >= 0 && percentage <= 1) {
                     let labelContent = `${Math.floor(percentage * 100)}%`;
                     let baiduMapLabel = new BMap.Label(
                         labelContent, // 文本内容 
@@ -577,11 +674,11 @@ export default {
 
                 // 绑定事件
                 baiduMapMarker.addEventListener("click", function () {
-                    let newCartslist = _this.cartslist.concat([]);
+                    let newCartslist = _this.cartsMaplist.concat([]);
 
                     _this.mountBaiduMap.clearOverlays(); // 清除所有遮罩物
 
-                    _this.cartslist = newCartslist.map((data, index) => {
+                    _this.cartsMaplist = newCartslist.map((data, index) => {
                         // 选中
                         if (key === index) {
                             data.isSelected = true;

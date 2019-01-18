@@ -1,5 +1,6 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
+import notFilter from '@/components/apibasics-notFilter';
 
 /**
  * 获取用户列表
@@ -12,7 +13,7 @@ import config from '@/config';
  * @param {number || string} state 状态
  */
 export function queryUserListUsingPOST(currentPage, userType, bcName, staffName, staffCode, roleName, state) {
-    return apibasics({
+    return notFilter({
         url: `${config.url.origin}/cdimms/server/user/queryUserList`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
