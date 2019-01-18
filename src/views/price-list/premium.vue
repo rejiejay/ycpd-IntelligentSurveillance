@@ -23,7 +23,7 @@
             ></el-option>
         </el-select>
 
-        <el-select v-model="teamSection" placeholder="业务团队">
+        <el-select v-model="teamSection" :disabled="!subCompanySection" placeholder="业务团队">
             <el-option
                 v-for="item in teamOptions"
                 :key="item.value"
@@ -45,7 +45,7 @@
 
         <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
 
-        <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="listPremiu">查询</el-button>
         <el-button icon="el-icon-download" type="success">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
@@ -106,6 +106,12 @@
 </template>
 
 <script>
+// 请求类
+import { listPremiumUsingGET } from "@/api/price-list/premium";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+// 组件类
+import TimeConver from '@/utils/TimeConver';
 
 export default {
     name: 'premium',
@@ -159,23 +165,44 @@ export default {
 
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             teamSection: null, // 业务团队
             teamOptions: [
-                {
-                    value: '业务团队一',
-                    label: '业务团队一',
-                }
+                // {
+                //     value: '业务团队一',
+                //     label: '业务团队一',
+                // }
             ],
             regionSection: null, // 网点
             regionOptions: [
                 {
-                    value: '网点一',
-                    label: '网点一',
+                    value: '0',
+                    label: '4S店',
+                }, {
+                    value: '1',
+                    label: '修理厂',
+                }, {
+                    value: '2',
+                    label: '二网',
+                }, {
+                    value: '3',
+                    label: '二手车行',
+                }, {
+                    value: '4',
+                    label: '续保',
+                }, {
+                    value: '5',
+                    label: '非车险',
+                }, {
+                    value: '6',
+                    label: '网络销售',
+                }, {
+                    value: '7',
+                    label: '其他',
                 }
             ],
 
@@ -206,13 +233,98 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanySection: function subCompanySection(newsubCompanySection) {
+            this.queryTeamByBcId(newsubCompanySection);
+        },
+    },
+
+	mounted: function mounted() {
+        this.listPremiu(); // 获取保费明细列表
+        this.queryCompanyList(); // 初始化 支公司下拉选项
+    },
 
 	methods: {
         /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+            }, error => console.log(error))
+        },
+
+        /**
          * 通过条件查询
          */
-        searchByConditions: function searchByConditions() {
+        listPremiu: function listPremiu() {
+            const _this  = this;
+
+            let pageNo = this.currentPage;
+            let pageSize = this.pageSize;
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
+            let storeId = ''; // 这个是多余的
+            let bcId = this.subCompanySection ? this.subCompanySection : ''; 
+            let teamId = this.teamSection ? this.teamSection : ''; 
+            let networkName = this.regionSection ? this.regionSection : ''; 
+            let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
+            let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
+
+            listPremiumUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium)
+            .then(val => {
+                let data = val.data;
+
+                _this.pageTotal = data.total;
+
+                if (!data || !data.premiums || data.premiums instanceof Array === false || data.premiums.length <= 0) {
+                    return false;
+                }
+
+                _this.premiumlist = data.premiums.map(val => {
+                    let newItem = {};
+
+                    newItem.netCode = val.netpointcode; // 网点编码
+                    newItem.netName = val.netpointname; // 网点名称	
+                    newItem.netType = val.netpointtype; // 网点类型	
+                    newItem.netRate = val.netpointstart; // 网点星级
+                    newItem.subCompany = val.comcode; // 支公司
+                    newItem.team = val.teamcode; // 业务团队
+                    newItem.orderTime = val.maketime ? val.maketime.split(' ')[0] : ''; // 出单时间
+                    newItem.carNo = val.licenseno; // 标的车牌号
+                    newItem.policyno = val.policyno; // 保单号
+                    newItem.policyNo = val.sumpremium; // 保费
+                    newItem.startdate = val.startdate; // 起保时间
+
+                    return newItem
+                });
+
+            }, error => console.log(error));
         },
 
         /**
@@ -235,7 +347,8 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.listPremiu();
         },
 
         /**

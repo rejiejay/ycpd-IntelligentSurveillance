@@ -433,7 +433,7 @@ export default {
             /**
              * 筛选
              */
-            isFilterModalShow: true, // 是否显示筛选模态框
+            isFilterModalShow: false, // 是否显示筛选模态框
             startendTime: [ // 开始结束时间
                 initStartTime,
                 initEndTime,
