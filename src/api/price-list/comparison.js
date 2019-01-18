@@ -3,7 +3,7 @@ import apibasics from '@/components/apibasics';
 import axios from 'axios';
 
 /**
- * 保费明细列表
+ * 产保比明细列表
  * @param {number} pageNo 当前页 必填
  * @param {number} pageSize 总页码 必填
  * @param {String} startDate 开始时间
@@ -12,10 +12,10 @@ import axios from 'axios';
  * @param {String} bcId 支公司
  * @param {String} teamId 团队
  * @param {String} networkName 车行
- * @param {String} lowestSumpremium 最低保费
- * @param {String} highestSumpremium 最高保费
+ * @param {String} lowestProportion 最低保费
+ * @param {String} highestProportion 最高保费
  */
-export function listPremiumUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium) {
+export function listPremiumLossAssessRatioUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, networkName, lowestProportion, highestProportion) {
     let urlparam = `?pageNo=${pageNo}&pageSize=${pageSize}`;
     urlparam += startDate ? `&startDate=${startDate}` : '';
     urlparam += endDate ? `&endDate=${endDate}` : '';
@@ -23,28 +23,28 @@ export function listPremiumUsingGET(pageNo, pageSize, startDate, endDate, storeI
     urlparam += bcId ? `&bcId=${bcId}` : '';
     urlparam += teamId ? `&teamId=${teamId}` : '';
     urlparam += networkName ? `&networkName=${networkName}` : '';
-    urlparam += lowestSumpremium ? `&lowestSumpremium=${lowestSumpremium}` : '';
-    urlparam += highestSumpremium ? `&highestSumpremium=${highestSumpremium}` : '';
+    urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
+    urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
 
     return apibasics({
-        url: `${config.url.origin}/cdimms/server/premium/list${urlparam}`,
+        url: `${config.url.origin}/cdimms/server/premiumLossAssessRatio/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
     });
 }
 
 /**
- * 保费明细导出excel
+ * 产保比明细导出excel
  * @param {String} startDate 开始时间
  * @param {String} endDate 结束时间
  * @param {String} storeId 车商ID
  * @param {String} bcId 支公司
  * @param {String} teamId 团队
  * @param {String} networkName 车行
- * @param {String} lowestSumpremium 最低保费
- * @param {String} highestSumpremium 最高保费
+ * @param {String} lowestProportion 最低保费
+ * @param {String} highestProportion 最高保费
  */
-export function exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium) {
+export function exportPremiumLossAssessRatioUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestProportion, highestProportion) {
     let urlparam = '';
 
     urlparam += startDate ? `&startDate=${startDate}` : '';
@@ -53,15 +53,15 @@ export function exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId,
     urlparam += bcId ? `&bcId=${bcId}` : '';
     urlparam += teamId ? `&teamId=${teamId}` : '';
     urlparam += networkName ? `&networkName=${networkName}` : '';
-    urlparam += lowestSumpremium ? `&lowestSumpremium=${lowestSumpremium}` : '';
-    urlparam += highestSumpremium ? `&highestSumpremium=${highestSumpremium}` : '';
+    urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
+    urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
 
     if (urlparam.indexOf('&') !== -1) {
         urlparam = `?${urlparam.substr(1)}`;
     }
 
     return axios({
-        url: `${config.url.origin}/cdimms/server/premium/export${urlparam}`,
+        url: `${config.url.origin}/cdimms/server/premiumLossAssessRatio/export${urlparam}`,
         method: 'get',
         headers: {
             token: window.sessionStorage.cdimmstoken,

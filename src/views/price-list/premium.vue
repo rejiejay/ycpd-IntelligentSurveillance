@@ -211,17 +211,17 @@ export default {
 
             // 保费明细
             premiumlist: [
-                {
-                    netCode: 1, // 网店编码
-                    netName: '网点一', // 网点名称
-                    netType: '网点一', // 网点类型
-                    netRate: 5, // 网点星级
-                    subCompany: '支公司一', // 支公司
-                    team: '业务团队一', // 业务团队
-                    orderTime: '2019年1月10日', // 出单时间
-                    carNo: '粤A12345', // 车牌号码
-                    policyNo: '13123123231', // 保单号
-                }
+                // {
+                //     netCode: 1, // 网店编码
+                //     netName: '网点一', // 网点名称
+                //     netType: '网点一', // 网点类型
+                //     netRate: 5, // 网点星级
+                //     subCompany: '支公司一', // 支公司
+                //     team: '业务团队一', // 业务团队
+                //     orderTime: '2019年1月10日', // 出单时间
+                //     carNo: '粤A12345', // 车牌号码
+                //     policyNo: '13123123231', // 保单号
+                // }
             ],
 
             /**
@@ -261,7 +261,7 @@ export default {
             let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
             let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
 
-            window.location.href = exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium);
+            exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium);
         },
 
         /**
@@ -319,6 +319,7 @@ export default {
                 _this.pageTotal = data.total;
 
                 if (!data || !data.premiums || data.premiums instanceof Array === false || data.premiums.length <= 0) {
+                    _this.premiumlist = [];
                     return false;
                 }
 
