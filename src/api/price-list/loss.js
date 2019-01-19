@@ -68,8 +68,17 @@ export function exportLossAssessmentUsingGET(startDate, endDate, storeId, bcId, 
         },
         responseType: 'arraybuffer'
     }).then(response => {
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        window.location.href = window.URL.createObjectURL(blob);
+        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
+        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
         
+        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
+        let url = window.URL.createObjectURL(blob);
+        let link = document.createElement('a');
+        link.style.display = 'none';
+        link.href = url;
+        link.setAttribute('download', myFlieName);
+
+        document.body.appendChild(link);
+        link.click();
     }).catch(error =>  console.log(error));
 }
