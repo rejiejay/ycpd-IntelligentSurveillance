@@ -14,8 +14,8 @@
                 ></el-option>
             </el-select>
 
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllCompany();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportCompany">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
 
@@ -105,7 +105,8 @@
 
 <script>
 // 请求类
-import { queryAllCompanyUsingPOST } from "@/api/shops/sub-company";
+import { queryAllCompanyUsingPOST, exportCompanyUsingGET, removeCompanyUsingGET } from "@/api/shops/sub-company";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
     name: 'subsidiary-company-manage',
@@ -115,10 +116,10 @@ export default {
             
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
 
             // 支公司列表
@@ -147,6 +148,7 @@ export default {
 
 	mounted: function mounted() {
         this.queryAllCompany(); // 初始化 获取支公司信息列表
+        this.queryCompanyList(); // 支公司下拉选项
     },
 
 	methods: {
@@ -176,6 +178,7 @@ export default {
                 _this.subCompanyList = data.content.map(val => {
                     let newItem = {};
 
+                    newItem.id = val.id; // 支公唯一标识
                     newItem.subCompanyCode = val.bcCode; // 支公司代码
                     newItem.subCompanyName = val.bcName; // 支公司名称
                     newItem.leadershipCode = val.leaderCode; // 分管领导代码
@@ -193,9 +196,34 @@ export default {
         },
 
         /**
-         * 通过条件查询
+         * 公司信息列表导出excel
          */
-        searchByConditions: function searchByConditions() {
+        exportCompany: function exportCompany() {
+            const _this = this;
+
+            let companyId = this.subCompanySection;
+
+            exportCompanyUsingGET(companyId);
+        },
+
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
         },
 
         /**
@@ -209,12 +237,38 @@ export default {
          * 修改一个项
          */
         modifierHandle: function modifierHandle(item) {
+            this.jumpToRouter('/shops/subcompany/details', {id: item.id});
         },
 
         /**
          * 删除一个项
          */
         deleteHandle: function deleteHandle(item) {
+            const _this = this;
+
+            this.$confirm('此操作将永久删除该支公司, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+
+                removeCompanyUsingGET(item.id)
+                .then(val => {
+                    _this.$message({
+                        message: '删除成功',
+                        type: 'info'
+                    });
+                    _this.currentPage = 1;
+                    _this.queryAllCompany();
+
+                }, error => console.log(error));
+
+            }).catch(() => {
+                _this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
 
         /**
