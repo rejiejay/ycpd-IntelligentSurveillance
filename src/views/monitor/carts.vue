@@ -225,7 +225,7 @@
                     v-model="cartsStore" 
                     filterable 
                     :filter-method="selectCartsStoreSearch"
-                    placeholder="请选择车行"
+                    placeholder="请搜索车行"
                 >
                     <el-option
                         v-for="item in cartsStoreList"
@@ -570,10 +570,14 @@ export default {
             queryStoreSelectUsingPOST(storeName)
             .then(val => {
                 let data = val.data;
-                console.log(val);
 
                 if (data && data instanceof Array && data.length > 0) {
-                    // 这里后台返回的数据同样不正确
+                    _this.cartsStoreList = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.cartsStoreList = []; // 记得清空
                 }
 
             }, error => console.log(error));
@@ -606,6 +610,15 @@ export default {
             queryTeamByBcIdUsingGET(bcId)
             .then(val => {
                 let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamList = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamList = []; // 记得清空
+                }
 
             }, error => console.log(error))
         },
@@ -806,7 +819,6 @@ export default {
 
             listByIdUsingGET(id)
             .then(val => {
-                console.log(val)
                 let data = val.data;
 
                 _this.storeId = data.id; // 车商id

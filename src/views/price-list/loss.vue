@@ -45,8 +45,8 @@
 
         <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
 
-        <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
-        <el-button icon="el-icon-download" type="success">导出</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; lossAssessment();">查询</el-button>
+        <el-button icon="el-icon-download" type="success" @click="exportLossAssessment">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
 
@@ -107,6 +107,12 @@
 </template>
 
 <script>
+// 请求类
+import { lossAssessmentUsingGET, exportLossAssessmentUsingGET } from "@/api/price-list/loss";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+// 组件类
+import TimeConver from '@/utils/TimeConver';
 
 export default {
     name: 'loss',
@@ -161,42 +167,63 @@ export default {
 
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             teamSection: null, // 业务团队
             teamOptions: [
-                {
-                    value: '业务团队一',
-                    label: '业务团队一',
-                }
+                // {
+                //     value: '业务团队一',
+                //     label: '业务团队一',
+                // }
             ],
             regionSection: null, // 网点
             regionOptions: [
                 {
-                    value: '网点一',
-                    label: '网点一',
+                    value: '0',
+                    label: '4S店',
+                }, {
+                    value: '1',
+                    label: '修理厂',
+                }, {
+                    value: '2',
+                    label: '二网',
+                }, {
+                    value: '3',
+                    label: '二手车行',
+                }, {
+                    value: '4',
+                    label: '续保',
+                }, {
+                    value: '5',
+                    label: '非车险',
+                }, {
+                    value: '6',
+                    label: '网络销售',
+                }, {
+                    value: '7',
+                    label: '其他',
                 }
             ],
 
             minProportion: '', // 最低损保比
             maxProportion: '', // 最高损保比
 
-            // 产保比明细
+            // 保费明细
             losslist: [
-                {
-                    netCode: 1, // 网店编码
-                    netName: '网点一', // 网点名称
-                    netType: '网点一', // 网点类型
-                    netRate: 5, // 网点星级
-                    subCompany: '支公司一', // 支公司
-                    team: '业务团队一', // 业务团队
-                    reportNo: '123123213213', // 报案号
-                    lossTime: '2019年1月10日', // 定损时间
-                    lossPlace: '中国人保财险科技园定损中心', // 定损中心
-                }
+                // {
+                //     netCode: 1, // 网店编码
+                //     netName: '网点一', // 网点名称
+                //     netType: '网点一', // 网点类型
+                //     netRate: 5, // 网点星级
+                //     subCompany: '支公司一', // 支公司
+                //     team: '业务团队一', // 业务团队
+                //     reportNo: '123123213213', // 报案号
+                //     lossTime: '2019年1月10日', // 定损时间
+                //     lossPlace: '中国人保财险科技园定损中心', // 定损中心
+                // }
             ],
 
             /**
@@ -208,13 +235,125 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanySection: function subCompanySection(newsubCompanySection) {
+            this.queryTeamByBcId(newsubCompanySection);
+        },
+    },
+
+	mounted: function mounted() {
+        this.lossAssessment(); // 初始化 定损明细列表
+        this.queryCompanyList(); // 初始化 支公司下拉选项
+    },
 
 	methods: {
         /**
          * 通过条件查询
          */
-        searchByConditions: function searchByConditions() {
+        exportLossAssessment: function exportLossAssessment() {
+            const _this  = this;
+
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
+            let storeId = ''; // 这个是多余的
+            let bcId = this.subCompanySection ? this.subCompanySection : ''; 
+            let teamId = this.teamSection ? this.teamSection : ''; 
+            let networkName = this.regionSection ? this.regionSection : ''; 
+            let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
+            let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
+
+            exportLossAssessmentUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium);
+        },
+
+        /**
+         * 通过条件查询
+         */
+        lossAssessment: function lossAssessment() {
+            const _this  = this;
+
+            let pageNo = this.currentPage;
+            let pageSize = this.pageSize;
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
+            let storeId = ''; // 这个是多余的
+            let bcId = this.subCompanySection ? this.subCompanySection : ''; 
+            let teamId = this.teamSection ? this.teamSection : ''; 
+            let networkName = this.regionSection ? this.regionSection : ''; 
+            let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
+            let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
+
+            lossAssessmentUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium)
+            .then(val => {
+                let data = val.data;
+
+                _this.pageTotal = data.total;
+
+                if (!data || !data.lossAssessment || data.lossAssessment instanceof Array === false || data.lossAssessment.length <= 0) {
+                    _this.losslist = [];
+                    return false;
+                }
+
+                _this.losslist = data.lossAssessment.map(val => {
+                    let newItem = {};
+
+                    newItem.netCode = val.networkname; // 网点编码
+                    newItem.netName = val.netpointname; // 网点名称	
+                    newItem.netType = val.netpointtype; // 网点类型	
+                    newItem.netRate = val.netpointstart; // 网点星级
+                    newItem.subCompany = val.comcode; // 支公司
+                    newItem.team = val.teamcode; // 业务团队
+
+                    newItem.reportNo = val.registno; // 报案号
+                    newItem.lossTime = val.deflossdate; // 定损时间
+                    newItem.lossPlace = val.defsite; // 定损中心
+
+                    return newItem
+                });
+
+            }, error => console.log(error));
+        },
+
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error))
         },
 
         /**

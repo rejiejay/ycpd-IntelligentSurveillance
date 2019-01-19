@@ -45,7 +45,7 @@
 
         <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
 
-        <el-button icon="el-icon-search" type="primary" @click="listPremiumLossAssessRatio">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; listPremiumLossAssessRatio();">查询</el-button>
         <el-button icon="el-icon-download" type="success" @click="exportPremium">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
@@ -340,13 +340,16 @@ export default {
             .then(val => {
                 let data = val.data;
 
-            }, error => console.log(error))
-        },
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
 
-        /**
-         * 通过条件查询
-         */
-        searchByConditions: function searchByConditions() {
+            }, error => console.log(error))
         },
 
         /**
@@ -369,7 +372,8 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.listPremiumLossAssessRatio();
         },
 
         /**

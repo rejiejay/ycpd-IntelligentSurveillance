@@ -24,7 +24,7 @@
 
             <el-input v-model="search" type="text" :clearable="true" placeholder="关键字查询"></el-input>
 
-            <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
             <el-button icon="el-icon-download" type="success">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>

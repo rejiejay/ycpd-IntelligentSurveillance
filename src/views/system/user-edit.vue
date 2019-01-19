@@ -271,6 +271,15 @@ export default {
             .then(val => {
                 let data = val.data;
 
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
             }, error => console.log(error))
         },
 
