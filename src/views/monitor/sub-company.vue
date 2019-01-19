@@ -248,7 +248,7 @@ export default {
              * 分页相关
              */
             currentPage: 1, // 当前页码
-            pageSize: 20, // 一个页面多少数据
+            pageSize: 10, // 一个页面多少数据
             pageTotal: 1, // 一共多少条数据 
 
             subCompanyList: [

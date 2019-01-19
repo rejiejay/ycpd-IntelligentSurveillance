@@ -98,6 +98,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :total="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -228,7 +229,7 @@ export default {
              * 分页相关
              */
             currentPage: 1, // 当前页码
-            pageSize: 20, // 一个页面多少数据
+            pageSize: 10, // 一个页面多少数据
             pageTotal: 1, // 一共多少条数据 
         } 
     },
@@ -374,6 +375,14 @@ export default {
          */
         pageChangeHandle: function pageChangeHandle(item) {
             this.currentPage = item;
+            this.listPremiu();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
             this.listPremiu();
         },
 

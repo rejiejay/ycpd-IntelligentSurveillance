@@ -83,8 +83,10 @@
         <el-pagination
             :current-page="currentPage"
             :page-count="pageCount"
+            :page-size="pageSize"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="prev, pager, next, jumper"
+            layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
@@ -143,6 +145,7 @@ export default {
              */
             currentPage: 1, // 当前页码
             pageCount: 1, // 一共多少页
+            pageSize: 10, // 页码大小
         } 
     },
 
@@ -158,11 +161,12 @@ export default {
             const _this  = this;
 
             let currentPage = this.currentPage;
+            let pageCount = this.pageSize;
             let indicatorType = this.warningStandardSection;
             let objType = this.warningTargetSection;
             let alarmName = this.search;
 
-            queryAlarmRuleListUsingPOST(currentPage, indicatorType, objType, alarmName)
+            queryAlarmRuleListUsingPOST(currentPage, pageCount, indicatorType, objType, alarmName)
             .then(val => {
                 if (val.code === 1001) {
                     return alert(val.msg);
@@ -256,6 +260,14 @@ export default {
          */
         pageChangeHandle: function pageChangeHandle(item) {
             this.currentPage = item;
+            this.queryAlarmRuleList();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
             this.queryAlarmRuleList();
         },
 

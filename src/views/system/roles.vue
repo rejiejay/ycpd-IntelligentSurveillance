@@ -66,8 +66,10 @@
         <el-pagination
             :current-page="currentPage"
             :page-count="pageCount"
+            :page-size="pageSize"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="prev, pager, next, jumper"
+            layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
@@ -107,6 +109,7 @@ export default {
              */
             currentPage: 1, // 当前页码
             pageCount: 1, // 一共多少页
+            pageSize: 10, // 页码大小
         } 
     },
 
@@ -145,10 +148,12 @@ export default {
         queryRoleList: function queryRoleList() {
             const _this  = this;
 
+            let currentPage = this.currentPage;
+            let pageCount = this.pageSize;
             let roleCode = this.rolesCodeSection ? this.rolesCodeSection : null;
             let rolesName = this.rolesName ? this.rolesName : null;
 
-            queryRoleListUsingPOST(this.currentPage, roleCode, rolesName)
+            queryRoleListUsingPOST(currentPage, pageCount, roleCode, rolesName)
             .then(val => {
                 let data = val.data;
 
@@ -204,6 +209,14 @@ export default {
          */
         pageChangeHandle: function pageChangeHandle(item) {
             this.currentPage = item;
+            this.queryRoleList();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
             this.queryRoleList();
         },
 

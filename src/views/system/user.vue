@@ -110,8 +110,10 @@
         <el-pagination
             :current-page="currentPage"
             :page-count="pageCount"
+            :page-size="pageSize"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="prev, pager, next, jumper"
+            layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
@@ -194,6 +196,7 @@ export default {
              */
             currentPage: 1, // 当前页码
             pageCount: 1, // 一共多少页
+            pageSize: 10, // 页码大小
         } 
     },
 
@@ -210,6 +213,8 @@ export default {
         queryUserList: function queryUserList() {
             const _this  = this;
 
+            let currentPage = this.currentPage;
+            let pageCount = this.pageSize;
             let userType = this.userTypeSection ? this.userTypeSection : ''; // 用户类型
             let bcName = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
             let staffName = this.userName ? this.userName : ''; // 用户姓名
@@ -217,7 +222,7 @@ export default {
             let roleName = this.rolesSection ? this.rolesSection : ''; // 角色
             let state = this.userStatusSection ? this.userStatusSection : ''; // 状态
 
-            queryUserListUsingPOST(this.currentPage, userType, bcName, staffName, staffCode, roleName, state)
+            queryUserListUsingPOST(currentPage, pageCount, userType, bcName, staffName, staffCode, roleName, state)
             .then(val => {
                 if (val.code === 1001) {
                     return alert('查询数据为空');
@@ -331,6 +336,14 @@ export default {
          */
         pageChangeHandle: function pageChangeHandle(item) {
             this.currentPage = item;
+            this.queryUserList();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
             this.queryUserList();
         },
 

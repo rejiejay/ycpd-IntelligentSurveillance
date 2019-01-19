@@ -244,6 +244,8 @@ export default {
          * @param {object} query 携带的参数 非必填
          */
         initPageData: function initPageData() {
+            const _this = this;
+
             // 如果 页面状态 存在 id 表示编辑状态
             let ruleId = this.$route.query.id
             if (ruleId) {
@@ -254,17 +256,29 @@ export default {
                 .then(val => {
                     console.log('查询单个告警规则信息', val);
 
-                    this.ruleName = val.alarmName ? val.alarmName : ''; //  预警名称
-                    this.ruleStandardSection = val.indicatorType ? `${val.indicatorType}` : ''; //  预警指标
-                    this.ruleTargetSection = val.objType ? `${val.objType}` : ''; //  预警对象
-                    this.ruleRangeSection = val.areaType ? `${val.areaType}` : ''; //  预警范围
-                    this.ruleFrequencySection = val.frequency ? `${val.frequency}` : ''; //  通知时间
-                    this.ruleValiditySection = val.activeType ? `${val.activeType}` : ''; //  通知有效期
-                    if (val.startDate && val.endDate) {
-                        this.startendTime[0] = new Date(TimeConver.YYYYmmDDToTimestamp(val.startDate)); //  通知有效期
-                        this.startendTime[1] = new Date(TimeConver.YYYYmmDDToTimestamp(val.endDate)); //  通知有效期
+                    if (val && val.data && val.data.alarmRule) {
+                        let alarmRule = val.data.alarmRule;
+
+                        _this.ruleName = alarmRule.alarmName ? alarmRule.alarmName : ''; //  预警名称
+                        _this.ruleStandardSection = alarmRule.indicatorType ? `${alarmRule.indicatorType}` : '0'; //  预警指标
+                        _this.ruleTargetSection = alarmRule.objType ? `${alarmRule.objType}` : '0'; //  预警对象
+                        _this.ruleRangeSection = alarmRule.areaType ? `${alarmRule.areaType}` : '0'; //  预警范围
+                        _this.ruleFrequencySection = alarmRule.frequency ? `${alarmRule.frequency}` : '0'; //  通知时间
+                        _this.ruleValiditySection = alarmRule.activeType ? `${alarmRule.activeType}` : '0'; //  通知有效期
+                        if (alarmRule.startDate && alarmRule.endDate) {
+                            _this.startendTime[0] = new Date(TimeConver.YYYYmmDDToTimestamp(alarmRule.startDate)); //  通知有效期
+                            _this.startendTime[1] = new Date(TimeConver.YYYYmmDDToTimestamp(alarmRule.endDate)); //  通知有效期
+                        }
+
                     }
-                    this.ruleInfoPeopleSection = val.userIds ? val.userIds : []; // 预警通知人 [id, id, id, id]
+
+                    // 预警通知人 [id, id, id, id]
+                    if (val && val.data && val.data.userNames) { 
+                        let userNames = val.data.userNames;
+
+                        _this.ruleInfoPeopleSection = userNames ? userNames.map(item => item[0]) : [];
+                    }
+
 
                 }, error => console.log(error));
             }
