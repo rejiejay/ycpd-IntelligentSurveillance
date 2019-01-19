@@ -95,6 +95,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :total="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -103,6 +104,8 @@
 </template>
 
 <script>
+// 请求类
+import { queryAllCompanyUsingPOST } from "@/api/shops/sub-company";
 
 export default {
     name: 'subsidiary-company-manage',
@@ -120,17 +123,17 @@ export default {
 
             // 支公司列表
             subCompanyList: [
-                {
-                    subCompanyCode: '', // 支公司代码
-                    subCompanyName: '', // 支公司名称
-                    leadershipCode: '', // 分管领导代码
-                    leadershipName: '', // 分管领导姓名
-                    leadershipPhone: '', // 分管领导电话
-                    adminCode: '', // 管理员代码
-                    adminName: '', // 管理员姓名
-                    adminPhone: '', // 管理员电话
-                    remark: '', // 备注
-                }
+                // {
+                //     subCompanyCode: '', // 支公司代码
+                //     subCompanyName: '', // 支公司名称
+                //     leadershipCode: '', // 分管领导代码
+                //     leadershipName: '', // 分管领导姓名
+                //     leadershipPhone: '', // 分管领导电话
+                //     adminCode: '', // 管理员代码
+                //     adminName: '', // 管理员姓名
+                //     adminPhone: '', // 管理员电话
+                //     remark: '', // 备注
+                // }
             ],
 
             /**
@@ -142,9 +145,53 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        this.queryAllCompany(); // 初始化 获取支公司信息列表
+    },
 
 	methods: {
+        /**
+         * 获取支公司信息列表
+         */
+        queryAllCompany: function queryAllCompany() {
+            const _this = this;
+
+            let pageNo = this.pageNo;
+            let pageSzie = this.pageSzie;
+            let companyId = this.subCompanySection;
+
+            queryAllCompanyUsingPOST(pageNo, pageSzie, companyId) 
+            .then(val => {
+                console.log(val)
+
+                let data = val.data;
+
+                _this.pageTotal = data.totalPages;
+
+                if (!data || !data.content || data.content instanceof Array === false || data.content.length <= 0) {
+                    _this.subCompanyList = [];
+                    return false;
+                }
+
+                _this.subCompanyList = data.content.map(val => {
+                    let newItem = {};
+
+                    newItem.subCompanyCode = val.bcCode; // 支公司代码
+                    newItem.subCompanyName = val.bcName; // 支公司名称
+                    newItem.leadershipCode = val.leaderCode; // 分管领导代码
+                    newItem.leadershipName = val.leaderName; // 分管领导姓名
+                    newItem.leadershipPhone = val.leaderPhone; // 分管领导电话
+                    newItem.adminCode = val.adminCode; // 管理员代码
+                    newItem.adminName = val.adminName; // 管理员姓名
+                    newItem.adminPhone = val.adminPhone; // 管理员电话
+                    newItem.remark = val.remark; // 备注
+
+                    return newItem
+                });
+
+            }, error => console.log(error));
+        },
+
         /**
          * 通过条件查询
          */
@@ -174,7 +221,16 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAllCompany();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.queryAllCompany();
         },
 
         /**
