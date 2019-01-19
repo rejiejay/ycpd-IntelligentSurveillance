@@ -1,5 +1,6 @@
 import config from '@/config';
 import notFilter from '@/components/apibasics-notFilter';
+import apibasics from '@/components/apibasics';
 import axios from 'axios';
 
 /**
@@ -58,3 +59,14 @@ export function exportAlarmRuleListUsingPOST(indicatorType, objType, alarmName) 
     }).catch(error =>  console.log(error));
 }
 
+/**
+ * 删除告警规则
+ * @param {string} id 预警唯一标识
+ */
+export function disableAlarmRuleUsingGET(id) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/alarmRule/disableAlarmRule?id=${id}`,
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+    });
+}

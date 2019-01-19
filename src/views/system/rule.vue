@@ -92,7 +92,7 @@
 
 <script>
 // 请求类
-import { queryAlarmRuleListUsingPOST, exportAlarmRuleListUsingPOST } from "@/api/system/rule";
+import { queryAlarmRuleListUsingPOST, exportAlarmRuleListUsingPOST, disableAlarmRuleUsingGET } from "@/api/system/rule";
 
 export default {
     name: 'system-rule',
@@ -244,12 +244,6 @@ export default {
         },
 
         /**
-         * 通过条件查询
-         */
-        searchByConditions: function searchByConditions() {
-        },
-
-        /**
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
@@ -269,15 +263,38 @@ export default {
          * 修改 一个项目
          */
         modifierHandle: function modifierHandle(item) {
-            console.log(item);
-            this.jumpToRouter('/system/rule/details', {id: ''});
+            this.jumpToRouter('/system/rule/details', {id: item.id});
         },
 
         /**
          * 删除 一个项目
          */
         deleteHandle: function deleteHandle(item) {
-            console.log(item);
+            const _this = this;
+
+            this.$confirm('此操作将永久删除该预警, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+
+                disableAlarmRuleUsingGET(item.id)
+                .then(val => {
+                    _this.$message({
+                        message: '删除成功',
+                        type: 'info'
+                    });
+                    _this.currentPage = 1;
+                    _this.queryAlarmRuleList();
+
+                }, error => console.log(error));
+
+            }).catch(() => {
+                _this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
 
         /**
