@@ -24,8 +24,8 @@
 
             <el-input v-model="search" type="text" :clearable="true" placeholder="关键字查询"></el-input>
 
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAlarmRuleList();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportAlarmRuleList">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
     
@@ -92,7 +92,7 @@
 
 <script>
 // 请求类
-import { queryAlarmRuleListUsingPOST } from "@/api/system/rule";
+import { queryAlarmRuleListUsingPOST, exportAlarmRuleListUsingPOST } from "@/api/system/rule";
 
 export default {
     name: 'system-rule',
@@ -102,31 +102,40 @@ export default {
             warningStandardSection: '', // 预警指标
             warningStandardOptions: [
                 {
-                    value: '预警指标一',
-                    label: '预警指标一',
-                }
+                    value: '0',
+                    label: '保费',
+                }, {
+                    value: '1',
+                    label: '定损',
+                }, {
+                    value: '3',
+                    label: '产保比',
+                },
             ],
 
             warningTargetSection: '', // 预警对象
             warningTargetOptions: [
                 {
-                    value: '预警对象一',
-                    label: '预警对象一',
-                }
+                    value: '0',
+                    label: '支公司',
+                }, {
+                    value: '1',
+                    label: '车行',
+                },
             ],
 
             search: '', // 关键字查询
 
             // 预警规则列表
             ruleList: [
-                {
-                    name: '', // 预警名称
-                    standard: '', // 预警指标
-                    target: '', // 预警对象
-                    range: '', // 预警范围
-                    infoPeople: '', // 通知人
-                    infoTime: '', // 通知时间
-                }
+                // {
+                //     name: '', // 预警名称
+                //     standard: '', // 预警指标
+                //     target: '', // 预警对象
+                //     range: '', // 预警范围
+                //     infoPeople: '', // 通知人
+                //     infoTime: '', // 通知时间
+                // }
             ],
 
             /**
@@ -148,12 +157,90 @@ export default {
         queryAlarmRuleList: function queryAlarmRuleList() {
             const _this  = this;
 
-            queryAlarmRuleListUsingPOST(this.currentPage)
+            let currentPage = this.currentPage;
+            let indicatorType = this.warningStandardSection;
+            let objType = this.warningTargetSection;
+            let alarmName = this.search;
+
+            queryAlarmRuleListUsingPOST(currentPage, indicatorType, objType, alarmName)
             .then(val => {
+                if (val.code === 1001) {
+                    return alert(val.msg);
+                }
+                if (val.code === 1002) {
+                    return alert('当前页码不能为空');
+                }
+                if (val.code === 1003) {
+                    return alert('查询数据为空');
+                }
+                if (val.code === 1004) {
+                    return alert('查询告警规则列表异常');
+                }
+
                 let data = val.data;
-                console.log(data);
+
+                _this.pageCount = data.pageSize;
+
+                if (!data || !data.alarmRules || data.alarmRules instanceof Array === false || data.alarmRules.length <= 0) {
+                    _this.ruleList = []; // 记得清空
+                    return false;
+                }
+
+                _this.ruleList = data.alarmRules.map(val => {
+                    let newItem = {};
+
+                    newItem.id = val.id; // 预警唯一标识
+                    newItem.name = val.alarmName; // 预警名称
+                    /**
+                     * 预警指标
+                     */
+                    if (val.indicatorType === 0) {
+                        newItem.standard = '保费';
+
+                    } else if (val.indicatorType === 1) {
+                        newItem.standard = '定损';
+
+                    } else if (val.indicatorType === 2) {
+                        newItem.standard = '产保比';
+
+                    }
+                    newItem.target = val.objType === 0 ? '支公司' : '车行' ; // 预警对象
+                    newItem.range = val.areaType === 0 ? '全部' : '自定义' ; // 预警范围
+                    newItem.infoPeople = val.userNames; // 通知人
+                    /**
+                     * 通知时间
+                     */
+                    if (val.frequency === 0) {
+                        newItem.infoTime = '每天';
+
+                    } else if (val.frequency === 1) {
+                        newItem.infoTime = '每三天';
+
+                    } else if (val.frequency === 2) {
+                        newItem.infoTime = '每周';
+
+                    } else if (val.frequency === 3) {
+                        newItem.infoTime = '每月';
+
+                    }
+
+                    return newItem
+                });
 
             }, error => console.log(error));
+        },
+
+        /**
+         * 导出告警规则excel
+         */
+        exportAlarmRuleList: function exportAlarmRuleList() {
+            const _this  = this;
+
+            let indicatorType = this.warningStandardSection;
+            let objType = this.warningTargetSection;
+            let alarmName = this.search;
+
+            exportAlarmRuleListUsingPOST(indicatorType, objType, alarmName)
         },
 
         /**
@@ -174,7 +261,8 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAlarmRuleList();
         },
 
         /**

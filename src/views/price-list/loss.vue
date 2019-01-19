@@ -376,7 +376,8 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.lossAssessment();
         },
 
         /**

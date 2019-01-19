@@ -245,7 +245,7 @@
                 </el-select>
             </div>
 
-            <div class="modal-main-switch">
+            <div class="modal-main-switch" v-if="false">
                 <el-switch
                     v-model="isFilterParticularCase"
                     active-color="#13ce66"
@@ -313,7 +313,7 @@
 
             <div class="modal-main-operate flex-start">
                 <div class="main-operate-item flex-rest flex-center">
-                    <el-button type="success" icon="el-icon-search">查询</el-button>
+                    <el-button type="success" icon="el-icon-search" @click="initListStoreToMap(); isFilterModalShow = false;">查询</el-button>
                 </div>
                 <div class="main-operate-item flex-rest flex-center">
                     <el-button type="info" icon="el-icon-close" @click="isFilterModalShow = false">关闭</el-button>
@@ -607,6 +607,8 @@ export default {
          * 根据支公司唯一id获取团队列表
          */
         queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
             queryTeamByBcIdUsingGET(bcId)
             .then(val => {
                 let data = val.data;
@@ -735,17 +737,17 @@ export default {
 
             let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
             let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
-            let bcId = ''; 
-            let teamId = ''; 
-            let networkName = ''; 
-            let isJoin = ''; 
-            let networkType = ''; 
-            let lowestSumpremium = ''; 
-            let highestSumpremium = ''; 
-            let lowestMaterialfee = ''; 
-            let highestMaterialfee = ''; 
-            let lowestProportion = ''; 
-            let highestProportion = ''; 
+            let bcId = this.subcompany ? this.subcompany : ''; 
+            let teamId = this.team ? this.team : ''; 
+            let networkName = this.cartsStore ? this.cartsStore : ''; // 车行
+            let isJoin = this.coperation ? this.coperation : ''; 
+            let networkType = this.regionType ? this.regionType : ''; // 网点类型
+            let lowestSumpremium = this.minPremium ? this.minPremium : ''; 
+            let highestSumpremium = this.maxPremium ? this.maxPremium : ''; 
+            let lowestMaterialfee = this.minLoss ? this.minLoss : ''; 
+            let highestMaterialfee = this.maxLoss ? this.maxLoss : ''; 
+            let lowestProportion = this.minProportion ? this.minProportion : ''; 
+            let highestProportion = this.maxProportion ? this.maxProportion : ''; 
 
             listStoreToMapUsingGET(startDate, endDate, bcId, teamId, networkName, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion)
             .then(val => {
