@@ -105,3 +105,55 @@ export function getTeamTemplateUsingGET() {
         link.click();
     }).catch(error =>  console.log(error));
 }
+
+/**
+ * 新增团队记录
+ * @param {string} teamCode 团队代码
+ * @param {string} teamName 团队名称
+ * @param {string} teamLeader 团队经理
+ * @param {string} phone 分管领导电话
+ * @param {string} subCompany 支公司
+ * @param {string} remark 备注
+ */
+export function addTeamUsingPOST(teamCode, teamName, manager, phone, bcId, remark) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/team/addTeam`,
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        data: {
+            teamCode: teamCode,
+            teamName: teamName,
+            manager: manager,
+            phone: phone,
+            bcId: bcId,
+            remark: remark,
+        }
+    });
+}
+
+/**
+ * 修改团队记录
+ * @param {string} id 团队唯一标识
+ * @param {string} teamCode 团队代码
+ * @param {string} teamName 团队名称
+ * @param {string} teamLeader 团队经理
+ * @param {string} phone 分管领导电话
+ * @param {string} subCompany 支公司
+ * @param {string} remark 备注
+ */
+export function modifierTeamUsingPOST(id, teamCode, teamName, manager, phone, bcId, remark) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/team/modifierTeam`,
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        data: {
+            id: id,
+            teamCode: teamCode,
+            teamName: teamName,
+            manager: manager,
+            phone: phone,
+            bcId: bcId,
+            remark: remark,
+        }
+    });
+}

@@ -64,39 +64,171 @@
 
     <div class="team-details-operate flex-center">
         <div class="details-operate-container flex-start">
-            <el-button type="info" plain>取消</el-button>
+            <el-button type="info" plain @click="$router.back(-1)">取消</el-button>
             <div style="width: 45px;"></div>
-            <el-button type="primary">保存</el-button>
+            <el-button type="primary" @click="submit">保存</el-button>
         </div>
     </div>
 </div>
 </template>
 
 <script>
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+import { addTeamUsingPOST, modifierTeamUsingPOST } from "@/api/shops/team";
 
 export default {
     name: 'team-manage-edit',
 
 	data: function data() { 
         return { 
+            /**
+             * 页面状态
+             * @param {string} add 新增
+             * @param {string} edit 编辑
+             */
+            pageType: 'add',
+
             teamCode: '', // 团队代码
             teamName: '', // 团队名称
             teamLeader: '', // 团队经理
             phone: '', // 电话
             subCompany: '', // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             remark: '', // 备注
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        this.initPageData();
+        this.queryCompanyList(); // 支公司下拉选项
+    },
 
 	methods: {
+        /**
+         * 初始化页面数据
+         */
+        initPageData: function initPageData() {
+            const _this = this;
+
+            // 如果 页面状态 存在 id 表示编辑状态
+            let id = this.$route.query.id;
+            if (id) {
+                this.pageType = 'edit';
+                console.log(this.$route.query)
+                this.id = this.$route.query.id; // 团队 唯一标识
+                this.teamCode = this.$route.query.teamCode; // 团队代码
+                this.teamName = this.$route.query.teamName; // 团队名称
+                this.teamLeader = this.$route.query.manager; // 团队经理
+                this.phone = this.$route.query.phone; // 分管领导电话
+                this.subCompany = this.$route.query.bcId; // 支公司名称
+                this.remark = this.$route.query.remark; // 备注
+            }
+        },
+
+        /**
+         * 新增团队
+         */
+        submit: function submit() {
+            const _this = this;
+
+            if (!this.teamCode) {
+                return this.$notify({title: '提示', message: '团队代码不能为空', duration: 0 });
+            }
+            if (!this.teamName) {
+                return this.$notify({title: '提示', message: '团队名称不能为空', duration: 0 });
+            }
+            if (!this.teamLeader) {
+                return this.$notify({title: '提示', message: '团队经理不能为空', duration: 0 });
+            }
+            if (!this.phone) {
+                return this.$notify({title: '提示', message: '分管领导电话不能为空', duration: 0 });
+            }
+            if (!this.subCompany) {
+                return this.$notify({title: '提示', message: '支公司不能为空', duration: 0 });
+            }
+
+            let id = this.id; //   团队 唯一标识
+            let teamCode = this.teamCode; //  团队代码
+            let teamName = this.teamName; //  团队名称
+            let manager = this.teamLeader; //  团队经理
+            let phone = this.phone; //  分管领导电话
+            let bcId = this.subCompany; //  支公司
+            let remark = this.remark ? this.remark : ''; //  备注
+
+            let addTeam = () => {
+
+                addTeamUsingPOST( teamCode, teamName, manager, phone, bcId, remark )
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$message({
+                            showClose: true,
+                            message: '添加成功',
+                            type: 'success'
+                        });
+                        _this.$router.back(-1);
+                        
+                    } else if (val.code === 1001) {
+                        return _this.$alert('添加团队规则异常', '添加失败');
+                    } else {
+                        return _this.$alert(val.msg, '添加失败');
+                    }
+
+                }, error => console.log(error));
+            }
+
+            let modifyTeam = () => {
+                modifierTeamUsingPOST( id, teamCode, teamName, manager, phone, bcId, remark )
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$message({
+                            showClose: true,
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        _this.$router.back(-1);
+                        
+                    } else if (val.code === 1001) {
+                        return _this.$alert('修改团队异常', '修改失败');
+                    } else {
+                        return _this.$alert(val.msg, '修改失败');
+                    }
+
+                }, error => console.log(error));
+            }
+
+            if (this.pageType === 'add') {
+                addTeam()
+            } else {
+                modifyTeam();
+            }
+
+        },
+
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
         /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填
