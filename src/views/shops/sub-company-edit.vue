@@ -85,7 +85,7 @@
 
     <div class="company-details-operate flex-center">
         <div class="details-operate-container flex-start">
-            <el-button type="info" plain>取消</el-button>
+            <el-button type="info" plain @click="$router.back(-1)">取消</el-button>
             <div style="width: 45px;"></div>
             <el-button type="primary" @click="submit">保存</el-button>
         </div>
@@ -95,7 +95,7 @@
 
 <script>
 // 请求类
-import { addCompanyUsingPOST } from "@/api/shops/sub-company";
+import { addCompanyUsingPOST, modifierCompanyUsingPOST } from "@/api/shops/sub-company";
 
 export default {
     name: 'subsidiary-company-edit',
@@ -109,6 +109,7 @@ export default {
              */
             pageType: 'add',
 
+            id: '', // 支公唯一标识
             subCompanyCode: '', // 支公司代码
             subCompanyName: '', // 支公司名称
             leadershipCode: '', // 分管领导代码
@@ -136,6 +137,17 @@ export default {
             let id = this.$route.query.id;
             if (id) {
                 this.pageType = 'edit';
+                console.log(this.$route.query)
+                this.id = this.$route.query.id; // 支公唯一标识
+                this.subCompanyCode = this.$route.query.bcCode; // 支公司代码
+                this.subCompanyName = this.$route.query.bcName; // 支公司名称
+                this.leadershipCode = this.$route.query.leaderCode; // 分管领导代码
+                this.leadershipName = this.$route.query.leaderName; // 分管领导姓名
+                this.leadershipPhone = this.$route.query.leaderPhone; // 分管领导电话
+                this.adminCode = this.$route.query.adminCode; // 管理员代码
+                this.adminName = this.$route.query.adminName; // 管理员姓名
+                this.adminPhone = this.$route.query.adminPhone; // 管理员电话
+                this.remark = this.$route.query.remark; // 备注
             }
         },
 
@@ -203,23 +215,23 @@ export default {
             }
 
             let modifyCompany = () => {
-                // modifyAlarmRuleUsingPOST(id, alarmName, indicatorType, objType, areaType, frequency, activeType, startDate, endDate, userIds)
-                // .then(val => {
-                //     if (val.code === 1000) {
-                //         _this.$message({
-                //             showClose: true,
-                //             message: '修改成功',
-                //             type: 'success'
-                //         });
-                //         _this.$router.back(-1);
+                modifierCompanyUsingPOST(id, bcCode, bcName, leaderCode, leaderName, leaderPhone, adminCode, adminName, adminPhone, remark)
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$message({
+                            showClose: true,
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        _this.$router.back(-1);
                         
-                //     } else if (val.code === 1001) {
-                //         return _this.$alert('修改告警规则异常', '修改失败');
-                //     } else {
-                //         return _this.$alert(val.msg, '修改失败');
-                //     }
+                    } else if (val.code === 1001) {
+                        return _this.$alert('修改支公司异常', '修改失败');
+                    } else {
+                        return _this.$alert(val.msg, '修改失败');
+                    }
 
-                // }, error => console.log(error));
+                }, error => console.log(error));
             }
 
             if (this.pageType === 'add') {

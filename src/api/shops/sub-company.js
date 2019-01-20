@@ -64,7 +64,7 @@ export function removeCompanyUsingGET(companyId) {
 }
 
 /**
- * 获取支公司信息列表
+ * 新增支公司信息
  * @param {number} bcCode 预警名称
  * @param {number} bcName 支公司名称
  * @param {number} leaderCode 分管领导代码
@@ -81,6 +81,38 @@ export function addCompanyUsingPOST(bcCode, bcName, leaderCode, leaderName, lead
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
+            bcCode: bcCode,
+            bcName: bcName,
+            leaderCode: leaderCode,
+            leaderName: leaderName,
+            leaderPhone: leaderPhone,
+            adminCode: adminCode,
+            adminName: adminName,
+            adminPhone: adminPhone,
+            remark: remark ? remark : '',
+        }
+    });
+}
+
+/**
+ * 编辑支公司信息
+ * @param {number} bcCode 预警名称
+ * @param {number} bcName 支公司名称
+ * @param {number} leaderCode 分管领导代码
+ * @param {number} leaderName 分管领导姓名
+ * @param {number} leaderPhone 分管领导电话
+ * @param {number} adminCode 管理员代码
+ * @param {number} adminName 管理员姓名
+ * @param {number} adminPhone 管理员电话
+ * @param {number} remark 管理员电话
+ */
+export function modifierCompanyUsingPOST(id, bcCode, bcName, leaderCode, leaderName, leaderPhone, adminCode, adminName, adminPhone, remark ) {
+    return notFilter({
+        url: `${config.url.origin}/cdimms/server/company/modifierCompany`,
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        data: {
+            id: id,
             bcCode: bcCode,
             bcName: bcName,
             leaderCode: leaderCode,

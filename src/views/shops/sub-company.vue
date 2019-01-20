@@ -178,6 +178,7 @@ export default {
                 _this.subCompanyList = data.content.map(val => {
                     let newItem = {};
 
+                    newItem.original = val; // 后端返的原始数据
                     newItem.id = val.id; // 支公唯一标识
                     newItem.subCompanyCode = val.bcCode; // 支公司代码
                     newItem.subCompanyName = val.bcName; // 支公司名称
@@ -237,7 +238,7 @@ export default {
          * 修改一个项
          */
         modifierHandle: function modifierHandle(item) {
-            this.jumpToRouter('/shops/subcompany/details', {id: item.id});
+            this.jumpToRouter('/shops/subcompany/details', item.original);
         },
 
         /**
