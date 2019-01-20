@@ -5,18 +5,23 @@
     <div class="team-manage-operate flex-start-bottom">
         <div class="manage-operate-left flex-rest">
 
-            <el-select v-model="subCompanySection" placeholder="选择支公司代码">
+            <el-select 
+                v-model="shopNetSection" 
+                filterable 
+                :filter-method="selectCartsStoreSearch"
+                placeholder="请搜索车行网点"
+            >
                 <el-option
-                    v-for="item in subCompanyOptions"
+                    v-for="item in shopNetOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
                 ></el-option>
             </el-select>
 
-            <el-select v-model="shopNetSection" placeholder="选择网点">
+            <el-select v-model="subCompanySection" placeholder="选择支公司代码">
                 <el-option
-                    v-for="item in shopNetOptions"
+                    v-for="item in subCompanyOptions"
                     :key="item.value"
                     :label="item.label"
                     :value="item.value"
@@ -32,13 +37,13 @@
                 ></el-option>
             </el-select>
 
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllTeam();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportTeam">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
 
         <div class="manage-operate-right">
-            <el-button icon="el-icon-download" type="text">下载模板</el-button>
+            <el-button icon="el-icon-download" type="text" @click="getTeamTemplate">下载模板</el-button>
             <el-button icon="el-icon-tickets" type="primary" plain>上传清单</el-button>
             <el-button icon="el-icon-plus" type="primary" @click="jumpToRouter('/shops/team/details')">新增</el-button>
         </div>
@@ -94,6 +99,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :total="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -102,6 +108,10 @@
 </template>
 
 <script>
+import { queryAllTeamUsingPOST, removeTeamUsingPOST, exportTeamUsingGET, getTeamTemplateUsingGET } from "@/api/shops/team";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+import { queryStoreSelectUsingPOST } from "@/api/store";
 
 export default {
     name: 'team-manage',
@@ -110,26 +120,26 @@ export default {
         return {
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             
             shopNetSection: null, // 网点
             shopNetOptions: [
-                {
-                    value: '网点一',
-                    label: '网点一',
-                }
+                // {
+                //     value: '网点一',
+                //     label: '网点一',
+                // }
             ],
             
             teamSection: null, // 团队
             teamOptions: [
-                {
-                    value: '团队一',
-                    label: '团队一',
-                }
+                // {
+                //     value: '团队一',
+                //     label: '团队一',
+                // }
             ],
 
             // 团队列表
@@ -153,13 +163,142 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanySection: function subCompanySection(newsubcompany) {
+            this.queryTeamByBcId(newsubcompany);
+        },
+    },
+
+	mounted: function mounted() {
+        this.queryAllTeam(); // 初始化 获取团队列表
+        this.queryCompanyList(); // 支公司下拉选项
+        this.selectCartsStoreSearch(''); // 车行下拉
+    },
 
 	methods: {
         /**
-         * 通过条件查询
+         * 获取团队列表
          */
-        searchByConditions: function searchByConditions() {
+        queryAllTeam: function queryAllTeam() {
+            const _this = this;
+
+            let currentPage = this.currentPage;
+            let pageSize = this.pageSize;
+            let companyId = this.subCompanySection ? this.subCompanySection : '';
+            let storeId = this.shopNetSection ? this.shopNetSection : '';
+            let teamId = this.teamSection ? this.teamSection : '';
+
+            queryAllTeamUsingPOST(currentPage, pageSize, companyId, storeId, teamId)
+            .then(val => {
+                console.log(val)
+
+                let data = val.data;
+
+                _this.pageTotal = data.totalPages;
+
+                if (!data || !data.content || data.content instanceof Array === false || data.content.length <= 0) {
+                    _this.teamList = [];
+                    return false;
+                }
+
+                _this.teamList = data.content.map(val => {
+                    let newItem = {};
+
+                    newItem.original = val; // 后端返的原始数据
+                    newItem.id = val.id; // 团队 唯一标识
+                    newItem.teamCode = val.teamCode; // 团队代码
+                    newItem.teamName = val.teamName; // 团队名称
+                    newItem.teamLeader = val.manager; // 团队经理
+                    newItem.phone = val.phone; // 分管领导电话
+                    newItem.subCompany = val.bcName; // 支公司名称
+                    newItem.remark = val.remark; // 备注
+                    
+                    return newItem
+                });
+
+            }, error => console.log(error));
+        },
+        
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 下载团队模板
+         */
+        getTeamTemplate: () => getTeamTemplateUsingGET(),
+
+        /**
+         * 选择车行搜索 车行下拉列表
+         */
+        selectCartsStoreSearch: function selectCartsStoreSearch(storeName) {
+            const _this  = this;
+            queryStoreSelectUsingPOST(storeName)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.shopNetOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.shopNetOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error));
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 数据导出
+         */
+        exportTeam: function exportTeam() {
+            let companyId = this.subCompanySection ? this.subCompanySection : '';
+            let storeId = this.shopNetSection ? this.shopNetSection : '';
+            let teamId = this.teamSection ? this.teamSection : '';
+            
+            exportTeamUsingGET(companyId, storeId, teamId);
         },
 
         /**
@@ -175,19 +314,54 @@ export default {
          * 修改一个项
          */
         modifierHandle: function modifierHandle(item) {
+            this.jumpToRouter('/shops/team/details', item.original);
         },
 
         /**
          * 删除一个项
          */
         deleteHandle: function deleteHandle(item) {
+            const _this = this;
+
+            this.$confirm('此操作将永久删除该支公司, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+
+                removeTeamUsingPOST(item.id)
+                .then(val => {
+                    _this.$message({
+                        message: '删除成功',
+                        type: 'info'
+                    });
+                    _this.currentPage = 1;
+                    _this.queryAllTeam();
+
+                }, error => console.log(error));
+
+            }).catch(() => {
+                _this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
 
         /**
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAllTeam();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.queryAllTeam();
         },
 
         /**
