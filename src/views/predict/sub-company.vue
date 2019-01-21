@@ -127,6 +127,7 @@
 <script>
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
+import TimeConver from '@/utils/TimeConver';
 // 请求类
 import { queryAllCompanyPredictionUsingPOST, exportCompanyPredictionUsingGET, getBcPreTemplateUsingGET } from "@/api/predict/sub-company";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
@@ -222,6 +223,9 @@ export default {
             }, error => console.log(error));
         },
 
+        /**
+         * 导出支公司模板
+         */
         exportCompanyPrediction: function exportCompanyPrediction() {
             let bcId = this.subCompanySection ? this.subCompanySection : '';
             let month = this.monthSection ? TimeConver.dateToFormat(this.monthSection) : '';
@@ -276,6 +280,7 @@ export default {
             this.pageSize = item;
             this.queryAllCompanyPrediction();
         },
+
         /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填

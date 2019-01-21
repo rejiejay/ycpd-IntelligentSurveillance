@@ -29,13 +29,13 @@
                 placeholder="选择月份">
             </el-date-picker>
 
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllTeamPrediction();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportTeamPrediction">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
 
         <div class="manage-operate-right">
-            <el-button icon="el-icon-download" type="text">下载模板</el-button>
+            <el-button icon="el-icon-download" type="text" @click="getTeamPreTemplate">下载模板</el-button>
             <el-button icon="el-icon-tickets" type="primary">数据设置</el-button>
         </div>
     </div>
@@ -143,6 +143,12 @@
 <script>
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
+import TimeConver from '@/utils/TimeConver';
+// 请求类
+import { queryAllTeamPredictionUsingPOST, exportTeamPredictionUsingGET, getTeamPreTemplateUsingGET } from "@/api/predict/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+
 
 export default {
     name: 'predict-team',
@@ -153,18 +159,18 @@ export default {
         return {
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
 
             teamSection: null, // 业务团队
             teamOptions: [
-                {
-                    value: '业务团队一',
-                    label: '业务团队一',
-                }
+                // {
+                //     value: '业务团队一',
+                //     label: '业务团队一',
+                // }
             ],
 
             monthSection: null, // 选择月份
@@ -174,16 +180,16 @@ export default {
             isUploadModalShow: false, // 是否显示上传模态框
 
             teamList: [
-                {
-                    teamCode: '', // 团队代码
-                    teamName: '', // 团队名称
-                    teamLeader: '', // 团队领导
-                    subCompany: '', // 支公司
-                    month: '', // 月份
-                    loss: '', // 定损支出
-                    proportion: '', // 产保比
-                    remark: '', // 备注
-                }
+                // {
+                //     teamCode: '', // 团队代码
+                //     teamName: '', // 团队名称
+                //     teamLeader: '', // 团队领导
+                //     subCompany: '', // 支公司
+                //     month: '', // 月份
+                //     loss: '', // 定损支出
+                //     proportion: '', // 产保比
+                //     remark: '', // 备注
+                // }
             ],
 
             /**
@@ -195,14 +201,81 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanySection: function subCompanySection(newsubcompany) {
+            this.queryTeamByBcId(newsubcompany);
+        },
+    },
+
+	mounted: function mounted() {
+        this.queryAllTeamPrediction(); // 通过条件查询
+        this.queryCompanyList(); // 支公司下拉选项
+    },
 
 	methods: {
         /**
          * 通过条件查询
          */
-        searchByConditions: function searchByConditions() {
+        queryAllTeamPrediction: function queryAllTeamPrediction() {
+            const _this = this;
+
+            let currentPage = this.currentPage;
+            let pageSize = this.pageSize;
+            let bcId = this.subCompanySection ? this.subCompanySection : '';
+            let teamId = this.teamSection ? this.teamSection : '';
+            let month = this.monthSection ? TimeConver.dateToFormat(this.monthSection) : '';
+
+            queryAllTeamPredictionUsingPOST(currentPage, pageSize, bcId, teamId, month)
+            .then(val => {
+                console.log(val)
+
+                let data = val.data;
+
+                _this.pageTotal = data.totalPages;
+
+                if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
+                    _this.teamList = []; // 记得清空
+                    return false;
+                }
+
+                _this.teamList = data.objs.map(val => {
+                    let newItem = {};
+
+                    newItem.original = val; // 后端返的原始数据
+                    newItem.id = val.id; // 唯一标识
+                    newItem.teamCode = val.teamCode; // 团队代码
+                    newItem.teamName = val.teamName; // 团队名称
+                    newItem.teamLeader = val.manager; // 团队领导
+                    newItem.subCompany = val.bcName; // 支公司
+                    newItem.month = val.month; // 月份
+                    newItem.loss = val.expense; // 定损支出
+                    newItem.proportion = val.ratio; // 产保比
+                    newItem.remark = val.remark; // 备注
+                    
+                    return newItem;
+                });
+
+            }, error => console.log(error));
         },
+
+        /**
+         * 导出团队模板
+         */
+        exportTeamPrediction: function exportTeamPrediction() {
+            let bcId = this.subCompanySection ? this.subCompanySection : '';
+            let teamId = this.teamSection ? this.teamSection : '';
+            let month = this.monthSection ? TimeConver.dateToFormat(this.monthSection) : '';
+
+            exportTeamPredictionUsingGET(bcId, teamId, month);
+        },
+
+        /**
+         * 下载团队模板
+         */
+        getTeamPreTemplate: () => getTeamPreTemplateUsingGET(),
 
         /**
          * 清空查询条件
@@ -211,12 +284,63 @@ export default {
             this.subCompanySection = null;
             this.monthSection = null;
         },
+        
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error))
+        },
 
         /**
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAllTeamPrediction();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.queryAllTeamPrediction();
         },
 
         /**

@@ -7,17 +7,19 @@ import axios from 'axios';
  * @param {number} pageNo 当前页码
  * @param {number} pageSzie 页面大小
  * @param {number} bcId 支公司 id
+ * @param {number} teamId 支公司 id
  * @param {number} month 月份
  */
-export function queryAllCompanyPredictionUsingPOST(pageNo, pageSzie, bcId, month) {
+export function queryAllTeamPredictionUsingPOST(pageNo, pageSzie, bcId, teamId, month) {
     return apibasics({
-        url: `${config.url.origin}/cdimms/server/prediction/queryAllCompanyPrediction`,
+        url: `${config.url.origin}/cdimms/server/prediction/queryAllTeamPrediction`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
             pageNo: pageNo ? pageNo : 1,
             pageSzie: pageSzie ? pageSzie : 10,
             bcId: bcId ? bcId : '',
+            teamId: teamId ? teamId : '',
             month: month ? month : '',
         }
     });
@@ -26,10 +28,19 @@ export function queryAllCompanyPredictionUsingPOST(pageNo, pageSzie, bcId, month
 /**
  * 导出团队模板
  */
-export function exportTeamPredictionUsingGET() {
+export function exportTeamPredictionUsingGET(bcId, teamId, month) {
+    let urlparam = '';
+
+    urlparam += bcId ? `&bcId=${bcId}` : '';
+    urlparam += teamId ? `&teamId=${teamId}` : '';
+    urlparam += month ? `&month=${month}` : '';
+
+    if (urlparam.indexOf('&') !== -1) {
+        urlparam = `?${urlparam.substr(1)}`;
+    }
 
     return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/exportTeamPrediction`,
+        url: `${config.url.origin}/cdimms/server/prediction/exportTeamPrediction${urlparam}`,
         method: 'get',
         headers: {
             token: window.sessionStorage.cdimmstoken,
