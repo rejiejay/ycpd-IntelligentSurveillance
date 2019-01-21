@@ -20,13 +20,13 @@
                 placeholder="选择月份">
             </el-date-picker>
 
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllCompanyPrediction();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportCompanyPrediction">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
 
         <div class="manage-operate-right">
-            <el-button icon="el-icon-download" type="text">下载模板</el-button>
+            <el-button icon="el-icon-download" type="text" @click="getBcPreTemplate">下载模板</el-button>
             <el-button icon="el-icon-tickets" type="primary">数据设置</el-button>
         </div>
     </div>
@@ -75,6 +75,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :total="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -126,6 +127,9 @@
 <script>
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
+// 请求类
+import { queryAllCompanyPredictionUsingPOST, exportCompanyPredictionUsingGET, getBcPreTemplateUsingGET } from "@/api/predict/sub-company";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
     name: 'predict-sub-company',
@@ -136,24 +140,24 @@ export default {
         return {
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
 
             monthSection: null, // 选择月份
 
             subCompanyList: [
-                {
-                    subCompanyCode: '', // 支公司代码
-                    subCompanyName: '', // 支公司名称
-                    month: '', // 月份
-                    premium: '', // 保费收入
-                    loss: '', // 定损支出
-                    proportion: '', // 产保比
-                    remark: '', // 备注
-                }
+                // {
+                //     subCompanyCode: '', // 支公司代码
+                //     subCompanyName: '', // 支公司名称
+                //     month: '', // 月份
+                //     premium: '', // 保费收入
+                //     loss: '', // 定损支出
+                //     proportion: '', // 产保比
+                //     remark: '', // 备注
+                // }
             ],
 
             uploadPercentage: 100, // 上传的百分比
@@ -169,13 +173,59 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        this.queryAllCompanyPrediction(); // 获取支公司预测信息列表
+        this.queryCompanyList(); // 支公司下拉选项
+    },
 
 	methods: {
         /**
          * 通过条件查询
          */
-        searchByConditions: function searchByConditions() {
+        queryAllCompanyPrediction: function queryAllCompanyPrediction() {
+            const _this = this;
+
+            let currentPage = this.currentPage;
+            let pageSize = this.pageSize;
+            let bcId = this.subCompanySection ? this.subCompanySection : '';
+            let month = this.monthSection ? TimeConver.dateToFormat(this.monthSection) : '';
+
+            queryAllCompanyPredictionUsingPOST(currentPage, pageSize, bcId, month)
+            .then(val => {
+                console.log(val)
+
+                let data = val.data;
+
+                _this.pageTotal = data.totalPages;
+
+                if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
+                    _this.subCompanyList = []; // 记得清空
+                    return false;
+                }
+
+                _this.subCompanyList = data.objs.map(val => {
+                    let newItem = {};
+
+                    newItem.original = val; // 后端返的原始数据
+                    newItem.id = val.id; // 唯一标识
+                    newItem.subCompanyCode = val.bcCode; // 支公司代码
+                    newItem.subCompanyName = val.bcName; // 支公司名称
+                    newItem.month = val.month; // 月份
+                    newItem.premium = val.income; // 保费收入
+                    newItem.loss = val.expense; // 定损支出
+                    newItem.proportion = val.ratio; // 产保比
+                    newItem.remark = val.remark; // 备注
+                    
+                    return newItem;
+                });
+
+            }, error => console.log(error));
+        },
+
+        exportCompanyPrediction: function exportCompanyPrediction() {
+            let bcId = this.subCompanySection ? this.subCompanySection : '';
+            let month = this.monthSection ? TimeConver.dateToFormat(this.monthSection) : '';
+            exportCompanyPredictionUsingGET(bcId, month);
         },
 
         /**
@@ -185,14 +235,47 @@ export default {
             this.subCompanySection = null;
             this.monthSection = null;
         },
+        
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 下载支公司模板
+         */
+        getBcPreTemplate: () => getBcPreTemplateUsingGET(),
 
         /**
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAllCompanyPrediction();
         },
 
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.queryAllCompanyPrediction();
+        },
         /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填

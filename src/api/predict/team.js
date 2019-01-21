@@ -3,7 +3,7 @@ import config from '@/config';
 import axios from 'axios';
 
 /**
- * 获取支公司列表
+ * 获取团队列表
  * @param {number} pageNo 当前页码
  * @param {number} pageSzie 页面大小
  * @param {number} bcId 支公司 id
@@ -25,21 +25,11 @@ export function queryAllCompanyPredictionUsingPOST(pageNo, pageSzie, bcId, month
 
 /**
  * 导出团队模板
- * @param {number} bcId 支公司 id
- * @param {number} month 月份
  */
-export function exportCompanyPredictionUsingGET(bcId, month) {
-    let urlparam = '';
-
-    urlparam += bcId ? `&bcId=${bcId}` : '';
-    urlparam += month ? `&month=${month}` : '';
-
-    if (urlparam.indexOf('&') !== -1) {
-        urlparam = `?${urlparam.substr(1)}`;
-    }
+export function exportTeamPredictionUsingGET() {
 
     return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/exportCompanyPrediction${urlparam}`,
+        url: `${config.url.origin}/cdimms/server/prediction/exportTeamPrediction`,
         method: 'get',
         headers: {
             token: window.sessionStorage.cdimmstoken,
@@ -62,12 +52,12 @@ export function exportCompanyPredictionUsingGET(bcId, month) {
 }
 
 /**
- * 下载支公司模板
+ * 下载团队模板
  */
-export function getBcPreTemplateUsingGET() {
+export function getTeamPreTemplateUsingGET() {
 
     return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/getBcPreTemplate`,
+        url: `${config.url.origin}/cdimms/server/prediction/getTeamPreTemplate`,
         method: 'get',
         headers: {
             token: window.sessionStorage.cdimmstoken,
