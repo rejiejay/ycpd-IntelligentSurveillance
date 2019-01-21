@@ -25,26 +25,8 @@
                 ></el-option>
             </el-select>
 
-            <el-select v-model="warnPeopleSection" placeholder="选择预警人">
-                <el-option
-                    v-for="item in warnPeopleOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                ></el-option>
-            </el-select>
-
-            <el-select v-model="warnStatusSection" placeholder="选择预警状态">
-                <el-option
-                    v-for="item in warnStatusOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                ></el-option>
-            </el-select>
-
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllAlarmLog();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportAlarmLog">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
     </div>
@@ -57,24 +39,20 @@
             style="width: 100%"
         >
             <el-table-column
-                prop="SMSsendingTime"
+                prop="sendTime"
                 label="预警短信发送时间"
             ></el-table-column>
             <el-table-column
-                prop="warnName"
+                prop="alarmName"
                 label="预警名称"
             ></el-table-column>
             <el-table-column
-                prop="warnRule"
-                label="预警规则"
+                prop="content"
+                label="预警内容"
             ></el-table-column>
             <el-table-column
-                prop="warnPeople"
+                prop="alarmUser"
                 label="被预警人"
-            ></el-table-column>
-            <el-table-column
-                prop="warnStatus"
-                label="预警状态"
             ></el-table-column>
         </el-table>
     </div>
@@ -85,6 +63,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :total="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -93,6 +72,10 @@
 </template>
 
 <script>
+// 工具类
+import TimeConver from '@/utils/TimeConver';
+// 请求类
+import { queryAllAlarmLogUsingPOST, exportAlarmLogUsingGET } from "@/api/consolelog";
 
 export default {
     name: 'consolelog',
@@ -146,37 +129,20 @@ export default {
 
             warnNameSection: '', // 预警名称
             warnNameOptions: [
-                {
-                    value: '预警名称一',
-                    label: '预警名称一',
-                }
-            ],
-
-            warnPeopleSection: '', // 预警人
-            warnPeopleOptions: [
-                {
-                    value: '预警人一',
-                    label: '预警人一',
-                }
-            ],
-
-            warnStatusSection: '', // 预警状态
-            warnStatusOptions: [
-                {
-                    value: '预警状态一',
-                    label: '预警状态一',
-                }
+                // {
+                //     value: '预警名称一',
+                //     label: '预警名称一',
+                // }
             ],
 
             // 预警表单
             logs: [
-                {
-                    SMSsendingTime: '', // 预警短信发送时间
-                    warnName: '', // 预警名称
-                    warnRule: '', // 预警规则
-                    warnPeople: '', // 被预警人
-                    warnStatus: '', // 预警状态
-                }
+                // {
+                //     sendTime: '', // 短信发送时间
+                //     alarmName: '', // 预警名称
+                //     content: '', // 预警内容
+                //     alarmUser: '', // 被预警人
+                // }
             ],
 
             /**
@@ -188,13 +154,61 @@ export default {
         } 
     },
 
-	mounted: function mounted() {},
+	mounted: function mounted() {
+        // this.queryAllAlarmLog();
+    },
 
 	methods: {
         /**
          * 通过条件查询
          */
-        searchByConditions: function searchByConditions() {
+        queryAllAlarmLog: function queryAllAlarmLog() {
+            const _this = this;
+
+            let currentPage = this.currentPage;
+            let pageSize = this.pageSize;
+            let arId = this.warnNameSection ? this.warnNameSection : '';
+            let startTime = this.startendTimeOptions[0] ? TimeConver.dateToFormat(this.startendTimeOptions[0]) : '';
+            let endTime = this.startendTimeOptions[1] ? TimeConver.dateToFormat(this.startendTimeOptions[1]) : '';
+
+            queryAllAlarmLogUsingPOST(currentPage, pageSize, arId, startTime, endTime)
+            .then(val => {
+                console.log(val)
+
+                let data = val.data;
+
+                _this.pageTotal = data.totalPages;
+
+                if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
+                    _this.teamList = []; // 记得清空
+                    return false;
+                }
+
+                _this.teamList = data.objs.map(val => {
+                    let newItem = {};
+
+                    newItem.original = val; // 后端返的原始数据
+                    newItem.id = val.id; // 唯一标识
+                    newItem.sendTime = val.sendTime; // 短信发送时间
+                    newItem.alarmName = val.alarmName; // 预警名称
+                    newItem.content = val.content; // 预警内容
+                    newItem.alarmUser = val.alarmUser; // 被预警人
+                    
+                    return newItem;
+                });
+
+            }, error => console.log(error));
+        },
+
+        /**
+         * 下载预警日志列表
+         */
+        exportAlarmLog: function exportAlarmLog() {
+            let arId = this.warnNameSection ? this.warnNameSection : '';
+            let startTime = this.startendTimeOptions[0] ? TimeConver.dateToFormat(this.startendTimeOptions[0]) : '';
+            let endTime = this.startendTimeOptions[1] ? TimeConver.dateToFormat(this.startendTimeOptions[1]) : '';
+
+            exportAlarmLogUsingGET(arId, startTime, endTime);
         },
 
         /**
@@ -209,7 +223,16 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAllAlarmLog();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.queryAllAlarmLog();
         },
 
         /**

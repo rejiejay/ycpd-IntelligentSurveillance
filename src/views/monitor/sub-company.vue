@@ -131,12 +131,12 @@
                 <div style="width: 200px;"></div>
                 <div class="company-table-premium flex-rest flex-start">
                     <div class="company-table-predicted" :style="`width: ${premiumWarningLine}%`">
-                        <div class="table-predicted-label">{{premiumWarningLine}}%</div>
+                        <!-- <div class="table-predicted-label">{{premiumWarningLine}}%</div> -->
                     </div>
                 </div>
                 <div class="company-table-loss flex-rest flex-start">
                     <div class="company-table-predicted" :style="`width: ${lossSortLine}%`">
-                        <div class="table-predicted-label">{{lossSortLine}}%</div>
+                        <!-- <div class="table-predicted-label">{{lossSortLine}}%</div> -->
                     </div>
                 </div>
                 <div class="company-table-proportion flex-rest flex-start">
@@ -206,11 +206,19 @@ export default {
                 }
             ]
         }
+        let thisFullYear = new Date().getFullYear(); // 今年
+        let thisMonth = new Date().getMonth(); // 这个月 - 1
+        // 初始化 筛选的开始时间（这个月 1号）
+        let initStartTime = new Date(thisFullYear, thisMonth, 1);
+        // 下个月初的时间戳（下个月 1号）
+        let nextMonthTimestamp = new Date(thisFullYear, thisMonth + 1, 1).getTime();
+        // 初始化 筛选的结束时间
+        let initEndTime = new Date(thisFullYear, thisMonth, new Date(nextMonthTimestamp - (1000 * 60 * 60 * 24)).getDate());
 
         return {
             startendTime: [ // 开始结束时间
-                new Date(new Date().getTime() - 3600 * 1000 * 24),
-                new Date(),
+                initStartTime,
+                initEndTime,
             ],
             startendTimeOptions: startendTimeOptions, // 开始结束时间 左边选项
 
@@ -240,9 +248,9 @@ export default {
              */
             proportionSort: null,
 
-            premiumWarningLine: 50, // 保费 预警线 （百分比1~100）
-            lossSortLine: 50, // 定损 预警线 （百分比1~100）
-            proportionSortLine: 50, // 产保比 预警线 （百分比1~100）
+            premiumWarningLine: 50, // 保费 预警线 （日期 百分比1~100）
+            lossSortLine: 50, // 定损 预警线 （日期 百分比1~100）
+            proportionSortLine: 60, // 产保比 预警线 （百分比1~100） 这个是固定的
 
             /**
              * 分页相关
