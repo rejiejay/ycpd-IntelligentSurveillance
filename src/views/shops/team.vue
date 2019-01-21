@@ -144,14 +144,14 @@ export default {
 
             // 团队列表
             teamList: [
-                {
-                    teamCode: '', // 团队代码
-                    teamName: '', // 团队名称
-                    teamLeader: '', // 团队经理
-                    phone: '', // 电话
-                    subCompany: '', // 支公司
-                    remark: '', // 备注
-                }
+                // {
+                //     teamCode: '', // 团队代码
+                //     teamName: '', // 团队名称
+                //     teamLeader: '', // 团队经理
+                //     phone: '', // 电话
+                //     subCompany: '', // 支公司
+                //     remark: '', // 备注
+                // }
             ],
 
             /**

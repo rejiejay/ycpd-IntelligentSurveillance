@@ -32,13 +32,13 @@
                 ></el-option>
             </el-select>
 
-            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllStore();">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportStore">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
 
         <div class="manage-operate-right">
-            <el-button icon="el-icon-download" type="text">下载模板</el-button>
+            <el-button icon="el-icon-download" type="text" @click="getStoreTemplate">下载模板</el-button>
             <el-button icon="el-icon-tickets" type="primary" plain>上传清单</el-button>
             <el-button icon="el-icon-plus" type="primary" @click="addHandle">新增</el-button>
         </div>
@@ -150,6 +150,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :total="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -158,6 +159,10 @@
 </template>
 
 <script>
+import { findAllStoreUsingPOST, exportStoreUsingGET, getStoreTemplateUsingGET } from "@/api/shops/carts";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+import { queryStoreSelectUsingPOST } from "@/api/store";
 
 export default {
     name: 'carts-manage',
@@ -166,46 +171,46 @@ export default {
         return {
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             teamSection: null, // 业务团队
             teamOptions: [
-                {
-                    value: '业务团队一',
-                    label: '业务团队一',
-                }
+                // {
+                //     value: '业务团队一',
+                //     label: '业务团队一',
+                // }
             ],
             regionSection: null, // 网点
             regionOptions: [
-                {
-                    value: '网点一',
-                    label: '网点一',
-                }
+                // {
+                //     value: '网点一',
+                //     label: '网点一',
+                // }
             ],
 
             // 车行列表
             cartsList: [
-                {
-                    shopsNo: '122', // 车行编码
-                    shopsName: '车行一', // 车行名称
-                    shopsType: '车行类型一', // 车行星级
-                    shopsRate: '一星', // 车行星级
-                    isCooperate: '合作', // 是否合作
-                    address: '深圳市龙岗区龙岗街道新生社区深惠路1420号J', // 地址
-                    contactName: '汤俊猛', // 联系人
-                    contactPhone: '13924593603', // 联系电话
-                    brand: '东风日产', // 品牌
-                    parCompany: '东风南方集团', // 上级集团
-                    subCompanyName: '新洲支公司', // 支公司名称
-                    subCompanyCode: '440327', // 支公司代码
-                    linkCode: '44033H100011、440321100126', // 渠道代码
-                    team: '团队一', // 团队名称
-                    teamManager: '团队经理', // 团队经理
-                    remark: '', // 备注
-                }
+                // {
+                //     shopsNo: '122', // 车行编码
+                //     shopsName: '车行一', // 车行名称
+                //     shopsType: '车行类型一', // 车行类型
+                //     shopsRate: '一星', // 车行星级
+                //     isCooperate: '合作', // 是否合作
+                //     address: '深圳市龙岗区龙岗街道新生社区深惠路1420号J', // 地址
+                //     contactName: '汤俊猛', // 联系人
+                //     contactPhone: '13924593603', // 联系电话
+                //     brand: '东风日产', // 品牌
+                //     parCompany: '东风南方集团', // 上级集团
+                //     subCompanyName: '新洲支公司', // 支公司名称
+                //     subCompanyCode: '440327', // 支公司代码
+                //     linkCode: '44033H100011、440321100126', // 渠道代码
+                //     team: '团队一', // 团队名称
+                //     teamManager: '团队经理', // 团队经理
+                //     remark: '', // 备注
+                // }
             ],
 
             /**
@@ -217,14 +222,153 @@ export default {
         }
     },
 
-	mounted: function mounted() {},
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanySection: function subCompanySection(newsubcompany) {
+            this.queryTeamByBcId(newsubcompany);
+        },
+    },
+
+	mounted: function mounted() {
+        // this.queryAllStore(); // 初始化 获取团队列表
+        this.queryCompanyList(); // 支公司下拉选项
+        this.selectCartsStoreSearch(''); // 车行下拉
+    },
 
 	methods: {
         /**
          * 通过条件查询
          */
-        searchByConditions: function searchByConditions() {
+        queryAllStore: function queryAllStore() {
+            const _this = this;
+
+            let currentPage = this.currentPage;
+            let pageSize = this.pageSize;
+            let companyId = this.subCompanySection ? this.subCompanySection : '';
+            let storeId = this.shopNetSection ? this.shopNetSection : '';
+            let teamId = this.teamSection ? this.teamSection : '';
+
+            findAllStoreUsingPOST(currentPage, pageSize, companyId, storeId, teamId)
+            .then(val => {
+                console.log(val)
+
+                let data = val.data;
+
+                _this.pageTotal = data.totalPages;
+
+                if (!data || !data.content || data.content instanceof Array === false || data.content.length <= 0) {
+                    _this.cartsList = []; // 记得清空
+                    return false;
+                }
+
+                _this.cartsList = data.content.map(val => {
+                    let newItem = {};
+
+                    newItem.original = val; // 后端返的原始数据
+                    newItem.id = val.id; // 唯一标识
+                    newItem.shopsNo = val.networkNo; // 车行编码
+                    newItem.shopsName = val.networkName; // 车行名称
+                    newItem.shopsType = val.shopsType === 0 ? '4S店' : '修理厂';
+                    newItem.shopsRate = val.star; // 车行星级
+                    newItem.isCooperate = val.isJoin === 0 ? '未合作' : '合作'; // 是否合作
+                    newItem.address = val.address; // 地址
+                    newItem.contactName = val.contact; // 联系人
+                    newItem.contactPhone = val.phone; // 联系电话
+                    newItem.brand = val.brand; // 品牌
+                    newItem.parCompany = val.superiorGroup; // 上级集团
+                    newItem.subCompanyName = val.bcName; // 支公司名称
+                    newItem.subCompanyCode = val.bcCode; // 支公司代码
+                    newItem.linkCode = val.channelCode; // 渠道代码
+                    newItem.team = val.teamName; // 团队名称
+                    newItem.teamManager = val.teamManager; // 团队经理
+                    newItem.remark = val.remark; // 备注
+                    
+                    return newItem;
+                });
+
+            }, error => console.log(error));
         },
+
+        /**
+         * 数据导出
+         */
+        exportStore: function exportStore() {
+            let companyId = this.subCompanySection ? this.subCompanySection : '';
+            let storeId = this.shopNetSection ? this.shopNetSection : '';
+            let teamId = this.teamSection ? this.teamSection : '';
+            
+            exportStoreUsingGET(companyId, storeId, teamId);
+        },
+        
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 选择车行搜索 车行下拉列表
+         */
+        selectCartsStoreSearch: function selectCartsStoreSearch(storeName) {
+            const _this  = this;
+            queryStoreSelectUsingPOST(storeName)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.regionOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.regionOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error));
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 下载车行导入模板
+         */
+        getStoreTemplate: () => getStoreTemplateUsingGET(),
 
         /**
          * 清空查询条件
@@ -258,7 +402,16 @@ export default {
          * 分页改变的时候处理函数
          */
         pageChangeHandle: function pageChangeHandle(item) {
-            console.log(item);
+            this.currentPage = item;
+            this.queryAllStore();
+        },
+
+        /**
+         * 前页页码大小时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.queryAllStore();
         },
 
         /**

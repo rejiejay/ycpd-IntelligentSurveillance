@@ -1,5 +1,4 @@
 import apibasics from '@/components/apibasics';
-import notFilter from '@/components/apibasics-notFilter';
 import config from '@/config';
 import axios from 'axios';
 
@@ -41,7 +40,7 @@ export function removeTeamUsingPOST(teamId) {
 /**
  * 团队记录列表导出excel
  * @param {number} companyId 支公司 id
- * @param {number} storeId 团队 id
+ * @param {number} storeId 网点 id
  * @param {number} teamId 团队 id
  */
 export function exportTeamUsingGET(companyId, storeId, teamId) {
