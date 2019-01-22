@@ -13,6 +13,7 @@ npm run dev
 npm run builddev
 120.79.36.217
 /home/cdimms/server
+http://cdimms.api2.hotgz.com
 
 # 项目打包 到 生产环境
 npm run build

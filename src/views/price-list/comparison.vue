@@ -256,14 +256,13 @@ export default {
         exportPremium: function exportPremium() {
             let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
             let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
-            let storeId = ''; // 这个是多余的
             let bcId = this.subCompanySection ? this.subCompanySection : ''; 
             let teamId = this.teamSection ? this.teamSection : ''; 
             let networkName = this.regionSection ? this.regionSection : ''; 
             let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
             let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
 
-            exportPremiumLossAssessRatioUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestSumpremium, highestSumpremium);
+            exportPremiumLossAssessRatioUsingGET(startDate, endDate, bcId, teamId, networkName, lowestSumpremium, highestSumpremium);
         },
 
         /**

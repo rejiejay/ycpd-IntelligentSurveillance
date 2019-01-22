@@ -102,14 +102,14 @@
                             <div class="details-describe-content flex-start-center">
                                 <div class="describe-content-item flex-rest">
                                     <div style="border-right: 1px solid #ddd;">保费金额</div>
-                                    <div class="content-item-money" style="border-right: 1px solid #ddd; color: #67C23A;">329112</div>
+                                    <div class="content-item-money" style="border-right: 1px solid #ddd; color: #67C23A;">{{sumpremium}}</div>
                                 </div>
                                 <div class="describe-content-item flex-rest">
                                     <div>定损金额</div>
-                                    <div class="content-item-money" style="color: #F56C6C;">168872</div>
+                                    <div class="content-item-money" style="color: #F56C6C;">{{materialfee}}</div>
                                 </div>
                             </div>
-                            <div class="details-describe-tip flex-center">· 保费/定损金额比例： <span style="color: #67C23A;">154%</span></div>
+                            <div class="details-describe-tip flex-center">· 保费/定损金额比例： <span style="color: #67C23A;">{{materialfee}}%</span></div>
                         </div>
                     </div>
                 </div>
@@ -342,7 +342,7 @@ import percentage_80 from '@/assets/baidu_map/percentage_80.svg';
 import percentage_90 from '@/assets/baidu_map/percentage_90.svg';
 import percentage_100 from '@/assets/baidu_map/percentage_100.svg';
 // 请求类
-import { countStoreInfoUsingGET, listStoreToMapUsingGET, listByIdUsingGET, listStoreToSearchUsingGET } from "@/api/monitor/carts";
+import { listStoreToMapUsingGET, listByIdUsingGET, listStoreToSearchUsingGET } from "@/api/monitor/carts";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 import { queryStoreSelectUsingPOST } from "@/api/store";
@@ -533,6 +533,9 @@ export default {
             storenetworkNo: '', // 送修码
             storecontact: '', // 联系人
             storephone: '', // 电话
+            materialfee: '', // 定损
+            sumpremium: '', // 保费
+            materialfee: '0', // 百分比
         } 
     },
 
@@ -554,7 +557,6 @@ export default {
 
 	mounted: function mounted() {
         // this.initBaiduMap(); // 初始化百度地图
-        this.initCountStoreInfo(); // 初始化 合作网点（统计：合作网点数，为合作网点数，新增网点，签约率）
         this.initListStoreToMap(); // 条件查询车商地图展示
 
         this.queryCompanyList(); // 支公司下拉选项
@@ -709,27 +711,6 @@ export default {
         },
 
         /**
-         * 初始化 合作网点（统计：合作网点数，为合作网点数，新增网点，签约率）
-         */
-        initCountStoreInfo: function initCountStoreInfo() {
-            const _this = this;
-
-            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
-            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
-
-            countStoreInfoUsingGET(startDate, endDate)
-            .then(val => {
-                let data = val.data;
-
-                _this.isJoinNum = data.isJoinNum;
-                _this.isNotJoinNum = data.isNotJoinNum;
-                _this.newAddStoreNum = data.newAddStoreNum;
-                _this.signingRate = data.signingRate;
-                
-            }, error => console.log(error));
-        },
-
-        /**
          * 条件查询车商地图展示
          */
         initListStoreToMap: function initListStoreToMap() {
@@ -753,11 +734,19 @@ export default {
             .then(val => {
                 let data = val.data;
 
-                if (!data || data instanceof Array === false || data.length <= 0) {
+                if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
                     return false;
                 }
 
-                _this.renderBaiduMapData(data);
+                // 初始化统计
+                let storeToMapCount = data.storeToMapCount;
+
+                _this.isJoinNum = storeToMapCount.isJoinNum;
+                _this.isNotJoinNum = storeToMapCount.isNotJoinNum;
+                _this.newAddStoreNum = storeToMapCount.newAddStoreNum;
+                _this.signingRate = storeToMapCount.signingRate;
+
+                _this.renderBaiduMapData(data.storeMaps); // 渲染百度地图
 
             }, error => console.log(error));
         },
@@ -823,6 +812,8 @@ export default {
             .then(val => {
                 let data = val.data;
 
+                console.log(data)
+
                 _this.storeId = data.id; // 车商id
                 _this.storenetworkName = data.networkName; // 网点名称
                 _this.storeaddress = `${data.province}${data.city}${data.county}${data.address}`; // 网点地址
@@ -835,6 +826,14 @@ export default {
                 _this.storenetworkNo = data.networkNo; // 网点编码 这个就是 送修码
                 _this.storecontact = data.contact; // 联系人
                 _this.storephone = data.phone; // 电话
+
+                _this.materialfee = data.materialfee; // 定损金额
+                _this.sumpremium = data.sumpremium; // 保费金额
+                if (data.materialfee && data.sumpremium) {
+                    _this.proportion = Math.floor((data.materialfee / data.sumpremium) * 100); // 定损金额/保费金额
+                } else {
+                    _this.proportion = '0';
+                }
                 
             }, error => console.log(error))
         },
@@ -1177,18 +1176,17 @@ $black4: #C0C4CC;
         
         .search-results-container {
             background: #fff;
-            border: 1px solid #fff;
-            padding: 0px 10px 0px 10px;
-        }
-
-        .search-results-container:hover {
-            border: 1px solid #67C23A;
+            padding: 0px;
         }
 
         .search-results-item {
-            padding-top: 10px;
-            padding-bottom: 10px;
+            padding: 10px;
             cursor: pointer;
+            border: 1px solid #fff;
+        }
+
+        .search-results-item:hover {
+            border: 1px solid #67C23A;
         }
 
         .results-item-left {

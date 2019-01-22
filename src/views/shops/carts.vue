@@ -268,7 +268,7 @@ export default {
 
                     newItem.original = val; // 后端返的原始数据
                     newItem.id = val.id; // 唯一标识
-                    newItem.shopsNo = val.networkNo; // 车行编码
+                    newItem.shopsNo = val.workNo; // 车行编码
                     newItem.shopsName = val.networkName; // 车行名称
                     newItem.shopsType = val.shopsType === 0 ? '4S店' : '修理厂';
                     newItem.shopsRate = val.star; // 车行星级

@@ -8,21 +8,19 @@ import axios from 'axios';
  * @param {number} pageSize 总页码 必填
  * @param {String} startDate 开始时间
  * @param {String} endDate 结束时间
- * @param {String} storeId 车商ID
  * @param {String} bcId 支公司
  * @param {String} teamId 团队
- * @param {String} networkName 车行
+ * @param {String} storeId 车行
  * @param {String} lowestProportion 最低保费
  * @param {String} highestProportion 最高保费
  */
-export function listPremiumLossAssessRatioUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, networkName, lowestProportion, highestProportion) {
+export function listPremiumLossAssessRatioUsingGET(pageNo, pageSize, startDate, endDate, bcId, teamId, storeId, lowestProportion, highestProportion) {
     let urlparam = `?pageNo=${pageNo}&pageSize=${pageSize}`;
     urlparam += startDate ? `&startDate=${startDate}` : '';
     urlparam += endDate ? `&endDate=${endDate}` : '';
-    urlparam += storeId ? `&storeId=${storeId}` : '';
     urlparam += bcId ? `&bcId=${bcId}` : '';
     urlparam += teamId ? `&teamId=${teamId}` : '';
-    urlparam += networkName ? `&networkName=${networkName}` : '';
+    urlparam += storeId ? `&storeId=${storeId}` : '';
     urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
     urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
 
@@ -37,22 +35,20 @@ export function listPremiumLossAssessRatioUsingGET(pageNo, pageSize, startDate, 
  * 产保比明细导出excel
  * @param {String} startDate 开始时间
  * @param {String} endDate 结束时间
- * @param {String} storeId 车商ID
  * @param {String} bcId 支公司
  * @param {String} teamId 团队
- * @param {String} networkName 车行
+ * @param {String} storeId 车商ID
  * @param {String} lowestProportion 最低保费
  * @param {String} highestProportion 最高保费
  */
-export function exportPremiumLossAssessRatioUsingGET(startDate, endDate, storeId, bcId, teamId, networkName, lowestProportion, highestProportion) {
+export function exportPremiumLossAssessRatioUsingGET(startDate, endDate, bcId, teamId, storeId, lowestProportion, highestProportion) {
     let urlparam = '';
 
     urlparam += startDate ? `&startDate=${startDate}` : '';
     urlparam += endDate ? `&endDate=${endDate}` : '';
-    urlparam += storeId ? `&storeId=${storeId}` : '';
     urlparam += bcId ? `&bcId=${bcId}` : '';
     urlparam += teamId ? `&teamId=${teamId}` : '';
-    urlparam += networkName ? `&networkName=${networkName}` : '';
+    urlparam += storeId ? `&storeId=${storeId}` : '';
     urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
     urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
 
