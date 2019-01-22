@@ -4,8 +4,6 @@ import axios from 'axios';
 
 /**
  * 统计分析保费数据
- * @param {number} currentPage 当前页码
- * @param {number} pageCount 页面大小
  * @param {number} type 类型 0 天 1 月
  * @param {number} startDate 开始日期
  * @param {number} endDate 结束日期
@@ -13,17 +11,15 @@ import axios from 'axios';
  * @param {number} teamId 团队
  * @param {number} networkId 网点id
  */
-export function statisticalAnalysisUsingPOST(currentPage, pageCount, type, startDate, endDate, bcId, teamId, networkId) {
+export function statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId) {
     return apibasics({
         url: `${config.url.origin}/cdimms/server/sa/statisticalAnalysis`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
-            currentPage: currentPage ? currentPage : 1,
-            pageCount: pageCount ? pageCount : 10,
             type: type ? type : '0',
-            startDate: startDate,
-            endDate: endDate,
+            start: startDate,
+            end: endDate,
             bcId: bcId ? bcId : '',
             teamId: teamId ? teamId : '',
             networkId: networkId ? networkId : '',
@@ -50,8 +46,8 @@ export function exportStatisticalAnalysisUsingPOST(type, startDate, endDate, bcI
         responseType: 'arraybuffer',
         data: {
             type: type ? type : '0',
-            startDate: startDate,
-            endDate: endDate,
+            start: startDate,
+            end: endDate,
             bcId: bcId ? bcId : '',
             teamId: teamId ? teamId : '',
             networkId: networkId ? networkId : '',

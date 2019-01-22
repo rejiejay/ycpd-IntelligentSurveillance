@@ -115,8 +115,12 @@
 </template>
 
 <script>
+// 工具类
+import TimeConver from '@/utils/TimeConver';
 // 框架类
 import echarts  from 'echarts';
+// 请求类
+import { statisticalAnalysisUsingPOST, exportStatisticalAnalysisUsingPOST } from "@/api/analyze";
 
 export default {
     name: 'analyze',
@@ -134,10 +138,10 @@ export default {
         return {
             /**
              * 统计分时间段 
-             * @param {string} data 按日分析
-             * @param {string} month 按月分析
+             * @param {string} 0 按日分析
+             * @param {string} 1 按月分析
              */
-            analyzeTimeSection: 'data',
+            analyzeTimeSection: '0',
 
             /**
              * 开始结束天数
@@ -198,9 +202,48 @@ export default {
 
 	mounted: function mounted() {
         this.initAnalyzeCharts(); // 初始化 图表
+        this.initStatisticalAnalys(); // 初始化数据
     },
 
 	methods: {
+        /**
+         * 初始化 图表
+         */
+        initStatisticalAnalys: function initStatisticalAnalys() {
+            const _this  = this;
+
+            let type = this.analyzeTimeSection;
+            let startDate = TimeConver.dateToFormat(this.startDataTime); 
+            let endDate = TimeConver.dateToFormat(this.endDataTime); 
+            let bcId = ''; 
+            let teamId = ''; 
+            let networkId = '';
+
+            statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId)
+            .then(val => {
+                let data = val.data;
+
+                // // 初始化一共多少条数据
+                // _this.pageCount = data.pageSize; 
+
+                // // 初始化图表列表
+                // if (data.roles && data.roles instanceof Array && data.roles.length > 0) {
+                //     _this.statistics = data.roles.map(item => {
+                //         let newItem = {};
+                //         newItem.id = item.id;
+
+                        
+                //         return newItem;
+                //     });
+
+                // } else {
+                //     _this.statistics = [];
+
+                // }
+
+            }, error => console.log(error))
+        },
+
         /**
          * 初始化 图表
          */

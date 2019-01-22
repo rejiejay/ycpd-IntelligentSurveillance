@@ -68,7 +68,7 @@ apibasics.interceptors.request.use(
         myLoading.close(); // 关闭加载框
         console.error(error); // for debug
         Message({
-            message: `请求未发送, 原因: ${error}`,
+            message: `请求未发送, 原因: JSON.stringify(${error})`,
             type: 'error',
             duration: 5 * 1000
         });
@@ -95,7 +95,7 @@ apibasics.interceptors.response.use(
             // 不是 1000 的情况下, 直接报出错误
 
             Message({
-                message: res.message,
+                message: res.msg,
                 type: 'error',
                 duration: 5 * 1000
             });
@@ -150,7 +150,7 @@ apibasics.interceptors.response.use(
             return Promise.reject('服务器正在升级或异常,请稍后再试!');
         } 
         
-        console.error(`服务器错误: ${error}`); // for debug
+        console.error(`服务器错误: JSON.stringify(${error})`); // for debug
 
         Message({
             message: error.message,
