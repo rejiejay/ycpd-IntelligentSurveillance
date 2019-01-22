@@ -51,7 +51,7 @@
             ></el-option>
         </el-select>
 
-        <el-select v-model="teamSection" placeholder="选择业务团队">
+        <el-select v-model="teamSection" :disabled="!subCompanySection" placeholder="选择业务团队">
             <el-option
                 v-for="item in teamOptions"
                 :key="item.value"
@@ -60,7 +60,12 @@
             ></el-option>
         </el-select>
 
-        <el-select v-model="regionSection" placeholder="请选择网点">
+        <el-select 
+            v-model="regionSection" 
+            placeholder="请输入网点名称"
+            filterable 
+            :filter-method="selectCartsStoreSearch"
+        >
             <el-option
                 v-for="item in regionOptions"
                 :key="item.value"
@@ -121,6 +126,9 @@ import TimeConver from '@/utils/TimeConver';
 import echarts  from 'echarts';
 // 请求类
 import { statisticalAnalysisUsingPOST, exportStatisticalAnalysisUsingPOST } from "@/api/analyze";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryStoreSelectUsingPOST } from "@/api/store";
 
 export default {
     name: 'analyze',
@@ -159,24 +167,24 @@ export default {
 
             subCompanySection: null, // 支公司
             subCompanyOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             teamSection: null, // 业务团队
             teamOptions: [
-                {
-                    value: '业务团队一',
-                    label: '业务团队一',
-                }
+                // {
+                //     value: '业务团队一',
+                //     label: '业务团队一',
+                // }
             ],
             regionSection: null, // 网点
             regionOptions: [
-                {
-                    value: '网点一',
-                    label: '网点一',
-                }
+                // {
+                //     value: '网点一',
+                //     label: '网点一',
+                // }
             ],
 
             /**
@@ -200,14 +208,26 @@ export default {
         } 
     },
 
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanySection: function subCompanySection(newsubcompany) {
+            this.queryTeamByBcId(newsubcompany);
+        },
+    },
+
 	mounted: function mounted() {
         this.initAnalyzeCharts(); // 初始化 图表
         this.initStatisticalAnalys(); // 初始化数据
+
+        this.queryCompanyList(); // 支公司下拉选项
+        this.selectCartsStoreSearch(''); // 初始化 车行下拉列表
     },
 
 	methods: {
         /**
-         * 初始化 图表
+         * 初始化 图表数据
          */
         initStatisticalAnalys: function initStatisticalAnalys() {
             const _this  = this;
@@ -215,9 +235,9 @@ export default {
             let type = this.analyzeTimeSection;
             let startDate = TimeConver.dateToFormat(this.startDataTime); 
             let endDate = TimeConver.dateToFormat(this.endDataTime); 
-            let bcId = ''; 
-            let teamId = ''; 
-            let networkId = '';
+            let bcId = this.subCompanySection; 
+            let teamId = this.teamSection; 
+            let networkId = this.regionSection;
 
             statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId)
             .then(val => {
@@ -242,6 +262,83 @@ export default {
                 // }
 
             }, error => console.log(error))
+        },
+
+        /**
+         * 导出图表数据
+         */
+        exportStatisticalAnalys: function exportStatisticalAnalys() {
+            let type = this.analyzeTimeSection;
+            let startDate = TimeConver.dateToFormat(this.startDataTime); 
+            let endDate = TimeConver.dateToFormat(this.endDataTime); 
+            let bcId = this.subCompanySection; 
+            let teamId = this.teamSection; 
+            let networkId = this.regionSection;
+
+            statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId)
+        },
+        
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 选择车行搜索 车行下拉列表
+         */
+        selectCartsStoreSearch: function selectCartsStoreSearch(storeName) {
+            const _this  = this;
+            queryStoreSelectUsingPOST(storeName)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.regionOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.regionOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error));
         },
 
         /**

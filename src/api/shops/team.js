@@ -6,11 +6,9 @@ import axios from 'axios';
  * 获取团队列表
  * @param {number} pageNo 当前页码
  * @param {number} pageSzie 页面大小
- * @param {number} companyId 支公司 id
- * @param {number} storeId 团队 id
- * @param {number} teamId 团队 id
+ * @param {number} keyword 团队关键词查询
  */
-export function queryAllTeamUsingPOST(pageNo, pageSzie, companyId, storeId, teamId) {
+export function queryAllTeamUsingPOST(pageNo, pageSzie, keyword) {
     return apibasics({
         url: `${config.url.origin}/cdimms/server/team/queryAllTeam`,
         method: 'post',
@@ -18,9 +16,7 @@ export function queryAllTeamUsingPOST(pageNo, pageSzie, companyId, storeId, team
         data: {
             pageNo: pageNo ? pageNo : 1,
             pageSzie: pageSzie ? pageSzie : 10,
-            companyId: companyId ? companyId : '',
-            storeId: storeId ? storeId : '',
-            teamId: teamId ? teamId : '',
+            keyword: keyword ? keyword : '',
         }
     });
 }
@@ -39,23 +35,11 @@ export function removeTeamUsingPOST(teamId) {
 
 /**
  * 团队记录列表导出excel
- * @param {number} companyId 支公司 id
- * @param {number} storeId 网点 id
- * @param {number} teamId 团队 id
+ * @param {number} keyword 团队关键词查询
  */
-export function exportTeamUsingGET(companyId, storeId, teamId) {
-    let urlparam = '';
-
-    urlparam += companyId ? `&companyId=${companyId}` : '';
-    urlparam += storeId ? `&storeId=${storeId}` : '';
-    urlparam += teamId ? `&teamId=${teamId}` : '';
-
-    if (urlparam.indexOf('&') !== -1) {
-        urlparam = `?${urlparam.substr(1)}`;
-    }
-
+export function exportTeamUsingGET(keyword) {
     return axios({
-        url: `${config.url.origin}/cdimms/server/team/exportTeam${urlparam}`,
+        url: `${config.url.origin}/cdimms/server/team/exportTeam${keyword ? `?keyword=${keyword}` : ''}`,
         method: 'get',
         headers: {
             token: window.sessionStorage.cdimmstoken,

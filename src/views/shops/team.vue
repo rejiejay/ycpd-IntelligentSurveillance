@@ -4,38 +4,7 @@
     <!-- 顶部操作按钮 -->
     <div class="team-manage-operate flex-start-bottom">
         <div class="manage-operate-left flex-rest">
-
-            <el-select 
-                v-model="shopNetSection" 
-                filterable 
-                :filter-method="selectCartsStoreSearch"
-                placeholder="请搜索车行网点"
-            >
-                <el-option
-                    v-for="item in shopNetOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                ></el-option>
-            </el-select>
-
-            <el-select v-model="subCompanySection" placeholder="选择支公司代码">
-                <el-option
-                    v-for="item in subCompanyOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                ></el-option>
-            </el-select>
-
-            <el-select v-model="teamSection" placeholder="选择团队">
-                <el-option
-                    v-for="item in teamOptions"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                ></el-option>
-            </el-select>
+            <el-input v-model="keyword" type="text" :clearable="true" placeholder="请输入团队名称"></el-input>
 
             <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryAllTeam();">查询</el-button>
             <el-button icon="el-icon-download" type="success" @click="exportTeam">导出</el-button>
@@ -118,29 +87,7 @@ export default {
 
 	data: function data() { 
         return {
-            subCompanySection: null, // 支公司
-            subCompanyOptions: [
-                // {
-                //     value: '支公司一',
-                //     label: '支公司一',
-                // }
-            ],
-            
-            shopNetSection: null, // 网点
-            shopNetOptions: [
-                // {
-                //     value: '网点一',
-                //     label: '网点一',
-                // }
-            ],
-            
-            teamSection: null, // 团队
-            teamOptions: [
-                // {
-                //     value: '团队一',
-                //     label: '团队一',
-                // }
-            ],
+            keyword: '', // 团队关键词查询
 
             // 团队列表
             teamList: [
@@ -187,11 +134,9 @@ export default {
 
             let currentPage = this.currentPage;
             let pageSize = this.pageSize;
-            let companyId = this.subCompanySection ? this.subCompanySection : '';
-            let storeId = this.shopNetSection ? this.shopNetSection : '';
-            let teamId = this.teamSection ? this.teamSection : '';
+            let keyword = this.keyword ? this.keyword : '';
 
-            queryAllTeamUsingPOST(currentPage, pageSize, companyId, storeId, teamId)
+            queryAllTeamUsingPOST(currentPage, pageSize, keyword)
             .then(val => {
                 console.log(val)
 
@@ -245,7 +190,9 @@ export default {
         /**
          * 下载团队模板
          */
-        getTeamTemplate: () => getTeamTemplateUsingGET(),
+        getTeamTemplate: function getTeamTemplate() {
+            getTeamTemplateUsingGET(this.keyword);
+        },
 
         /**
          * 选择车行搜索 车行下拉列表
@@ -398,6 +345,11 @@ $black4: #C0C4CC;
 // 顶部操作部分
 .team-manage-operate {
     padding: 15px;
+
+    .el-input {
+        width: 240px;
+        margin-right: 15px;
+    }
 
     .el-select {
         margin-right: 15px;

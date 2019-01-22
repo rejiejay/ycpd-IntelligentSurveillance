@@ -14,7 +14,7 @@
                 ></el-option>
             </el-select>
 
-            <el-select v-model="teamSection" placeholder="业务团队">
+            <el-select v-model="teamSection" :disabled="!subCompanySection" placeholder="业务团队">
                 <el-option
                     v-for="item in teamOptions"
                     :key="item.value"
@@ -23,7 +23,7 @@
                 ></el-option>
             </el-select>
 
-            <el-select v-model="regionSection" placeholder="选择网点">
+            <el-select v-model="regionSection"  placeholder="网点类型">
                 <el-option
                     v-for="item in regionOptions"
                     :key="item.value"
@@ -185,10 +185,31 @@ export default {
             ],
             regionSection: null, // 网点
             regionOptions: [
-                // {
-                //     value: '网点一',
-                //     label: '网点一',
-                // }
+                {
+                    value: '0',
+                    label: '4S店',
+                }, {
+                    value: '1',
+                    label: '修理厂',
+                }, {
+                    value: '2',
+                    label: '二网',
+                }, {
+                    value: '3',
+                    label: '二手车行',
+                }, {
+                    value: '4',
+                    label: '续保',
+                }, {
+                    value: '5',
+                    label: '非车险',
+                }, {
+                    value: '6',
+                    label: '网络销售',
+                }, {
+                    value: '7',
+                    label: '其他',
+                }
             ],
 
             // 车行列表
@@ -234,7 +255,6 @@ export default {
 	mounted: function mounted() {
         this.queryAllStore(); // 初始化 获取团队列表
         this.queryCompanyList(); // 支公司下拉选项
-        this.selectCartsStoreSearch(''); // 车行下拉
     },
 
 	methods: {
@@ -334,27 +354,6 @@ export default {
                 }
 
             }, error => console.log(error))
-        },
-
-        /**
-         * 选择车行搜索 车行下拉列表
-         */
-        selectCartsStoreSearch: function selectCartsStoreSearch(storeName) {
-            const _this  = this;
-            queryStoreSelectUsingPOST(storeName)
-            .then(val => {
-                let data = val.data;
-
-                if (data && data instanceof Array && data.length > 0) {
-                    _this.regionOptions = data.map(item => ({
-                        value: item[0],
-                        label: item[1],
-                    }));
-                } else {
-                    _this.regionOptions = []; // 记得清空
-                }
-
-            }, error => console.log(error));
         },
 
         /**

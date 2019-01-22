@@ -14,7 +14,7 @@
                 ></el-option>
             </el-select>
 
-            <el-select v-model="teamSection" placeholder="选择业务团队">
+            <el-select v-model="teamSection" :disabled="!subCompanySection" placeholder="选择业务团队">
                 <el-option
                     v-for="item in teamOptions"
                     :key="item.value"
