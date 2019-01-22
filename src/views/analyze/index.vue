@@ -10,7 +10,7 @@
             </el-select>
         </div>
 
-        <div class="analyze-operate-date flex-start" v-if="analyzeTimeSection === 'data'">
+        <div class="analyze-operate-date flex-start" v-if="analyzeTimeSection === '0'">
             <el-date-picker
                 v-model="startDataTime"
                 @change="startDataHandle"
@@ -26,7 +26,7 @@
             ></el-date-picker>
         </div>
 
-        <div class="analyze-operate-month flex-start" v-if="analyzeTimeSection === 'month'">
+        <div class="analyze-operate-month flex-start" v-if="analyzeTimeSection === '1'">
             <el-date-picker
                 v-model="startMonthTime"
                 @change="startMonthHandle"
@@ -187,6 +187,10 @@ export default {
                 // }
             ],
 
+            premiums: [], // 保险
+            lossAssessments: [], // 定损
+            ratios: [], // 产包比
+
             /**
              * 表单统计
              */
@@ -218,7 +222,6 @@ export default {
     },
 
 	mounted: function mounted() {
-        this.initAnalyzeCharts(); // 初始化 图表
         this.initStatisticalAnalys(); // 初始化数据
 
         this.queryCompanyList(); // 支公司下拉选项
@@ -242,26 +245,152 @@ export default {
             statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId)
             .then(val => {
                 let data = val.data;
+                
+                _this.premiums = data.premiums.concat(data.futureDay4Premiums);
+                _this.lossAssessments = data.lossAssessments.concat(data.futureDay4LossAssessments);
+                _this.ratios = data.ratios.concat(data.futureDay4Ratios);
 
-                // // 初始化一共多少条数据
-                // _this.pageCount = data.pageSize; 
-
-                // // 初始化图表列表
-                // if (data.roles && data.roles instanceof Array && data.roles.length > 0) {
-                //     _this.statistics = data.roles.map(item => {
-                //         let newItem = {};
-                //         newItem.id = item.id;
-
-                        
-                //         return newItem;
-                //     });
-
-                // } else {
-                //     _this.statistics = [];
-
-                // }
+                _this.initAnalyzeCharts(); // 初始化 图表
 
             }, error => console.log(error))
+
+            return '下面的是测试数据!';
+
+            /**
+             * 获取循环多少次
+             */
+            let differ = 0;
+            let startTimestamp = this.startDataTime.getTime(); // 开始时间
+            let endTimestamp = this.endDataTime.getTime(); // 结束时间
+            if (this.analyzeTimeSection === '0') {
+                differ = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
+            } else {
+                let endTimeMonth = (this.endMonthTime.getFullYear() * 12) + (this.endMonthTime.getMonth() + 1); // 结束一共多少个月
+                let startTimeMonth = (this.startMonthTime.getFullYear() * 12) + (this.startMonthTime.getMonth() + 1); // 开始一共多少个月
+                differ = endTimeMonth - startTimeMonth; // 相差几个月
+            }
+
+            let premiums = [];
+            let lossAssessments = [];
+            let ratios = [];
+
+            for (let i = 0; i <= differ; i++) {
+                premiums.push(123321);
+                lossAssessments.push(321123);
+                ratios.push(12);
+            }
+            
+            this.premiums = premiums;
+            this.lossAssessments = lossAssessments;
+            this.ratios = ratios;
+
+            this.initAnalyzeCharts(); // 初始化 图表
+        },
+
+        /**
+         * 初始化表单统计
+         */
+        initFormStatistical: function initFormStatistical() {
+            // 现在的时间戳
+            let nowTimestamp = new Date(); 
+            let nowDayTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth(), nowTimestamp.getDate()).getTime(); // 精确到日
+            let nowMonthTimestamp = new Date(nowTimestamp.getFullYear(), nowTimestamp.getMonth()).getTime(); // 精确到月
+            
+            let startTimestamp = this.startDataTime.getTime(); // 开始时间
+            let endTimestamp = this.endDataTime.getTime(); // 结束时间
+            let statistics = [];
+
+            if (this.analyzeTimeSection === '0') {
+                let differDay = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
+
+                let countpremium = 0;
+                let countloss = 0;
+
+                for (let i = 0; i <= differDay; i++) { // 循环相差几天
+                    let mapTemDate = new Date(startTimestamp + (i * (1000 * 60 * 60 * 24)) ); // 数组循环的时间
+                    let Month = mapTemDate.getMonth() + 1;
+                    let nowDate = mapTemDate.getDate();
+                    let thisMapTimestamp = startTimestamp + (i * (1000 * 60 * 60 * 24)); // 当前数组循环的时间戳
+
+                    countpremium += this.premiums[i];
+                    countloss += this.lossAssessments[i];
+
+                    let date = `${Month}月${nowDate}日`;
+                    let premium = this.premiums[i];
+                    let loss = this.lossAssessments[i];
+                    let proportion = this.ratios[i];
+                    let type = '实际数据';
+                    if (thisMapTimestamp > nowDayTimestamp) {
+                        type = '预测数据';
+                    }
+
+                    statistics.push({
+                        date: date,
+                        premium: premium,
+                        loss: loss,
+                        proportion: `${proportion}%`,
+                        type: type,
+                    });
+                }
+
+                let countProportion = Math.floor((countloss / countpremium) * 100); // 定损金额/保费金额
+
+                statistics.push({
+                    date: '汇总',
+                    premium: countpremium,
+                    loss: countloss,
+                    proportion: countProportion ? `${countProportion}%` : '0%',
+                    type: '汇总数据',
+                });
+
+            } else {
+                let endTimeMonth = (this.endMonthTime.getFullYear() * 12) + (this.endMonthTime.getMonth() + 1); // 结束一共多少个月
+                let startTimeMonth = (this.startMonthTime.getFullYear() * 12) + (this.startMonthTime.getMonth() + 1); // 开始一共多少个月
+                let differMonth = endTimeMonth - startTimeMonth; // 相差几个月
+                
+                let countpremium = 0;
+                let countloss = 0;
+
+                for (let i = 0; i <= differMonth; i++) { // 循环相差几月
+                    let thisMapFullYear = Math.floor( (startTimeMonth + i) / 12); // 当前循环的年份
+                    let thisMapMonth = ((startTimeMonth + i) % 12) - 1; // 当前循环的(月份 - 1)
+                    let thisMapTime = new Date(thisMapFullYear, thisMapMonth);
+                    let thisMapTimestamp = new Date(thisMapFullYear, thisMapMonth).getTime(); // 当前循环的时间戳
+
+                    
+                    countpremium += this.premiums[i];
+                    countloss += this.lossAssessments[i];
+
+                    let date = `${thisMapTime.getFullYear()}年${thisMapTime.getMonth() + 1}月`;
+                    let premium = this.premiums[i];
+                    let loss = this.lossAssessments[i];
+                    let proportion = this.ratios[i];
+                    let type = '实际数据';
+                    if (thisMapTimestamp > nowMonthTimestamp) {
+                        type = '预测数据';
+                    }
+
+                    statistics.push({
+                        date: date,
+                        premium: premium,
+                        loss: loss,
+                        proportion: `${proportion}%`,
+                        type: type,
+                    });
+                }
+
+                let countProportion = Math.floor((countloss / countpremium) * 100); // 定损金额/保费金额
+
+                statistics.push({
+                    date: '汇总',
+                    premium: countpremium,
+                    loss: countloss,
+                    proportion: countProportion ? `${countProportion}%` : '0%',
+                    type: '汇总数据',
+                });
+            }
+
+            this.statistics = statistics;
         },
 
         /**
@@ -354,6 +483,8 @@ export default {
 
             this.initPremiumLossCharts(); // 初始化 保费收入/定损支出 图表
             this.initProportionCharts(); // 初始化 产保比 图表
+            
+            this.initFormStatistical(); // 初始化表单统计
         },
 
         /**
@@ -456,26 +587,24 @@ export default {
 
                         if (nowDayTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
-                            premiumRealArr.push(1020);
-                            lossRealArr.push(3010);
-                            premiumPredictArr.push(1020);
-                            lossPredictArr.push(3010);
+                            premiumRealArr.push(_this.premiums[i]); // 【保费 真实】 
+                            lossRealArr.push(_this.lossAssessments[i]); // 【定损 真实】
+                            premiumPredictArr.push(_this.premiums[i]); // 【保费 预测】
+                            lossPredictArr.push(_this.lossAssessments[i]); // 【定损 预测】
 
                         } else if (thisMapTimestamp > nowDayTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
-                            // 预测数据的时候 真实数据是 null
-                            premiumRealArr.push(null);
-                            lossRealArr.push(null);
-                            // 预测数据
-                            premiumPredictArr.push(1020);
-                            lossPredictArr.push(3010);
+                            premiumRealArr.push(null); // 【保费 真实】  真实数据 传入 null 即可
+                            lossRealArr.push(null); // 【定损 真实】 真实数据 传入 null 即可
+                            premiumPredictArr.push(_this.premiums[i]); // 【保费 预测】 后端数据
+                            lossPredictArr.push(_this.lossAssessments[i]); // 【定损 预测】 后端数据
+
                         } else {
                             // 表示真实数据的情况
-                            premiumRealArr.push(2060);
-                            lossRealArr.push(1888);
-                            //真实数据的情况 预测数据传入 null 即可
-                            premiumPredictArr.push(null);
-                            lossPredictArr.push(null);
+                            premiumRealArr.push(_this.premiums[i]); // 【保费 真实】 后端数据
+                            lossRealArr.push(_this.lossAssessments[i]); // 【定损 真实】 后端数据
+                            premiumPredictArr.push(null); // 【保费 预测】 传入 null 即可
+                            lossPredictArr.push(null); // 【定损 预测】 传入 null 即可
                         }
                     }
 
@@ -602,26 +731,24 @@ export default {
 
                         if (nowMonthTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
-                            premiumRealArr.push(1020);
-                            lossRealArr.push(3010);
-                            premiumPredictArr.push(1020);
-                            lossPredictArr.push(3010);
+                            premiumRealArr.push(_this.premiums[i]); // 【保费 真实】 
+                            lossRealArr.push(_this.lossAssessments[i]); // 【定损 真实】
+                            premiumPredictArr.push(_this.premiums[i]); // 【保费 预测】
+                            lossPredictArr.push(_this.lossAssessments[i]); // 【定损 预测】
 
                         } else if (thisMapTimestamp > nowMonthTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
-                            // 预测数据的时候 真实数据是 null
-                            premiumRealArr.push(null);
-                            lossRealArr.push(null);
-                            // 预测数据
-                            premiumPredictArr.push(1020);
-                            lossPredictArr.push(3010);
+                            premiumRealArr.push(null); // 【保费 真实】  真实数据 传入 null 即可
+                            lossRealArr.push(null); // 【定损 真实】 真实数据 传入 null 即可
+                            premiumPredictArr.push(_this.premiums[i]); // 【保费 预测】 后端数据
+                            lossPredictArr.push(_this.lossAssessments[i]); // 【定损 预测】 后端数据
+
                         } else {
                             // 表示真实数据的情况
-                            premiumRealArr.push(2060);
-                            lossRealArr.push(1888);
-                            //真实数据的情况 预测数据传入 null 即可
-                            premiumPredictArr.push(null);
-                            lossPredictArr.push(null);
+                            premiumRealArr.push(_this.premiums[i]); // 【保费 真实】 后端数据
+                            lossRealArr.push(_this.lossAssessments[i]); // 【定损 真实】 后端数据
+                            premiumPredictArr.push(null); // 【保费 预测】 传入 null 即可
+                            lossPredictArr.push(null); // 【定损 预测】 传入 null 即可
                         }
                     }
 
@@ -710,9 +837,9 @@ export default {
              * 【一】 按日分析
              * 【二】 按月分析
              */
-            if (this.analyzeTimeSection === 'data') {
+            if (this.analyzeTimeSection === '0') {
                 initChartsByData(); // 初始化 图标 按日分析 
-            } else if (this.analyzeTimeSection === 'month') {
+            } else if (this.analyzeTimeSection === '1') {
                 initChartsByMonth(); // 初始化 图标 按月分析 
             }
 
@@ -831,21 +958,19 @@ export default {
 
                         if (nowDayTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
-                            proportionRealArr.push(67);
-                            proportionPredictArr.push(67);
+                            proportionRealArr.push(_this.ratios[i]); // 【真实数据】 同样是 后端数据
+                            proportionPredictArr.push(_this.ratios[i]); // 【预测数据】 同样是 后端数据
 
                         } else if (thisMapTimestamp > nowDayTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
-                            // 预测数据的时候 真实数据是 null
-                            proportionRealArr.push(null);
-                            // 预测数据
-                            proportionPredictArr.push(67);
+                           
+                            proportionRealArr.push(null);  // 【真实数据】预测数据的时候 真实数据是 null
+                            proportionPredictArr.push(_this.ratios[i]); // 【预测数据】 推入后端数据
 
                         } else {
                             // 表示真实数据的情况
-                            proportionRealArr.push(43);
-                            //真实数据的情况 预测数据传入 null 即可
-                            proportionPredictArr.push(null);
+                            proportionRealArr.push(_this.ratios[i]); // 【真实数据】 是 后端数据
+                            proportionPredictArr.push(null);  // 【预测数据】 真实数据的情况 预测数据传入 null 即可
                         }
                     }
 
@@ -888,7 +1013,7 @@ export default {
 
                     // 初始化 系列列表数据
                     for (let i = 0; i <= differDay; i++) { // 循环相差几天
-                        proportionTemArr.push(50); // 产保比
+                        proportionTemArr.push(_this.ratios[i]); // 产保比
                     }
 
                     series.push({
@@ -1027,9 +1152,9 @@ export default {
              * 【一】 按日分析
              * 【二】 按月分析
              */
-            if (this.analyzeTimeSection === 'data') {
+            if (this.analyzeTimeSection === '0') {
                 initChartsByData(); // 初始化 图标 按日分析 
-            } else if (this.analyzeTimeSection === 'month') {
+            } else if (this.analyzeTimeSection === '1') {
                 initChartsByMonth(); // 初始化 图标 按月分析 
             }
 
@@ -1198,7 +1323,7 @@ export default {
          */
         searchByConditions: function searchByConditions() {
             // 判断是否为空
-            if (this.analyzeTimeSection === 'data') {
+            if (this.analyzeTimeSection === '0') {
                 // 按日分析
                 if (!this.startDataTime || !this.endDataTime) {
                     return this.$alert('查询的日期不能为空', '查询条件有误');
@@ -1217,7 +1342,7 @@ export default {
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
-            this.analyzeTimeSection = 'data';
+            this.analyzeTimeSection = '0';
             this.startDataTime = this.initStartTime;
             this.endDataTime = this.initEndTime;
             this.startMonthTime = null;
