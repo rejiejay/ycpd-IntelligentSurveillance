@@ -5,8 +5,8 @@
     <div class="analyze-operate flex-start-bottom">
         <div class="analyze-time-section">
             <el-select v-model="analyzeTimeSection" placeholder="请选择统计分析">
-                <el-option label="按日分析" value="data"></el-option>
-                <el-option label="按月分析" value="month"></el-option>
+                <el-option label="按日分析" value="0"></el-option>
+                <el-option label="按月分析" value="1"></el-option>
             </el-select>
         </div>
 
