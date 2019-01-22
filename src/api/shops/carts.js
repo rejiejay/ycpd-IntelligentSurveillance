@@ -26,6 +26,18 @@ export function findAllStoreUsingPOST(pageNo, pageSzie, companyId, storeId, team
 }
 
 /**
+ * 删除车行列表
+ * @param {number} storeId 车行网点唯一标识
+ */
+export function removeStoreUsingGET(storeId) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/store/removeStore?storeId=${storeId}`,
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+    });
+}
+
+/**
  * 车行记录列表导出excel
  * @param {number} companyId 支公司 id
  * @param {number} storeId 网点 id

@@ -267,6 +267,8 @@ export default {
          * 根据支公司唯一id获取团队列表
          */
         queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
             queryTeamByBcIdUsingGET(bcId)
             .then(val => {
                 let data = val.data;

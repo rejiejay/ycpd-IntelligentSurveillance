@@ -159,7 +159,7 @@
 </template>
 
 <script>
-import { findAllStoreUsingPOST, exportStoreUsingGET, getStoreTemplateUsingGET } from "@/api/shops/carts";
+import { findAllStoreUsingPOST, exportStoreUsingGET, getStoreTemplateUsingGET, removeStoreUsingGET } from "@/api/shops/carts";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 import { queryStoreSelectUsingPOST } from "@/api/store";
@@ -252,8 +252,6 @@ export default {
 
             findAllStoreUsingPOST(currentPage, pageSize, companyId, storeId, teamId)
             .then(val => {
-                console.log(val)
-
                 let data = val.data;
 
                 _this.pageTotal = data.totalPages;
@@ -270,7 +268,23 @@ export default {
                     newItem.id = val.id; // 唯一标识
                     newItem.shopsNo = val.networkNo; // 车行编码
                     newItem.shopsName = val.networkName; // 车行名称
-                    newItem.shopsType = val.shopsType === 0 ? '4S店' : '修理厂';
+                    if ( val.shopsType === 0 ) {
+                        newItem.shopsType = '4S店';
+                    } else if ( val.shopsType === 1 ) {
+                        newItem.shopsType = '修理厂';
+                    } else if ( val.shopsType === 2 ) {
+                        newItem.shopsType = '二网';
+                    } else if ( val.shopsType === 3 ) {
+                        newItem.shopsType = '二手车行';
+                    } else if ( val.shopsType === 4 ) {
+                        newItem.shopsType = '续保';
+                    } else if ( val.shopsType === 5 ) {
+                        newItem.shopsType = '非车险';
+                    } else if ( val.shopsType === 6 ) {
+                        newItem.shopsType = '网络销售';
+                    } else if ( val.shopsType === 7 ) {
+                        newItem.shopsType = '其他';
+                    }
                     newItem.shopsRate = val.star; // 车行星级
                     newItem.isCooperate = val.isJoin === 0 ? '未合作' : '合作'; // 是否合作
                     newItem.address = val.address; // 地址
@@ -390,6 +404,7 @@ export default {
          * 修改一个项
          */
         modifierHandle: function modifierHandle(item) {
+            this.jumpToRouter('/shops/carts/details', item.original);
         },
 
         /**

@@ -818,7 +818,23 @@ export default {
                 _this.storenetworkName = data.networkName; // 网点名称
                 _this.storeaddress = `${data.province}${data.city}${data.county}${data.address}`; // 网点地址
                 _this.storeisJoin = data.isJoin === 1 ? '已签约' : '未签约'; // 是否合作
-                _this.storenetworkType = data.networkType === 0 ? '4S店' : '修理厂'; // 网点名称
+                if ( val.networkType === 0 ) {
+                    _this.storenetworkType = '4S店';
+                } else if ( val.networkType === 1 ) {
+                    _this.storenetworkType = '修理厂';
+                } else if ( val.networkType === 2 ) {
+                    _this.storenetworkType = '二网';
+                } else if ( val.networkType === 3 ) {
+                    _this.storenetworkType = '二手车行';
+                } else if ( val.networkType === 4 ) {
+                    _this.storenetworkType = '续保';
+                } else if ( val.networkType === 5 ) {
+                    _this.storenetworkType = '非车险';
+                } else if ( val.networkType === 6 ) {
+                    _this.storenetworkType = '网络销售';
+                } else if ( val.networkType === 7 ) {
+                    _this.storenetworkType = '其他';
+                }
                 let myStar = _this.starToRate(data.star);
                 _this.rate = myStar.rate;
                 _this.ratemax = myStar.ratemax;

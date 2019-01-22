@@ -43,43 +43,43 @@
                     >
                         <el-option  v-if="shopsType === '0' || shopsType === '1'"
                             label="A级"
-                            value="A"
+                            value="A级"
                         ></el-option>
                         <el-option  v-if="shopsType === '0' || shopsType === '1'"
                             label="B级"
-                            value="B"
+                            value="B级"
                         ></el-option>
                         <el-option  v-if="shopsType === '0' || shopsType === '1'"
                             label="C级"
-                            value="C"
+                            value="C级"
                         ></el-option>
                         <el-option  v-if="shopsType === '0' || shopsType === '1'"
                             label="D级"
-                            value="D"
+                            value="D级"
                         ></el-option>
                         <el-option  v-if="shopsType === '0' || shopsType === '1'"
                             label="E级"
-                            value="E"
+                            value="E级"
                         ></el-option>
                         <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
                             label="一星级"
-                            value="1"
+                            value="一星级"
                         ></el-option>
                         <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
                             label="二星级"
-                            value="2"
+                            value="二星级"
                         ></el-option>
                         <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
                             label="三星级"
-                            value="3"
+                            value="三星级"
                         ></el-option>
                         <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
                             label="四星级"
-                            value="4"
+                            value="四星级"
                         ></el-option>
                         <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
                             label="五星级"
-                            value="5"
+                            value="五星级"
                         ></el-option>
                     </el-select>
                 </div>
@@ -397,7 +397,6 @@ export default {
     },
 
 	mounted: function mounted() {
-        this.initPageData(); // 初始化页面数据
         this.initBaiduMap(); // 初始化百度地图
         this.queryCompanyList(); // 初始化 支公司下拉
     },
@@ -408,8 +407,28 @@ export default {
          */
         initPageData: function initPageData() {
             // 如果 页面状态 存在 id 表示编辑状态
-            if (this.$route.query.id) {
+            let query = this.$route.query;
+            let id = query.id;
+            if (id) {
+                
                 this.pageType = 'edit';
+                this.id = query.id; // 车行唯一标识
+                this.shopsNo = query.networkNo; // 车行编码
+                this.shopsName = query.networkName; // 车行名称
+                this.shopsType = `${query.shopsType}`; // 车行类型
+                this.shopsRate = `${query.star}`; // 车行星级
+                this.isJoin = `${query.isJoin}`; // 是否合作
+                this.contactName = `${query.contact}`; // 联系人
+                this.contactPhone = `${query.phone}`; // 联系电话
+                this.brand = `${query.brand}`; // 品牌
+                this.parCompany = query.superiorGroup; // 上级集团
+                this.subCompanyName = `${query.bcCode}`; // 支公司代码
+                this.team = `${query.teamId}`; // 团队
+                this.linkCode = query.channelCode; // 渠道代码
+                this.remark = query.remark; // 备注
+                this.address = query.address; // 地址
+                this.longitude = query.longitude; // 经度
+                this.latitude = query.latitude; // 纬度
             }
         },
 
@@ -542,6 +561,8 @@ export default {
                         label: item[1],
                     }));
                 }
+                
+                _this.initPageData(); // 初始化页面数据
 
             }, error => console.log(error))
         },
