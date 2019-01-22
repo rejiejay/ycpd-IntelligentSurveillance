@@ -14,20 +14,23 @@ import notFilter from '@/components/apibasics-notFilter';
  * @param {number || string} state 状态
  */
 export function queryUserListUsingPOST(currentPage, pageCount, userType, bcName, staffName, staffCode, roleName, state) {
+    let body = {
+        currentPage: currentPage ? currentPage : 1,
+        pageCount: pageCount ? pageCount : 10,
+        bcName: bcName ? bcName : '',
+        staffName: staffName ? staffName : '',
+        staffCode: staffCode ? staffCode : '',
+        roleName: roleName ? roleName : '',
+        state: state ? state : '',
+    }
+
+    userType ? body.userType = userType : '';
+
     return notFilter({
         url: `${config.url.origin}/cdimms/server/user/queryUserList`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
-        data: {
-            currentPage: currentPage ? currentPage : 1,
-            pageCount: pageCount ? pageCount : 10,
-            userType: userType ? userType : '',
-            bcName: bcName ? bcName : '',
-            staffName: staffName ? staffName : '',
-            staffCode: staffCode ? staffCode : '',
-            roleName: roleName ? roleName : '',
-            state: state ? state : '',
-        }
+        data: body
     });
 }
 

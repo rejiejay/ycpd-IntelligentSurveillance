@@ -12,17 +12,20 @@ import axios from 'axios';
  * @param {number} alarmName 关键字查询
  */
 export function queryAlarmRuleListUsingPOST(currentPage, pageCount, indicatorType, objType, alarmName) {
+    let body = {
+        currentPage: currentPage ? currentPage : 1,
+        pageCount: pageCount ? pageCount : 10,
+        alarmName: alarmName ? alarmName : '',
+    }
+
+    indicatorType ? body.indicatorType = indicatorType : '';
+    objType ? body.objType = objType : '';
+
     return notFilter({
         url: `${config.url.origin}/cdimms/server/alarmRule/queryAlarmRuleList`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
-        data: {
-            currentPage: currentPage ? currentPage : 1,
-            pageCount: pageCount ? pageCount : 10,
-            indicatorType: indicatorType ? indicatorType : '',
-            objType: objType ? objType : '',
-            alarmName: alarmName ? alarmName : '',
-        }
+        data: body
     });
 }
 
@@ -33,17 +36,20 @@ export function queryAlarmRuleListUsingPOST(currentPage, pageCount, indicatorTyp
  * @param {number} alarmName 关键字查询
  */
 export function exportAlarmRuleListUsingPOST(indicatorType, objType, alarmName) {
+    let body = {
+        alarmName: alarmName ? alarmName : '',
+    }
+
+    indicatorType ? body.indicatorType = indicatorType : '';
+    objType ? body.objType = objType : '';
+
     return axios({
         url: `${config.url.origin}/cdimms/server/alarmRule/exportAlarmRuleList`,
         method: 'post',
         headers: {
             token: window.sessionStorage.cdimmstoken,
         },
-        data: {
-            indicatorType: indicatorType ? indicatorType : '',
-            objType: objType ? objType : '',
-            alarmName: alarmName ? alarmName : '',
-        },
+        data: body,
         responseType: 'arraybuffer'
     }).then(response => {
         let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
