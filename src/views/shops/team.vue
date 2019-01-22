@@ -199,12 +199,12 @@ export default {
 
                 _this.pageTotal = data.totalPages;
 
-                if (!data || !data.content || data.content instanceof Array === false || data.content.length <= 0) {
+                if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
                     _this.teamList = [];
                     return false;
                 }
 
-                _this.teamList = data.content.map(val => {
+                _this.teamList = data.objs.map(val => {
                     let newItem = {};
 
                     newItem.original = val; // 后端返的原始数据

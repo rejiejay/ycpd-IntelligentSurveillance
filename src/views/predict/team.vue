@@ -187,6 +187,7 @@ export default {
                 //     teamLeader: '', // 团队领导
                 //     subCompany: '', // 支公司
                 //     month: '', // 月份
+                //     premium: '', // 定损支出
                 //     loss: '', // 定损支出
                 //     proportion: '', // 产保比
                 //     remark: '', // 备注
@@ -251,7 +252,8 @@ export default {
                     newItem.teamName = val.teamName; // 团队名称
                     newItem.teamLeader = val.manager; // 团队领导
                     newItem.subCompany = val.bcName; // 支公司
-                    newItem.month = val.month; // 月份
+                    newItem.month = val.predictionDate; // 月份
+                    newItem.premium = val.income; // 定损支出
                     newItem.loss = val.expense; // 定损支出
                     newItem.proportion = val.ratio; // 产保比
                     newItem.remark = val.remark; // 备注

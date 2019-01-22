@@ -211,7 +211,7 @@ export default {
                     newItem.id = val.id; // 唯一标识
                     newItem.subCompanyCode = val.bcCode; // 支公司代码
                     newItem.subCompanyName = val.bcName; // 支公司名称
-                    newItem.month = val.month; // 月份
+                    newItem.month = val.predictionDate; // 月份
                     newItem.premium = val.income; // 保费收入
                     newItem.loss = val.expense; // 定损支出
                     newItem.proportion = val.ratio; // 产保比

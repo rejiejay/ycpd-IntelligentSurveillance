@@ -232,7 +232,7 @@ export default {
     },
 
 	mounted: function mounted() {
-        // this.queryAllStore(); // 初始化 获取团队列表
+        this.queryAllStore(); // 初始化 获取团队列表
         this.queryCompanyList(); // 支公司下拉选项
         this.selectCartsStoreSearch(''); // 车行下拉
     },
@@ -258,12 +258,12 @@ export default {
 
                 _this.pageTotal = data.totalPages;
 
-                if (!data || !data.content || data.content instanceof Array === false || data.content.length <= 0) {
+                if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
                     _this.cartsList = []; // 记得清空
                     return false;
                 }
 
-                _this.cartsList = data.content.map(val => {
+                _this.cartsList = data.objs.map(val => {
                     let newItem = {};
 
                     newItem.original = val; // 后端返的原始数据

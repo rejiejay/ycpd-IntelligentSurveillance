@@ -155,7 +155,7 @@ export default {
     },
 
 	mounted: function mounted() {
-        // this.queryAllAlarmLog();
+        this.queryAllAlarmLog();
     },
 
 	methods: {
