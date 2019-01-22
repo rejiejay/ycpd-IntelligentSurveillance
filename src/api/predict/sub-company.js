@@ -1,4 +1,5 @@
 import apibasics from '@/components/apibasics';
+import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 import axios from 'axios';
 
@@ -10,7 +11,7 @@ import axios from 'axios';
  * @param {number} month 月份
  */
 export function queryAllCompanyPredictionUsingPOST(pageNo, pageSzie, bcId, month) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/prediction/queryAllCompanyPrediction`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

@@ -1,6 +1,7 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
 import axios from 'axios';
+import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 统计分析保费数据
@@ -12,7 +13,7 @@ import axios from 'axios';
  * @param {number} networkId 网点id
  */
 export function statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/sa/statisticalAnalysis`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

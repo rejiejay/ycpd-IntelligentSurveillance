@@ -1,6 +1,7 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
 import axios from 'axios';
+import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 获取团队列表
@@ -9,7 +10,7 @@ import axios from 'axios';
  * @param {number} keyword 团队关键词查询
  */
 export function queryAllTeamUsingPOST(pageNo, pageSzie, keyword) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/team/queryAllTeam`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

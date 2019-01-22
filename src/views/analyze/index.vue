@@ -328,7 +328,7 @@ export default {
                         date: date,
                         premium: premium,
                         loss: loss,
-                        proportion: `${proportion}%`,
+                        proportion: `${proportion * 100}%`,
                         type: type,
                     });
                 }
@@ -337,8 +337,8 @@ export default {
 
                 statistics.push({
                     date: '汇总',
-                    premium: countpremium,
-                    loss: countloss,
+                    premium: Math.round(countpremium * 100) / 100,
+                    loss: Math.round(countloss * 100) / 100,
                     proportion: countProportion ? `${countProportion}%` : '0%',
                     type: '汇总数据',
                 });
@@ -374,7 +374,7 @@ export default {
                         date: date,
                         premium: premium,
                         loss: loss,
-                        proportion: `${proportion}%`,
+                        proportion: `${proportion * 100}%`,
                         type: type,
                     });
                 }
@@ -383,8 +383,8 @@ export default {
 
                 statistics.push({
                     date: '汇总',
-                    premium: countpremium,
-                    loss: countloss,
+                    premium: Math.round(countpremium * 100) / 100,
+                    loss: Math.round(countloss * 100) / 100,
                     proportion: countProportion ? `${countProportion}%` : '0%',
                     type: '汇总数据',
                 });

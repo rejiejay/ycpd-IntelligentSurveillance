@@ -1,6 +1,7 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
 import axios from 'axios';
+import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 获取车行列表
@@ -11,7 +12,7 @@ import axios from 'axios';
  * @param {number} teamId 团队 id
  */
 export function findAllStoreUsingPOST(pageNo, pageSzie, companyId, storeId, teamId) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/store/queryAllStore`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

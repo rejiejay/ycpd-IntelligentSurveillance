@@ -1,6 +1,7 @@
 import config from '@/config';
 import apibasics from '@/components/apibasics';
 import axios from 'axios';
+import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 产保比明细列表
@@ -24,7 +25,7 @@ export function listPremiumLossAssessRatioUsingGET(pageNo, pageSize, startDate, 
     urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
     urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
 
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/premiumLossAssessRatio/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

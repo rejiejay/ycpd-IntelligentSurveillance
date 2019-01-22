@@ -70,7 +70,7 @@ apibasics.interceptors.request.use(
         Message({
             message: `请求未发送, 原因: JSON.stringify(${error})`,
             type: 'error',
-            duration: 5 * 1000
+            duration: 2.5 * 1000
         });
         Promise.reject(error); // 这个的意思是 获取到 Promise 然后调用 reject
     },
@@ -104,7 +104,7 @@ apibasics.interceptors.response.use(
             Message({
                 message: `网络错误, 请检查你的网络`,
                 type: 'error',
-                duration: 5 * 1000
+                duration: 2.5 * 1000
             });
             return Promise.reject('网络错误, 请检查你的网络');
         }
@@ -114,7 +114,7 @@ apibasics.interceptors.response.use(
             Message({
                 message: `登录过期, 请重新登录`,
                 type: 'error',
-                duration: 5 * 1000
+                duration: 2.5 * 1000
             });
             window.sessionStorage.removeItem('cdimmstoken');
             Router.push({ path: '/login' });
@@ -126,7 +126,7 @@ apibasics.interceptors.response.use(
             Message({
                 message: `服务器正在升级或异常,请稍后再试!`,
                 type: 'error',
-                duration: 5 * 1000
+                duration: 2.5 * 1000
             });
             // 跳转等正在升级页面
             Router.push({ path: '/404' });
@@ -138,7 +138,7 @@ apibasics.interceptors.response.use(
         Message({
             message: error.message,
             type: 'error',
-            duration: 5 * 1000
+            duration: 2.5 * 1000
         });
 
         return Promise.reject(error);

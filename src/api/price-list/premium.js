@@ -1,5 +1,6 @@
 import config from '@/config';
 import apibasics from '@/components/apibasics';
+import notLoading from '@/components/apibasics-notLoading';
 import axios from 'axios';
 
 /**
@@ -24,7 +25,7 @@ export function listPremiumUsingGET(pageNo, pageSize, startDate, endDate, storeI
     urlparam += lowestSumpremium ? `&lowestSumpremium=${lowestSumpremium}` : '';
     urlparam += highestSumpremium ? `&highestSumpremium=${highestSumpremium}` : '';
 
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/premium/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

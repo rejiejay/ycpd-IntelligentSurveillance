@@ -1,4 +1,5 @@
 import apibasics from '@/components/apibasics';
+import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 import axios from 'axios';
 
@@ -11,7 +12,7 @@ import axios from 'axios';
  * @param {number} endTime 结束时间
  */
 export function queryAllAlarmLogUsingPOST(pageNo, pageSzie, arId, startTime, endTime) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/alarmlog/queryAllAlarmLog`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

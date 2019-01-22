@@ -514,7 +514,7 @@ export default {
                     _this.$message({
                         message: `请求成功!`,
                         type: 'success',
-                        duration: 5 * 1000
+                        duration: 2.5 * 1000
                     });
                     _this.$router.back(-1);
 

@@ -39,7 +39,7 @@ export function listStoreToMapUsingGET(startDate, endDate, bcId, teamId, id, isJ
         urlparam = `?${urlparam.substr(1)}`;
     }
     
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/storeMap/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

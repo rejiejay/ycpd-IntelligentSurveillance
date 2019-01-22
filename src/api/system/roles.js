@@ -1,5 +1,6 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
+import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 获取角色列表
@@ -9,7 +10,7 @@ import config from '@/config';
  * @param {number} roleName 角色名称 (非必填)
  */
 export function queryRoleListUsingPOST(currentPage, pageCount, roleCode, roleName) {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/role/queryRoleList`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -26,7 +27,7 @@ export function queryRoleListUsingPOST(currentPage, pageCount, roleCode, roleNam
  * 角色代码下拉框
  */
 export function queryRoleCodeListUsingGET() {
-    return apibasics({
+    return notLoading({
         url: `${config.url.origin}/cdimms/server/role/queryRoleCodeList`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
