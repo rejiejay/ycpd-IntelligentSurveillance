@@ -92,3 +92,96 @@ export function getStoreTemplateUsingGET() {
         link.click();
     }).catch(error =>  console.log(error));
 }
+
+/**
+ * 新增车行网点
+ * @param {string} networkNo 车行编码
+ * @param {string} networkName 车行名称
+ * @param {string} networkType 车行类型
+ * @param {string} star 车行星级
+ * @param {string} isJoin 是否合作
+ * @param {string} contact 联系人
+ * @param {string} phone 联系电话
+ * @param {string} brand 品牌
+ * @param {string} superiorGroup 上级集团
+ * @param {string} bcId 支公司
+ * @param {string} teamId 团队
+ * @param {string} channelCode 渠道代码
+ * @param {string} remark 备注
+ * @param {string} address 地址
+ * @param {string} longitude 经度
+ * @param {string} latitude 纬度
+ */
+export function addStoreUsingPOST(networkNo, networkName, networkType, star, isJoin, contact, phone, brand, superiorGroup, bcId, teamId, channelCode, remark, address, longitude, latitude) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/store/addStore`,
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        data: {
+            networkNo: networkNo, // 车行编码
+            networkName: networkName, // 车行名称
+            networkType: networkType, // 车行类型
+            star: star, // 车行星级
+            isJoin: isJoin, // 是否合作
+            contact: contact, // 联系人
+            phone: phone, // 联系电话
+            brand: brand, // 品牌
+            superiorGroup: superiorGroup, // 上级集团
+            bcId: bcId, // 支公司
+            teamId: teamId, // 团队
+            channelCode: channelCode, // 渠道代码
+            remark: remark ? remark : '', // 备注
+            address: address, // 地址
+            longitude: longitude, // 经度
+            latitude: latitude, // 纬度
+        }
+    });
+}
+
+/**
+ * 新增车行网点
+ * @param {string} id 车行网点唯一标识
+ * @param {string} networkNo 车行编码
+ * @param {string} networkName 车行名称
+ * @param {string} networkType 车行类型
+ * @param {string} star 车行星级
+ * @param {string} isJoin 是否合作
+ * @param {string} contact 联系人
+ * @param {string} phone 联系电话
+ * @param {string} brand 品牌
+ * @param {string} superiorGroup 上级集团
+ * @param {string} bcId 支公司
+ * @param {string} teamId 团队
+ * @param {string} channelCode 渠道代码
+ * @param {string} remark 备注
+ * @param {string} address 地址
+ * @param {string} longitude 经度
+ * @param {string} latitude 纬度
+ */
+export function modifyStoreUsingPOST(id, networkNo, networkName, networkType, star, isJoin, contact, phone, brand, superiorGroup, bcId, teamId, channelCode, remark, address, longitude, latitude) {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/store/modifierStore`,
+        method: 'post',
+        headers: {'Content-Type': 'application/json'},
+        data: {
+            id: id, // 车行网点唯一标识
+            networkNo: networkNo, // 车行编码
+            networkName: networkName, // 车行名称
+            networkType: networkType, // 车行类型
+            star: star, // 车行星级
+            isJoin: isJoin, // 是否合作
+            contact: contact, // 联系人
+            phone: phone, // 联系电话
+            brand: brand, // 品牌
+            superiorGroup: superiorGroup, // 上级集团
+            bcId: bcId, // 支公司
+            teamId: teamId, // 团队
+            channelCode: channelCode, // 渠道代码
+            remark: remark ? remark : '', // 备注
+            address: address, // 地址
+            longitude: longitude, // 经度
+            latitude: latitude, // 纬度
+        }
+    });
+}
+

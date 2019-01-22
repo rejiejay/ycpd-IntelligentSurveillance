@@ -36,13 +36,51 @@
             <el-col :span="8">
                 <div class="details-form-item">
                     <div class="form-item-title">车行星级</div>
-                    <el-select v-model="shopsRate" placeholder="请选择车行星级">
-                        <el-option
-                            v-for="item in shopsRateOptions"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value">
-                        </el-option>
+                    <el-select 
+                        v-model="shopsRate" 
+                        :disabled="!shopsType"
+                        placeholder="请选择车行星级"
+                    >
+                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                            label="A级"
+                            value="A"
+                        ></el-option>
+                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                            label="B级"
+                            value="B"
+                        ></el-option>
+                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                            label="C级"
+                            value="C"
+                        ></el-option>
+                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                            label="D级"
+                            value="D"
+                        ></el-option>
+                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                            label="E级"
+                            value="E"
+                        ></el-option>
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                            label="一星级"
+                            value="1"
+                        ></el-option>
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                            label="二星级"
+                            value="2"
+                        ></el-option>
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                            label="三星级"
+                            value="3"
+                        ></el-option>
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                            label="四星级"
+                            value="4"
+                        ></el-option>
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                            label="五星级"
+                            value="5"
+                        ></el-option>
                     </el-select>
                 </div>
             </el-col>
@@ -50,9 +88,9 @@
             <el-col :span="8">
                 <div class="details-form-item">
                     <div class="form-item-title">是否合作</div>
-                    <el-select v-model="shopsRate" placeholder="请选择是否合作">
-                        <el-option label="合作" value="合作"></el-option>
-                        <el-option label="不合作" value="不合作"></el-option>
+                    <el-select v-model="isJoin" placeholder="请选择是否合作">
+                        <el-option label="合作" value="1"></el-option>
+                        <el-option label="不合作" value="0"></el-option>
                     </el-select>
                 </div>
             </el-col>
@@ -106,7 +144,11 @@
             <el-col :span="8">
                 <div class="details-form-item">
                     <div class="form-item-title">团队</div>
-                    <el-select v-model="team" placeholder="请选择团队">
+                    <el-select 
+                        v-model="team" 
+                        placeholder="请选择团队"
+                        :disabled="!subCompanyName"
+                    >
                         <el-option
                             v-for="item in teamOptions"
                             :key="item.value"
@@ -204,9 +246,9 @@
 
     <div class="carts-details-operate flex-center">
         <div class="details-operate-container flex-start">
-            <el-button type="info" plain>取消</el-button>
+            <el-button type="info" plain @click="$router.back(-1)">取消</el-button>
             <div style="width: 45px;"></div>
-            <el-button type="primary">保存</el-button>
+            <el-button type="primary" @click="submit">保存</el-button>
         </div>
     </div>
 </div>
@@ -215,6 +257,10 @@
 <script>
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
+// 请求类
+import { addStoreUsingPOST, modifyStoreUsingPOST } from "@/api/shops/carts";
+import { queryTeamByBcIdUsingGET } from "@/api/team";
+import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
     name: 'carts-details',
@@ -240,59 +286,54 @@ export default {
             shopsType: '', // 车行类型
             shopsTypeOptions: [
                 {
-                    value: '4S店',
+                    value: '0',
                     label: '4S店',
                 }, {
-                    value: '二网',
-                    label: '二网',
-                }, {
-                    value: '修理厂',
+                    value: '1',
                     label: '修理厂',
                 }, {
-                    value: '二手车行',
+                    value: '2',
+                    label: '二网',
+                }, {
+                    value: '3',
                     label: '二手车行',
                 }, {
-                    value: '续保',
+                    value: '4',
                     label: '续保',
                 }, {
-                    value: '非车险',
+                    value: '5',
                     label: '非车险',
                 }, {
-                    value: '网络销售',
+                    value: '6',
                     label: '网络销售',
                 }, {
-                    value: '其他',
+                    value: '7',
                     label: '其他',
                 }
             ],
+            /**
+             * 4S店与二网：A级、B级、C级、D级、E级 
+             * 其他：一星级、二星级、三星级、四星级、五星级
+             */
             shopsRate: '', // 车行星级
-            shopsRateOptions: [
-                /**
-                 * 4S店与二网：A级、B级、C级、D级、E级 
-                 * 其他：一星级、二星级、三星级、四星级、五星级
-                 */
-                {
-                    value: '车行星级一',
-                    label: '车行星级一',
-                }
-            ],
+            isJoin: '', // 是否合作
             contactName: '', // 联系人
             contactPhone: '', // 联系电话
             brand: '', // 品牌
             parCompany: '', // 上级集团
             subCompanyName: '', // 支公司
             subCompanyNameOptions: [
-                {
-                    value: '支公司一',
-                    label: '支公司一',
-                }
+                // {
+                //     value: '支公司一',
+                //     label: '支公司一',
+                // }
             ],
             team: '', // 团队
             teamOptions: [
-                {
-                    value: '团队一',
-                    label: '团队一',
-                }
+                // {
+                //     value: '团队一',
+                //     label: '团队一',
+                // }
             ],
             linkCode: '', // 渠道代码
             remark: '', // 备注
@@ -346,21 +387,185 @@ export default {
         },
     },
 
+    watch: {
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        subCompanyName: function subCompanyName(newsubcompany) {
+            this.queryTeamByBcId(newsubcompany);
+        },
+    },
+
 	mounted: function mounted() {
         this.initPageData(); // 初始化页面数据
         this.initBaiduMap(); // 初始化百度地图
+        this.queryCompanyList(); // 初始化 支公司下拉
     },
 
 	methods: {
         /**
-         * 跳转到路由
-         * @param {object} query 携带的参数 非必填
+         * 初始化页面数据
          */
         initPageData: function initPageData() {
             // 如果 页面状态 存在 id 表示编辑状态
             if (this.$route.query.id) {
                 this.pageType = 'edit';
             }
+        },
+
+        /**
+         * 新增预警
+         */
+        submit: function submit() {
+            const _this = this;
+
+            if (!this.shopsNo) {
+                return this.$notify({title: '提示', message: '车行编码不能为空', duration: 0 });
+            }
+            if (!this.shopsName) {
+                return this.$notify({title: '提示', message: '车行名称不能为空', duration: 0 });
+            }
+            if (!this.shopsType) {
+                return this.$notify({title: '提示', message: '请选择车行类型', duration: 0 });
+            }
+            if (!this.shopsRate) {
+                return this.$notify({title: '提示', message: '请选择车行星级', duration: 0 });
+            }
+            if (!this.isJoin) {
+                return this.$notify({title: '提示', message: '请选择是否合作', duration: 0 });
+            }
+            if (!this.contactName) {
+                return this.$notify({title: '提示', message: '联系人不能为空', duration: 0 });
+            }
+            if (!this.contactPhone) {
+                return this.$notify({title: '提示', message: '联系电话不能为空', duration: 0 });
+            }
+            if (!this.brand) {
+                return this.$notify({title: '提示', message: '品牌不能为空', duration: 0 });
+            }
+            if (!this.parCompany) {
+                return this.$notify({title: '提示', message: '上级集团不能为空', duration: 0 });
+            }
+            if (!this.subCompanyName) {
+                return this.$notify({title: '提示', message: '请选择支公司', duration: 0 });
+            }
+            if (!this.team) {
+                return this.$notify({title: '提示', message: '请选择团队', duration: 0 });
+            }
+            if (!this.linkCode) {
+                return this.$notify({title: '提示', message: '渠道代码不能为空', duration: 0 });
+            }
+            if (!this.address || !this.longitude || !this.latitude ) {
+                return this.$notify({title: '提示', message: '请选择地址', duration: 0 });
+            }
+
+            let id = this.id; // 车行唯一标识
+            let networkNo = this.shopsNo; // 车行编码
+            let networkName = this.shopsName; // 车行名称
+            let networkType = this.shopsType; // 车行类型
+            let star = this.shopsRate; // 车行星级
+            let isJoin = this.isJoin; // 是否合作
+            let contact = this.contactName; // 联系人
+            let phone = this.contactPhone; // 联系电话
+            let brand = this.brand; // 品牌
+            let superiorGroup = this.parCompany; // 上级集团
+            let bcId = this.subCompanyName; // 支公司
+            let teamId = this.team; // 团队
+            let channelCode = this.linkCode; // 渠道代码
+            let remark = this.remark; // 备注
+            let address = this.address; // 地址
+            let longitude = this.longitude; // 经度
+            let latitude = this.latitude; // 纬度
+
+            let addStore = () => {
+
+                addStoreUsingPOST(networkNo, networkName, networkType, star, isJoin, contact, phone, brand, superiorGroup, bcId, teamId, channelCode, remark, address, longitude, latitude)
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$message({
+                            showClose: true,
+                            message: '添加成功',
+                            type: 'success'
+                        });
+                        _this.$router.back(-1);
+                        
+                    } else if (val.code === 1001) {
+                        return _this.$alert('添加支公司规则异常', '添加失败');
+                    } else {
+                        return _this.$alert(val.msg, '添加失败');
+                    }
+
+                }, error => console.log(error));
+            }
+
+            let modifyStore = () => {
+                modifyStoreUsingPOST(id, networkNo, networkName, networkType, star, isJoin, contact, phone, brand, superiorGroup, bcId, teamId, channelCode, remark, address, longitude, latitude)
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$message({
+                            showClose: true,
+                            message: '修改成功',
+                            type: 'success'
+                        });
+                        _this.$router.back(-1);
+                        
+                    } else if (val.code === 1001) {
+                        return _this.$alert('修改支公司异常', '修改失败');
+                    } else {
+                        return _this.$alert(val.msg, '修改失败');
+                    }
+
+                }, error => console.log(error));
+            }
+
+            if (this.pageType === 'add') {
+                addStore()
+            } else {
+                modifyStore();
+            }
+
+        },
+        
+        /**
+         * 支公司下拉选项
+         */
+        queryCompanyList: function queryCompanyList() {
+            const _this  = this;
+
+            queryCompanyListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyNameOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 根据支公司唯一id获取团队列表
+         */
+        queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this = this;
+
+            queryTeamByBcIdUsingGET(bcId)
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamOptions = data.map(item => ({
+                        value: item[0],
+                        label: item[1],
+                    }));
+                } else {
+                    _this.teamOptions = []; // 记得清空
+                }
+
+            }, error => console.log(error))
         },
 
         /**
