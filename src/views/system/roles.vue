@@ -16,7 +16,7 @@
             <el-input v-model="rolesName" type="text" :clearable="true" placeholder="角色名称"></el-input>
 
             <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryRoleList();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportRoleList">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
     
@@ -77,7 +77,7 @@
 
 <script>
 // 请求类
-import { queryRoleListUsingPOST, queryRoleCodeListUsingGET } from "@/api/system/roles";
+import { queryRoleListUsingPOST, queryRoleCodeListUsingGET, exportRoleListUsingPOST } from "@/api/system/roles";
 
 export default {
     name: 'system-roles',
@@ -121,28 +121,6 @@ export default {
 
 	methods: {
         /**
-         * 角色代码下拉框
-         */
-        initRolesCode: function initRolesCode() {
-            const _this  = this;
-
-            queryRoleCodeListUsingGET()
-            .then(val => {
-                let data = val.data;
-
-                if (data && data instanceof Array && data.length > 0) {
-                    _this.rolesCodeOptions = data.map(item => {
-                        return {
-                            value: item,
-                            label: item,
-                        }
-                    });
-                }
-
-            }, error => console.log(error))
-        },
-
-        /**
          * 请求角色列表
          */
         queryRoleList: function queryRoleList() {
@@ -176,6 +154,38 @@ export default {
                 } else {
                     _this.rolesList = [];
 
+                }
+
+            }, error => console.log(error))
+        },
+
+        /**
+         * 导出角色
+         */
+        exportRoleList: function exportRoleList() {
+            let roleCode = this.rolesCodeSection ? this.rolesCodeSection : null;
+            let rolesName = this.rolesName ? this.rolesName : null;
+
+            exportRoleListUsingPOST(roleCode, rolesName);
+        },
+
+        /**
+         * 角色代码下拉框
+         */
+        initRolesCode: function initRolesCode() {
+            const _this  = this;
+
+            queryRoleCodeListUsingGET()
+            .then(val => {
+                let data = val.data;
+
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.rolesCodeOptions = data.map(item => {
+                        return {
+                            value: item,
+                            label: item,
+                        }
+                    });
                 }
 
             }, error => console.log(error))

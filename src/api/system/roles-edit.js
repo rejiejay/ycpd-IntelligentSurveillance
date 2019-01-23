@@ -1,3 +1,4 @@
+import notFilter from '@/components/apibasics-notFilter';
 import apibasics from '@/components/apibasics';
 import config from '@/config';
 
@@ -9,7 +10,7 @@ import config from '@/config';
  * @param {number} roleList 权限
  */
 export function addRoleUsingPOST(roleCode, roleName, roleDetail, roleList) {
-    return apibasics({
+    return notFilter({
         url: `${config.url.origin}/cdimms/server/role/addRole`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -43,7 +44,7 @@ export function queryUserUsingGET(roleName) {
  * @param {number} roleList 权限
  */
 export function modifyRoleUsingPOST(id, roleCode, roleName, roleDetail, roleList) {
-    return apibasics({
+    return notFilter({
         url: `${config.url.origin}/cdimms/server/role/modifyRole`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

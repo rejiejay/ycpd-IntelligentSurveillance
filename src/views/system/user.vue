@@ -45,7 +45,7 @@
             </el-select>
 
             <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; queryUserList();">查询</el-button>
-            <el-button icon="el-icon-download" type="success">导出</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportUserList">导出</el-button>
             <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
         </div>
     
@@ -121,7 +121,7 @@
 
 <script>
 // 请求类
-import { queryUserListUsingPOST, queryRoleListUsingGET } from "@/api/system/user";
+import { queryUserListUsingPOST, queryRoleListUsingGET, exportUserListUsingPOST } from "@/api/system/user";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
@@ -276,6 +276,21 @@ export default {
                 }
 
             }, error => console.log(error));
+        },
+
+        /**
+         * 导出用户模板
+         */
+        exportUserList: function exportUserList() {
+            const _this  = this;
+
+            let userType = this.userTypeSection ? this.userTypeSection : ''; // 用户类型
+            let bcName = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
+            let staffName = this.userName ? this.userName : ''; // 用户姓名
+            let staffCode = this.userCode ? this.userCode : ''; // 用户代码
+            let roleName = this.rolesSection ? this.rolesSection : ''; // 角色
+            let state = this.userStatusSection ? this.userStatusSection : ''; // 状态
+            exportUserListUsingPOST(userType, bcName, staffName, staffCode, roleName, state);
         },
 
         /**

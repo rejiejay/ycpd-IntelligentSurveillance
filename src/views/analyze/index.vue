@@ -75,7 +75,7 @@
         </el-select>
 
         <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
-        <el-button icon="el-icon-download" type="success">导出</el-button>
+        <el-button icon="el-icon-download" type="success" @click="exportStatisticalAnalysis">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
 
@@ -287,6 +287,20 @@ export default {
             this.initAnalyzeCharts(); // 初始化 图表
         },
 
+        /**
+         * 初始化表单统计
+         */
+        exportStatisticalAnalysis: function exportStatisticalAnalysis() {
+            let type = this.analyzeTimeSection;
+            let startDate = TimeConver.dateToFormat(this.startDataTime); 
+            let endDate = TimeConver.dateToFormat(this.endDataTime); 
+            let bcId = this.subCompanySection; 
+            let teamId = this.teamSection; 
+            let networkId = this.regionSection;
+
+            exportStatisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId);
+        },
+        
         /**
          * 初始化表单统计
          */

@@ -18,7 +18,7 @@
                 name="username" 
                 type="text" 
                 auto-complete="on" 
-                placeholder="请输入手机号" 
+                placeholder="请输入用户名" 
             ></el-input>
         </el-form-item>
 
@@ -308,15 +308,19 @@ export default {
                             _this.getToken();
 
                         } else if (response.code === 1004) {
-                            alert('登陆异常,请重新登陆!');
+                            alert('该用户不是系统用户!');
                             _this.getToken();
 
                         } else if (response.code === 1005) {
-                            alert('该用户不是系统用户!');
+                            alert('用户已经被锁定不能登录，请与管理员联系!');
                             _this.getToken();
 
                         } else if (response.code === 1006) {
                             alert('用户或密码不正确!');
+                            _this.getToken();
+
+                        } else if (response.code === 1007) {
+                            alert('登陆异常,请重新登陆!');
                             _this.getToken();
 
                         } else {
