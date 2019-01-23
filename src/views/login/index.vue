@@ -319,6 +319,10 @@ export default {
                             alert('用户或密码不正确!');
                             _this.getToken();
 
+                        } else {
+                            alert(response.msg);
+                            _this.getToken();
+
                         }
                     })
                     .catch(error => alert(`请求登录失败, 原因：${JSON.stringify(error)}`));

@@ -57,3 +57,14 @@ export function exportAlarmLogUsingGET(arId, startTime, endTime) {
         link.click();
     }).catch(error =>  console.log(error));
 }
+
+/**
+ * 查询预警规则下拉列表
+ */
+export function queryAlarmRuleNameUsingGET() {
+    return notLoading({
+        url: `${config.url.origin}/cdimms/server/alarmRule/queryAlarmRuleName`,
+        method: 'get',
+        headers: {'Content-Type': 'application/json'},
+    });
+}

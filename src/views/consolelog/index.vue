@@ -75,7 +75,7 @@
 // 工具类
 import TimeConver from '@/utils/TimeConver';
 // 请求类
-import { queryAllAlarmLogUsingPOST, exportAlarmLogUsingGET } from "@/api/consolelog";
+import { queryAllAlarmLogUsingPOST, exportAlarmLogUsingGET, queryAlarmRuleNameUsingGET } from "@/api/consolelog";
 
 export default {
     name: 'consolelog',
@@ -156,6 +156,7 @@ export default {
 
 	mounted: function mounted() {
         this.queryAllAlarmLog();
+        this.queryAlarmRuleName(); // 初始化 查询预警规则下拉列表
     },
 
 	methods: {
@@ -208,6 +209,30 @@ export default {
             let endTime = this.startendTimeOptions[1] ? TimeConver.dateToFormat(this.startendTimeOptions[1]) : '';
 
             exportAlarmLogUsingGET(arId, startTime, endTime);
+        },
+
+        /**
+         * 初始化 查询预警规则下拉列表
+         */
+        queryAlarmRuleName: function queryAlarmRuleName() {
+            const _this = this;
+
+            queryAlarmRuleNameUsingGET()
+            .then(res => {
+                console.log(val)
+
+                let data = val.data;
+
+                if (!data|| !data instanceof Array === false || data.length <= 0) {
+                    return false;
+                }
+
+                _this.warnNameOptions = data.map(item => ({
+                    value: item[0],
+                    label: item[1],
+                }));
+
+            }, error => console.log(error));
         },
 
         /**

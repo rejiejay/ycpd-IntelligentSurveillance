@@ -11,6 +11,7 @@
 <script>
 // 资源类
 import picc from '@/assets/picc.png';
+import { Loading } from 'element-ui';
 
 export default {
     name: 'preview',

@@ -121,8 +121,8 @@ export default {
 
 	mounted: function mounted() {
         this.queryAllTeam(); // 初始化 获取团队列表
-        this.queryCompanyList(); // 支公司下拉选项
-        this.selectCartsStoreSearch(''); // 车行下拉
+        // this.queryCompanyList(); // 支公司下拉选项
+        // this.selectCartsStoreSearch(''); // 车行下拉
     },
 
 	methods: {
