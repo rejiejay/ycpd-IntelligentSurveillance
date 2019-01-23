@@ -5,7 +5,7 @@
     <div class="company-manage-operate flex-start-bottom">
         <div class="manage-operate-left flex-rest">
 
-            <el-select v-model="subCompanySection" placeholder="选择支公司代码">
+            <el-select v-model="subCompanySection" placeholder="选择支公司名称">
                 <el-option
                     v-for="item in subCompanyOptions"
                     :key="item.value"

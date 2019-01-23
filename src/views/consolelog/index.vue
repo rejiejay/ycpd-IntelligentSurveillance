@@ -180,15 +180,14 @@ export default {
                 _this.pageTotal = data.totalPages;
 
                 if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
-                    _this.teamList = []; // 记得清空
+                    _this.logs = []; // 记得清空
                     return false;
                 }
 
-                _this.teamList = data.objs.map(val => {
+                _this.logs = data.objs.map(val => {
                     let newItem = {};
 
                     newItem.original = val; // 后端返的原始数据
-                    newItem.id = val.id; // 唯一标识
                     newItem.sendTime = val.sendTime; // 短信发送时间
                     newItem.alarmName = val.alarmName; // 预警名称
                     newItem.content = val.content; // 预警内容

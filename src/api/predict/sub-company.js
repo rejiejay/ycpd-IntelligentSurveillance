@@ -30,18 +30,13 @@ export function queryAllCompanyPredictionUsingPOST(pageNo, pageSzie, bcId, month
  * @param {number} month 月份
  */
 export function exportCompanyPredictionUsingGET(bcId, month) {
-    let urlparam = '';
-
-    urlparam += bcId ? `&bcId=${bcId}` : '';
-    urlparam += month ? `&month=${month}` : '';
-
-    if (urlparam.indexOf('&') !== -1) {
-        urlparam = `?${urlparam.substr(1)}`;
-    }
-
     return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/exportCompanyPrediction${urlparam}`,
-        method: 'get',
+        url: `${config.url.origin}/cdimms/server/prediction/exportCompanyPrediction`,
+        method: 'post',
+        data: {
+            bcId: bcId ? bcId : '',
+            month: month ? month : '',
+        },
         headers: {
             token: window.sessionStorage.cdimmstoken,
         },

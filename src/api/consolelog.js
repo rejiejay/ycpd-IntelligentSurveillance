@@ -30,21 +30,16 @@ export function queryAllAlarmLogUsingPOST(pageNo, pageSzie, arId, startTime, end
  * 下载预警日志列表
  */
 export function exportAlarmLogUsingGET(arId, startTime, endTime) {
-    let urlparam = '';
-
-    urlparam += arId ? `&arId=${arId}` : '';
-    urlparam += startTime ? `&startTime=${startTime}` : '';
-    urlparam += endTime ? `&endTime=${endTime}` : '';
-
-    if (urlparam.indexOf('&') !== -1) {
-        urlparam = `?${urlparam.substr(1)}`;
-    }
-
     return axios({
-        url: `${config.url.origin}/cdimms/server/alarmlog/exportAlarmLog${urlparam}`,
-        method: 'get',
+        url: `${config.url.origin}/cdimms/server/alarmlog/exportAlarmLog`,
+        method: 'post',
         headers: {
             token: window.sessionStorage.cdimmstoken,
+        },
+        data: {
+            arId: arId ? arId : '',
+            startTime: startTime ? startTime : '',
+            endTime: endTime ? endTime : '',
         },
         responseType: 'arraybuffer'
     }).then(response => {

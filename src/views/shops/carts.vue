@@ -267,7 +267,7 @@ export default {
             let currentPage = this.currentPage;
             let pageSize = this.pageSize;
             let companyId = this.subCompanySection ? this.subCompanySection : '';
-            let storeId = this.shopNetSection ? this.shopNetSection : '';
+            let storeId = this.regionSection ? this.regionSection : '';
             let teamId = this.teamSection ? this.teamSection : '';
 
             findAllStoreUsingPOST(currentPage, pageSize, companyId, storeId, teamId)
@@ -330,7 +330,7 @@ export default {
          */
         exportStore: function exportStore() {
             let companyId = this.subCompanySection ? this.subCompanySection : '';
-            let storeId = this.shopNetSection ? this.shopNetSection : '';
+            let storeId = this.regionSection ? this.regionSection : '';
             let teamId = this.teamSection ? this.teamSection : '';
             
             exportStoreUsingGET(companyId, storeId, teamId);
@@ -410,6 +410,31 @@ export default {
          * 删除一个项
          */
         deleteHandle: function deleteHandle(item) {
+            const _this = this;
+
+            this.$confirm('此操作将永久删除该网点, 是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                
+                removeStoreUsingGET(item.id)
+                .then(val => {
+                    _this.$message({
+                        message: '删除成功',
+                        type: 'info'
+                    });
+                    _this.currentPage = 1;
+                    _this.queryAllTeam();
+
+                }, error => console.log(error));
+
+            }).catch(() => {
+                _this.$message({
+                    type: 'info',
+                    message: '已取消删除'
+                });
+            });
         },
 
         /**

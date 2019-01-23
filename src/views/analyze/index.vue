@@ -1397,12 +1397,12 @@ $black4: #C0C4CC;
     }
 
     .analyze-operate-month .el-date-editor {
-        width: 120px;
+        width: 160px;
         margin-right: 15px;
     }
 
     .analyze-operate-date .el-date-editor {
-        width: 140px;
+        width: 160px;
         margin-right: 15px;
     }
 }

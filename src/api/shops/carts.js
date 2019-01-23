@@ -45,21 +45,16 @@ export function removeStoreUsingGET(storeId) {
  * @param {number} teamId 团队 id
  */
 export function exportStoreUsingGET(companyId, storeId, teamId) {
-    let urlparam = '';
-
-    urlparam += companyId ? `&companyId=${companyId}` : '';
-    urlparam += storeId ? `&storeId=${storeId}` : '';
-    urlparam += teamId ? `&teamId=${teamId}` : '';
-
-    if (urlparam.indexOf('&') !== -1) {
-        urlparam = `?${urlparam.substr(1)}`;
-    }
-
     return axios({
-        url: `${config.url.origin}/cdimms/server/store/exportStore${urlparam}`,
-        method: 'get',
+        url: `${config.url.origin}/cdimms/server/store/exportStore`,
+        method: 'post',
         headers: {
             token: window.sessionStorage.cdimmstoken,
+        },
+        data: {
+            companyId: companyId ? companyId : '',
+            storeId: storeId ? storeId : '',
+            teamId: teamId ? teamId : '',
         },
         responseType: 'arraybuffer'
     }).then(response => {

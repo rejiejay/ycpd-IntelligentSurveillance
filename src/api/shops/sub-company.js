@@ -29,10 +29,13 @@ export function queryAllCompanyUsingPOST(pageNo, pageSzie, companyId) {
  */
 export function exportCompanyUsingGET(companyId) {
     return axios({
-        url: `${config.url.origin}/cdimms/server/company/exportCompany${companyId ? `?companyId=${companyId}` : ''}`,
-        method: 'get',
+        url: `${config.url.origin}/cdimms/server/company/exportCompany`,
+        method: 'post',
         headers: {
             token: window.sessionStorage.cdimmstoken,
+        },
+        data: {
+            companyId: companyId ? companyId : '',
         },
         responseType: 'arraybuffer'
     }).then(response => {

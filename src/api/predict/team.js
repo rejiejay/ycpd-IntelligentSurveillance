@@ -30,21 +30,16 @@ export function queryAllTeamPredictionUsingPOST(pageNo, pageSzie, bcId, teamId, 
  * 导出团队模板
  */
 export function exportTeamPredictionUsingGET(bcId, teamId, month) {
-    let urlparam = '';
-
-    urlparam += bcId ? `&bcId=${bcId}` : '';
-    urlparam += teamId ? `&teamId=${teamId}` : '';
-    urlparam += month ? `&month=${month}` : '';
-
-    if (urlparam.indexOf('&') !== -1) {
-        urlparam = `?${urlparam.substr(1)}`;
-    }
-
     return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/exportTeamPrediction${urlparam}`,
-        method: 'get',
+        url: `${config.url.origin}/cdimms/server/prediction/exportTeamPrediction`,
+        method: 'post',
         headers: {
             token: window.sessionStorage.cdimmstoken,
+        },
+        data: {
+            bcId: bcId ? bcId : '',
+            teamId: teamId ? teamId : '',
+            month: month ? month : '',
         },
         responseType: 'arraybuffer'
     }).then(response => {

@@ -40,10 +40,13 @@ export function removeTeamUsingPOST(teamId) {
  */
 export function exportTeamUsingGET(keyword) {
     return axios({
-        url: `${config.url.origin}/cdimms/server/team/exportTeam${keyword ? `?keyword=${keyword}` : ''}`,
-        method: 'get',
+        url: `${config.url.origin}/cdimms/server/team/exportTeam`,
+        method: 'post',
         headers: {
             token: window.sessionStorage.cdimmstoken,
+        },
+        data: {
+            keyword: keyword ? keyword : '',
         },
         responseType: 'arraybuffer'
     }).then(response => {
