@@ -289,62 +289,16 @@ export default {
             const _this = this;
             let roleList = [];
 
-            /**
-             * 新增的请求
-             */
-            let submitAdd = () => {
-                addRoleUsingPOST(_this.rolesCode, _this.rolesName, _this.rolesDes, roleList)
-                .then(val => {
-                    if (val.code === 1000) {
-                        _this.$router.back(-1);
-
-                    } else if (val.code === 1001) {
-                        alert('添加异常');
-
-                    } else if (val.code === 1002) {
-                        alert('角色代码重复!');
-
-                    } else if (val.code === 1003) {
-                        alert('者角色名称重复!');
-
-                    } else {
-                        alert(`添加失败, ${val.msg}`)
-                    }
-
-                }, error => console.log(error))
-            };
-
-            /**
-             * 编辑的请求
-             */
-            let submitEdd = () => {
-                modifyRoleUsingPOST(_this.rolesId, _this.rolesCode, _this.rolesName, _this.rolesDes, roleList)
-                .then(val => {
-                    if (val.code === 1000) {
-                        _this.$router.back(-1);
-
-                    } else if (val.code === 1001) {
-                        alert('修改角色异常');
-
-                    } else if (val.code === 1002) {
-                        alert('角色代码重复!');
-
-                    } else if (val.code === 1003) {
-                        alert('者角色名称重复!');
-
-                    } else {
-                        alert(`修改角色失败, ${val.msg}`)
-                    }
-
-                }, error => console.log(error))
-            };
-
-            if (this.rolesCode === '') {
-                return alert('角色代码不能为空');
+            if (!this.rolesCode) {
+                return this.$notify({title: '提示', message: '角色代码不能为空', duration: 0 });
             }
 
-            if (this.rolesName === '') {
-                return alert('角色名称不能为空');
+            if (!this.rolesName) {
+                return this.$notify({title: '提示', message: '角色名称不能为空', duration: 0 });
+            }
+
+            if (!this.rolesDes) {
+                return this.$notify({title: '提示', message: '角色介绍不能为空', duration: 0 });
             }
 
             /**
@@ -455,6 +409,56 @@ export default {
                     }
                 }
             });
+
+            /**
+             * 新增的请求
+             */
+            let submitAdd = () => {
+                addRoleUsingPOST(_this.rolesCode, _this.rolesName, _this.rolesDes, roleList)
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$router.back(-1);
+
+                    } else if (val.code === 1001) {
+                        alert('添加异常');
+
+                    } else if (val.code === 1002) {
+                        alert('角色代码重复!');
+
+                    } else if (val.code === 1003) {
+                        alert('者角色名称重复!');
+
+                    } else {
+                        alert(`添加失败, ${val.msg}`)
+                    }
+
+                }, error => console.log(error))
+            };
+
+            /**
+             * 编辑的请求
+             */
+            let submitEdd = () => {
+                modifyRoleUsingPOST(_this.rolesId, _this.rolesCode, _this.rolesName, _this.rolesDes, roleList)
+                .then(val => {
+                    if (val.code === 1000) {
+                        _this.$router.back(-1);
+
+                    } else if (val.code === 1001) {
+                        alert('修改角色异常');
+
+                    } else if (val.code === 1002) {
+                        alert('角色代码重复!');
+
+                    } else if (val.code === 1003) {
+                        alert('者角色名称重复!');
+
+                    } else {
+                        alert(`修改角色失败, ${val.msg}`)
+                    }
+
+                }, error => console.log(error))
+            };
 
             // 判断是新增还是编辑
             if (this.pageType === 'add') {

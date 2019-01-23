@@ -301,9 +301,9 @@ export default {
                     let data = val.data;
 
                     _this.userId = data.id;
-                    _this.userTypeSection = `${data.userType}`;
-                    _this.userBelongSection = `${data.bcId}`;
-                    _this.teamSection = `${data.teamId}`;
+                    _this.userTypeSection = `${data.userType ? data.userType : ''}`;
+                    _this.userBelongSection = `${data.bcId ? data.bcId : ''}`;
+                    _this.teamSection = `${data.teamId ? data.teamId : ''}`;
                     _this.userRealName = data.staffName;
                     _this.userCode = data.staffCode;
                     _this.userName = data.userName;
@@ -392,14 +392,14 @@ export default {
         submit: function submit() {
             const _this = this;
 
-            if (this.userTypeSection === '') {
-                return alert('用户类型 不能为空！');
+            if (!this.userTypeSection) {
+                return this.$notify({title: '提示', message: '用户类型 不能为空！', duration: 0 });
             }
 
             if (this.userTypeSection === '2') {
 
                 if (this.userBelongSection === '') {
-                    return alert('用户归属 不能为空！');
+                    return this.$notify({title: '提示', message: '用户归属 不能为空！', duration: 0 });
                 }
 
             }
@@ -407,57 +407,66 @@ export default {
             if (this.userTypeSection === '3') {
 
                 if (this.userBelongSection === '') {
-                    return alert('用户归属 不能为空！');
+                    return this.$notify({title: '提示', message: '用户归属 不能为空！', duration: 0 });
                 }
 
                 if (this.teamSection === '') {
-                    return alert('业务团队 不能为空！');
+                    return this.$notify({title: '提示', message: '业务团队 不能为空！', duration: 0 });
                 }
             }
 
             if (this.userRealName === '') {
-                return alert('员工姓名 不能为空！');
+                return this.$notify({title: '提示', message: '员工姓名 不能为空！', duration: 0 });
             }
 
             if (this.userCode === '') {
-                return alert('员工代码 不能为空！');
+                return this.$notify({title: '提示', message: '员工代码 不能为空！', duration: 0 });
             }
 
             if (this.userName === '') {
-                return alert('登录名 不能为空！');
+                return this.$notify({title: '提示', message: '登录名 不能为空！', duration: 0 });
             }
 
             if (this.isExistUser) {
-                return alert('登录名已被使用!');
+                return this.$notify({title: '提示', message: '登录名已被使用', duration: 0 });
             }
 
-            // 判断是否修改密码
-            if (this.isChangePassword) {
-                if (this.password === '') {
-                    return alert('密码 不能为空！');
-                } else if (this.password <= 6)  {
-                    return alert('密码 不能为空！');
+            if (pageType === 'add') {
+                if (this.password <= 6)  {
+                    return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
+                }
+
+            } else {
+                
+                // 判断是否修改密码
+                if (this.isChangePassword) {
+                    if (this.password === '') {
+                        return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
+                    } else if (this.password <= 6)  {
+                        return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
+                    }
                 }
             }
 
             if (this.phone === '') {
-                return alert('手机号 不能为空！');
+                return this.$notify({title: '提示', message: '手机号 不能为空！', duration: 0 });
 
             } else if (/^(?=\d{11}$)^1(?:3\d|4[57]|5[^4\D]|66|7[^249\D]|8\d|9[89])\d{8}$/.test(this.phone) === false) {
-                return alert('请输入正确的手机号码格式！');
+                return this.$notify({title: '提示', message: '请输入正确的手机号码格式！', duration: 0 });
                 
             }
 
             if (this.isExistPhone) {
-                return alert('手机号已被使用!');
+                return this.$notify({title: '提示', message: '手机号已被使用!', duration: 0 });
             }
 
             if (this.rolesSection === '') {
+                return this.$notify({title: '提示', message: '角色不能为空！', duration: 0 });
                 return alert('手机号 不能为空！');
             }
 
             if (this.userStatusSection === '') {
-                return alert('手机号 不能为空！');
+                return this.$notify({title: '提示', message: '状态不能为空!', duration: 0 });
             }
 
             let userType = this.userTypeSection;

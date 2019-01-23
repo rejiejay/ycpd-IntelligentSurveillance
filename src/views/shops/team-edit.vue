@@ -145,9 +145,14 @@ export default {
             if (!this.teamLeader) {
                 return this.$notify({title: '提示', message: '团队经理不能为空', duration: 0 });
             }
-            if (!this.phone) {
+
+            let phone = this.phone ? this.phone.replace(/\s+/g,"") : ''; //  分管领导电话
+            if (!phone) {
                 return this.$notify({title: '提示', message: '分管领导电话不能为空', duration: 0 });
+            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(phone) === false) {
+                return this.$notify({title: '提示', message: '请输入正确的电话号码', duration: 0 });
             }
+
             if (!this.subCompany) {
                 return this.$notify({title: '提示', message: '支公司不能为空', duration: 0 });
             }
@@ -156,7 +161,6 @@ export default {
             let teamCode = this.teamCode; //  团队代码
             let teamName = this.teamName; //  团队名称
             let manager = this.teamLeader; //  团队经理
-            let phone = this.phone; //  分管领导电话
             let bcId = this.subCompany; //  支公司
             let remark = this.remark ? this.remark : ''; //  备注
 

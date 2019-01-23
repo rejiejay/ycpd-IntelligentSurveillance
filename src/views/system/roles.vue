@@ -196,7 +196,7 @@ export default {
          */
         clearConditions: function clearConditions() {
             this.rolesCodeSection = null;
-            this.rolesNameSection = null;
+            this.rolesName = null;
             this.currentPage = 1;
         },
 
