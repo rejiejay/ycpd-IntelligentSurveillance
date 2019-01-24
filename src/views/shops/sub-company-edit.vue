@@ -169,17 +169,27 @@ export default {
             if (!this.leadershipName) {
                 return this.$notify({title: '提示', message: '分管领导姓名不能为空', duration: 0 });
             }
-            if (!this.leadershipPhone) {
+            
+            let leaderPhone = this.leadershipPhone ? this.leadershipPhone.replace(/\s+/g,"") : ''; //  分管领导电话
+            if (!leaderPhone) {
                 return this.$notify({title: '提示', message: '分管领导电话不能为空', duration: 0 });
+            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(leaderPhone) === false) {
+                return this.$notify({title: '提示', message: '请输入正确的分管领导电话号码', duration: 0 });
             }
+
+
             if (!this.adminCode) {
                 return this.$notify({title: '提示', message: '管理员代码不能为空', duration: 0 });
             }
             if (!this.adminName) {
                 return this.$notify({title: '提示', message: '管理员姓名不能为空', duration: 0 });
             }
-            if (!this.adminPhone) {
+            
+            let adminPhone = this.adminPhone ? this.adminPhone.replace(/\s+/g,"") : ''; //  管理员电话
+            if (!adminPhone) {
                 return this.$notify({title: '提示', message: '管理员电话不能为空', duration: 0 });
+            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(adminPhone) === false) {
+                return this.$notify({title: '提示', message: '请输入正确的管理员电话号码', duration: 0 });
             }
 
             let id = this.id; // 支公司唯一标识
@@ -187,10 +197,8 @@ export default {
             let bcName = this.subCompanyName; //  支公司名称
             let leaderCode = this.leadershipCode; //  分管领导代码
             let leaderName = this.leadershipName; //  分管领导姓名
-            let leaderPhone = this.leadershipPhone; //  分管领导电话
             let adminCode = this.adminCode; //  管理员代码
             let adminName = this.adminName; //  管理员姓名
-            let adminPhone = this.adminPhone; //  管理员电话
             let remark = this.remark ? this.remark : ''; //  管理员电话
 
             let addCompany = () => {

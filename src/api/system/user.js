@@ -23,10 +23,10 @@ export function queryUserListUsingPOST(currentPage, pageCount, userType, bcName,
         staffName: staffName ? staffName : '',
         staffCode: staffCode ? staffCode : '',
         roleName: roleName ? roleName : '',
-        state: state ? state : '',
     }
 
     userType ? body.userType = userType : '';
+    state ? body.state = state : '';
 
     return notLoading({
         url: `${config.url.origin}/cdimms/server/user/queryUserList`,
@@ -62,10 +62,10 @@ export function exportUserListUsingPOST(userType, bcName, staffName, staffCode, 
         staffName: staffName ? staffName : '',
         staffCode: staffCode ? staffCode : '',
         roleName: roleName ? roleName : '',
-        state: state ? state : '',
     }
 
     userType ? body.userType = userType : '';
+    state ? body.state = state : '';
 
     downloadUsingPOST('/cdimms/server/user/exportUserList', body);
 }

@@ -86,7 +86,7 @@ export function addStoreUsingPOST(networkNo, networkName, networkType, star, isJ
         data: {
             networkNo: networkNo, // 车行编码
             networkName: networkName, // 车行名称
-            networkType: networkType, // 车行类型
+            networkType: parseInt(networkType), // 车行类型
             star: star, // 车行星级
             isJoin: isJoin, // 是否合作
             contact: contact, // 联系人
@@ -102,6 +102,7 @@ export function addStoreUsingPOST(networkNo, networkName, networkType, star, isJ
             latitude: latitude, // 纬度
         }
     });
+    
 }
 
 /**

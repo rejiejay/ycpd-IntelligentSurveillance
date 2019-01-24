@@ -132,7 +132,11 @@
             <el-col :span="12">
                 <div class="details-form-item">
                     <div class="form-item-title">状态</div>
-                    <el-select v-model="userStatusSection" placeholder="状态">
+                    <el-select 
+                        v-model="userStatusSection" 
+                        :disabled="myUserName === userName"
+                        placeholder="状态"
+                    >
                         <el-option
                             v-for="item in userStatusOptions"
                             :key="item.value"
@@ -216,6 +220,7 @@ export default {
             userRealName: '', // 员工姓名
             userCode: '', // 员工代码
             userName: '', // 登录名
+            myUserName: window.localStorage.cdimmsusername,
             password: '', // 用户密码
             isChangePassword: false, // 是否修改密码
             phone: '', // 手机号
@@ -301,7 +306,7 @@ export default {
                     let data = val.data;
 
                     _this.userId = data.id;
-                    if (data.userType === '') {
+                    if (data.userType === 0) {
                         _this.userTypeSection = '0';
                     } else {
                         _this.userTypeSection = `${data.userType ? data.userType : ''}`;

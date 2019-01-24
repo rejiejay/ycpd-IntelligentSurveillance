@@ -32,7 +32,7 @@
             ></el-option>
         </el-select>
 
-        <el-select v-model="regionSection" placeholder="选择网点">
+        <el-select v-model="regionSection" placeholder="选择车行">
             <el-option
                 v-for="item in regionOptions"
                 :key="item.value"
@@ -55,19 +55,19 @@
         <el-table :data="comparisonlist" border>
             <el-table-column
                 prop="netCode"
-                label="网点编码"
+                label="车行编码"
             ></el-table-column>
             <el-table-column
                 prop="netName"
-                label="网点名称"
+                label="车行名称"
             ></el-table-column>
             <el-table-column
                 prop="netType"
-                label="网点类型"
+                label="车行类型"
             ></el-table-column>
             <el-table-column
                 prop="netRate"
-                label="网点星级"
+                label="车行星级"
             ></el-table-column>
             <el-table-column
                 prop="subCompany"

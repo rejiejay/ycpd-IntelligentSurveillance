@@ -199,7 +199,7 @@ export default {
                     label: '支公司',
                 }, {
                     value: '1',
-                    label: '车行',
+                    label: '团队',
                 }
             ],
 

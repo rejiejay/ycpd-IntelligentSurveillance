@@ -456,9 +456,14 @@ export default {
             if (!this.contactName) {
                 return this.$notify({title: '提示', message: '联系人不能为空', duration: 0 });
             }
-            if (!this.contactPhone) {
+
+            let phone = this.contactPhone ? this.contactPhone.replace(/\s+/g,"") : ''; // 联系电话
+            if (!phone) {
                 return this.$notify({title: '提示', message: '联系电话不能为空', duration: 0 });
+            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(phone) === false) {
+                return this.$notify({title: '提示', message: '请输入正确的电话号码', duration: 0 });
             }
+
             if (!this.brand) {
                 return this.$notify({title: '提示', message: '品牌不能为空', duration: 0 });
             }
@@ -485,7 +490,6 @@ export default {
             let star = this.shopsRate; // 车行星级
             let isJoin = this.isJoin; // 是否合作
             let contact = this.contactName; // 联系人
-            let phone = this.contactPhone; // 联系电话
             let brand = this.brand; // 品牌
             let superiorGroup = this.parCompany; // 上级集团
             let bcId = this.subCompanyName; // 支公司
