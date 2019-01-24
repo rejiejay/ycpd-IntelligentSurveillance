@@ -2,6 +2,7 @@ import apibasics from '@/components/apibasics';
 import config from '@/config';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 import notLoading from '@/components/apibasics-notLoading';
+import upload from '@/components/upload';
 
 /**
  * 获取车行列表
@@ -12,17 +13,21 @@ import notLoading from '@/components/apibasics-notLoading';
  * @param {number} teamId 团队 id
  */
 export function findAllStoreUsingPOST(pageNo, pageSzie, companyId, storeId, teamId) {
+    let data = {
+        pageNo: pageNo ? pageNo : 1,
+        pageSzie: pageSzie ? pageSzie : 10,
+        companyId: companyId ? companyId : '',
+        networkType: storeId ? storeId : '',
+        teamId: teamId ? teamId : '',
+    }
+
+    storeId ? data.networkType = storeId : '';
+
     return notLoading({
         url: `${config.url.origin}/cdimms/server/store/queryAllStore`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
-        data: {
-            pageNo: pageNo ? pageNo : 1,
-            pageSzie: pageSzie ? pageSzie : 10,
-            companyId: companyId ? companyId : '',
-            storeId: storeId ? storeId : '',
-            teamId: teamId ? teamId : '',
-        }
+        data: data,
     });
 }
 
@@ -39,17 +44,30 @@ export function removeStoreUsingGET(storeId) {
 }
 
 /**
+ * 导入车行信息
+ * @param {files} formData 文件表单
+ */
+export function importStoreUsingFormData(formData) {
+    return upload('/cdimms/server/store/importStore', formData);
+}
+
+/**
  * 车行记录列表导出excel
  * @param {number} companyId 支公司 id
  * @param {number} storeId 网点 id
  * @param {number} teamId 团队 id
  */
 export function exportStoreUsingGET(companyId, storeId, teamId) {
-    downloadUsingPOST('/cdimms/server/store/exportStore', {
+    let data = {
+        pageNo: pageNo ? pageNo : 1,
+        pageSzie: pageSzie ? pageSzie : 10,
         companyId: companyId ? companyId : '',
-        storeId: storeId ? storeId : '',
         teamId: teamId ? teamId : '',
-    });
+    }
+
+    storeId ? data.networkType = storeId : '';
+
+    downloadUsingPOST('/cdimms/server/store/exportStore', data);
 }
 
 /**

@@ -158,11 +158,11 @@ export default {
         queryAllCompany: function queryAllCompany() {
             const _this = this;
 
-            let pageNo = this.pageNo;
-            let pageSzie = this.pageSzie;
+            let pageNo = this.currentPage;
+            let pageSize = this.pageSize;
             let companyId = this.subCompanySection;
 
-            queryAllCompanyUsingPOST(pageNo, pageSzie, companyId) 
+            queryAllCompanyUsingPOST(pageNo, pageSize, companyId) 
             .then(val => {
                 console.log(val)
 

@@ -13,7 +13,8 @@
 
         <div class="manage-operate-right">
             <el-button icon="el-icon-download" type="text" @click="getTeamTemplate">下载模板</el-button>
-            <el-button icon="el-icon-tickets" type="primary" plain>上传清单</el-button>
+            <input type="file" name="file" ref="uploadFile" id="uploadFile" style="display: none;" />
+            <el-button icon="el-icon-tickets" type="primary" plain @click="$refs.uploadFile.click()">上传清单</el-button>
             <el-button icon="el-icon-plus" type="primary" @click="jumpToRouter('/shops/team/details')">新增</el-button>
         </div>
     </div>
@@ -73,17 +74,63 @@
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
+
+    <!-- 上传进度模态框 -->
+    <ModalByZindex 
+        class="upload-modal"
+        :isShow="isUploadModalShow" 
+        :zindex="9999" 
+    >
+        <div class="upload-modal-container">
+            <div class="upload-modal-title">数据设置</div>
+            <div class="upload-modal-main">
+                <el-progress :percentage="isUploadSuccess ? 100 : 0"></el-progress>
+                <div class="modal-succeed-tip" v-if="isUploadSuccess">
+                    <div class="succeed-tip-container">
+                        <div class="succeed-tip-title flex-start-center">
+                            <i class="el-icon-success"></i>
+                            <span>文件上传完成</span>
+                        </div>
+                        <div class="succeed-tip-main">
+                            <span>成功{{uploadSuccessNum}}条，失败{{uploadErrorNum}}条</span>
+                            <el-button icon="el-icon-download" type="text">下载失败清单</el-button>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-failure-tip" v-if="!isUploadSuccess">
+                    <div class="failure-tip-container">
+                        <div class="failure-tip-title flex-start-center">
+                            <i class="el-icon-error"></i>
+                            <span>文件上传失败</span>
+                        </div>
+                        <div class="failure-tip-main">
+                            <span>失败原因：{{uploadErrMsg}}</span>
+                        </div>
+                        <el-button icon="el-icon-upload" type="text" @click="$refs.uploadFile.click()">重新上传</el-button>
+                    </div>
+                </div>
+            </div>
+            <div class="upload-modal-operate flex-center">
+                <el-button type="primary" @click="isUploadModalShow = false;">确定</el-button>
+            </div>
+        </div>
+    </ModalByZindex>
 </div>
 </template>
 
 <script>
-import { queryAllTeamUsingPOST, removeTeamUsingPOST, exportTeamUsingGET, getTeamTemplateUsingGET } from "@/api/shops/team";
+// 组件类
+import ModalByZindex from '@/components/ModalByZindex';
+// 请求类
+import { queryAllTeamUsingPOST, removeTeamUsingPOST, exportTeamUsingGET, getTeamTemplateUsingGET, importTeamUsingFormData } from "@/api/shops/team";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 import { queryStoreSelectUsingPOST } from "@/api/store";
 
 export default {
     name: 'team-manage',
+
+    components: { ModalByZindex },
 
 	data: function data() { 
         return {
@@ -100,6 +147,15 @@ export default {
                 //     remark: '', // 备注
                 // }
             ],
+
+            /**
+             * 表单上传
+             */
+            isUploadModalShow: false, // 是否显示上传模态框
+            isUploadSuccess: false, // 是否上传成功
+            uploadSuccessNum: '', // 成功条数
+            uploadErrorNum: '', // 失败条数
+            uploadErrMsg: '', // 错误信息
 
             /**
              * 分页相关
@@ -123,6 +179,7 @@ export default {
         this.queryAllTeam(); // 初始化 获取团队列表
         // this.queryCompanyList(); // 支公司下拉选项
         // this.selectCartsStoreSearch(''); // 车行下拉
+        this.uploadImportTeam(); // 导入团队信息
     },
 
 	methods: {
@@ -249,6 +306,45 @@ export default {
         },
 
         /**
+         * 导入团队信息
+         */
+        uploadImportTeam: function uploadImportTeam() {
+            const _this = this;
+
+            this.$refs.uploadFile.onchange = event => {
+                _this.isUploadModalShow = false; // 关闭上传模态框
+
+                let formData = new FormData();
+                formData.append("file", event.target.files[0]);
+
+                importTeamUsingFormData(formData)
+                .then(res => {
+                    let response = res.data;
+                    _this.$refs.uploadFile.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
+
+                    // 判断是否上传成功
+                    if (response.code === 1000) {
+                        _this.isUploadModalShow = true; // 显示上传模态框
+                        _this.isUploadSuccess = true; // 上传成功
+                        _this.uploadErrMsg = response.data.successNum; // 成功提示
+                        _this.uploadErrMsg = response.data.errorNum; // 成功提示
+
+                    } else {
+                        _this.isUploadModalShow = true; // 显示上传模态框
+                        _this.isUploadSuccess = false; // 上传失败
+                        _this.uploadErrMsg = response.data.errMsg; // 失败提示
+
+                    }
+                    console.log(res);
+
+                }, error => {
+                    _this.$refs.uploadFile.value = '';
+                    console.error(error);
+                });
+            }
+        },
+
+        /**
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
@@ -363,6 +459,77 @@ $black4: #C0C4CC;
 
 .team-manage-pagination {
     padding: 15px 15px 35px 15px;
+}
+
+// 上传进度模态框
+.upload-modal {
+    .upload-modal-container {
+        width: 480px;
+    }
+
+    .upload-modal-title {
+        padding-left: 15px;
+        font-weight: bold;
+        line-height: 45px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .upload-modal-main {
+        padding: 35px 15px;
+    }
+
+    .upload-modal-operate {
+        border-top: 1px solid #ddd;
+        padding: 15px;
+    }
+
+    .modal-succeed-tip {
+        padding-top: 15px;
+
+        .succeed-tip-container {
+            border-radius: 5px;
+            padding: 15px;
+            color: #409eff;
+            background: #ecf5ff;
+            border-color: #b3d8ff;
+        }
+
+        .succeed-tip-title {
+            font-size: 16px;
+        }
+
+        .succeed-tip-main {
+            padding: 5px;
+        }
+
+        span {
+            padding: 0 10px;
+        }
+    }
+
+    .modal-failure-tip {
+        padding-top: 15px;
+
+        .failure-tip-container {
+            border-radius: 5px;
+            padding: 15px;
+            color: #f56c6c;
+            background: #fef0f0;
+            border-color: #fbc4c4;
+        }
+
+        .failure-tip-title {
+            font-size: 16px;
+        }
+
+        .failure-tip-main {
+            padding: 15px 15px 5px 5px;
+        }
+
+        span {
+            padding: 0 10px;
+        }
+    }
 }
 
 </style>

@@ -1,7 +1,7 @@
-import apibasics from '@/components/apibasics';
 import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
+import upload from '@/components/upload';
 
 /**
  * 获取支公司列表
@@ -34,6 +34,14 @@ export function exportCompanyPredictionUsingGET(bcId, month) {
         bcId: bcId ? bcId : '',
         month: month ? month : '',
     });
+}
+
+/**
+ * 导入数据
+ * @param {files} formData 文件表单
+ */
+export function importSubCompanyUsingFormData(formData) {
+    return upload('/cdimms/server/prediction/importBcPrediction', formData);
 }
 
 /**

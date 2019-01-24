@@ -1,8 +1,7 @@
-import apibasics from '@/components/apibasics';
 import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
-import axios from 'axios';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
+import upload from '@/components/upload';
 
 /**
  * 获取团队列表
@@ -25,6 +24,14 @@ export function queryAllTeamPredictionUsingPOST(pageNo, pageSzie, bcId, teamId, 
             month: month ? month : '',
         }
     });
+}
+
+/**
+ * 导入数据
+ * @param {files} formData 文件表单
+ */
+export function importTeamPredictionUsingFormData(formData) {
+    return upload('/cdimms/server/prediction/importTeamPrediction', formData);
 }
 
 /**

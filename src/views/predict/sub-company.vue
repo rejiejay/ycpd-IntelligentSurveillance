@@ -26,8 +26,9 @@
         </div>
 
         <div class="manage-operate-right">
+            <input type="file" name="file" ref="uploadFile" id="uploadFile" style="display: none;" />
             <el-button icon="el-icon-download" type="text" @click="getBcPreTemplate">下载模板</el-button>
-            <el-button icon="el-icon-tickets" type="primary">数据设置</el-button>
+            <el-button icon="el-icon-tickets" type="primary" @click="$refs.uploadFile.click()">数据设置</el-button>
         </div>
     </div>
 
@@ -90,34 +91,34 @@
         <div class="upload-modal-container">
             <div class="upload-modal-title">数据设置</div>
             <div class="upload-modal-main">
-                <el-progress :percentage="uploadPercentage"></el-progress>
-                <div class="modal-succeed-tip" v-if="false">
+                <el-progress :percentage="isUploadSuccess ? 100 : 0"></el-progress>
+                <div class="modal-succeed-tip" v-if="isUploadSuccess">
                     <div class="succeed-tip-container">
                         <div class="succeed-tip-title flex-start-center">
                             <i class="el-icon-success"></i>
                             <span>文件上传完成</span>
                         </div>
                         <div class="succeed-tip-main">
-                            <span>成功**条，失败**条</span>
+                            <span>成功{{uploadSuccessNum}}条，失败{{uploadErrorNum}}条</span>
                             <el-button icon="el-icon-download" type="text">下载失败清单</el-button>
                         </div>
                     </div>
                 </div>
-                <div class="modal-failure-tip" v-if="false">
+                <div class="modal-failure-tip" v-if="!isUploadSuccess">
                     <div class="failure-tip-container">
                         <div class="failure-tip-title flex-start-center">
                             <i class="el-icon-error"></i>
                             <span>文件上传失败</span>
                         </div>
                         <div class="failure-tip-main">
-                            <span>失败原因：xxxxxx</span>
+                            <span>失败原因：{{uploadErrMsg}}</span>
                         </div>
-                        <el-button icon="el-icon-upload" type="text">重新上传</el-button>
+                        <el-button icon="el-icon-upload" type="text" @click="$refs.uploadFile.click()">重新上传</el-button>
                     </div>
                 </div>
             </div>
-            <div class="upload-modal-operate flex-center" v-if="uploadPercentage >= 100">
-                <el-button type="primary">确定</el-button>
+            <div class="upload-modal-operate flex-center">
+                <el-button type="primary" @click="isUploadModalShow = false;">确定</el-button>
             </div>
         </div>
     </ModalByZindex>
@@ -129,7 +130,7 @@
 import ModalByZindex from '@/components/ModalByZindex';
 import TimeConver from '@/utils/TimeConver';
 // 请求类
-import { queryAllCompanyPredictionUsingPOST, exportCompanyPredictionUsingGET, getBcPreTemplateUsingGET } from "@/api/predict/sub-company";
+import { queryAllCompanyPredictionUsingPOST, exportCompanyPredictionUsingGET, getBcPreTemplateUsingGET, importSubCompanyUsingFormData } from "@/api/predict/sub-company";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
@@ -161,9 +162,14 @@ export default {
                 // }
             ],
 
-            uploadPercentage: 100, // 上传的百分比
-
+            /**
+             * 表单上传
+             */
             isUploadModalShow: false, // 是否显示上传模态框
+            isUploadSuccess: false, // 是否上传成功
+            uploadSuccessNum: '', // 成功条数
+            uploadErrorNum: '', // 失败条数
+            uploadErrMsg: '', // 错误信息
 
             /**
              * 分页相关
@@ -177,6 +183,7 @@ export default {
 	mounted: function mounted() {
         this.queryAllCompanyPrediction(); // 获取支公司预测信息列表
         this.queryCompanyList(); // 支公司下拉选项
+        this.uploadImportSubCompany(); // 导入支公司数据设置
     },
 
 	methods: {
@@ -258,6 +265,45 @@ export default {
                 }
 
             }, error => console.log(error))
+        },
+
+        /**
+         * 导入支公司数据设置
+         */
+        uploadImportSubCompany: function uploadImportSubCompany() {
+            const _this = this;
+
+            this.$refs.uploadFile.onchange = event => {
+                _this.isUploadModalShow = false; // 关闭上传模态框
+
+                let formData = new FormData();
+                formData.append("file", event.target.files[0]);
+
+                importSubCompanyUsingFormData(formData)
+                .then(res => {
+                    let response = res.data;
+                    _this.$refs.uploadFile.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
+
+                    // 判断是否上传成功
+                    if (response.code === 1000) {
+                        _this.isUploadModalShow = true; // 显示上传模态框
+                        _this.isUploadSuccess = true; // 上传成功
+                        _this.uploadErrMsg = response.data.successNum; // 成功提示
+                        _this.uploadErrMsg = response.data.errorNum; // 成功提示
+
+                    } else {
+                        _this.isUploadModalShow = true; // 显示上传模态框
+                        _this.isUploadSuccess = false; // 上传失败
+                        _this.uploadErrMsg = response.data.errMsg; // 失败提示
+
+                    }
+                    console.log(res);
+
+                }, error => {
+                    _this.$refs.uploadFile.value = '';
+                    console.error(error);
+                });
+            }
         },
 
         /**

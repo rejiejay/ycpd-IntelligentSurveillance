@@ -41,43 +41,43 @@
                         :disabled="!shopsType"
                         placeholder="请选择车行星级"
                     >
-                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                        <el-option  v-if="shopsType === '0' || shopsType === '1' || shopsType === '2'"
                             label="A级"
                             value="A级"
                         ></el-option>
-                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                        <el-option  v-if="shopsType === '0' || shopsType === '1' || shopsType === '2'"
                             label="B级"
                             value="B级"
                         ></el-option>
-                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                        <el-option  v-if="shopsType === '0' || shopsType === '1' || shopsType === '2'"
                             label="C级"
                             value="C级"
                         ></el-option>
-                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                        <el-option  v-if="shopsType === '0' || shopsType === '1' || shopsType === '2'"
                             label="D级"
                             value="D级"
                         ></el-option>
-                        <el-option  v-if="shopsType === '0' || shopsType === '1'"
+                        <el-option  v-if="shopsType === '0' || shopsType === '1' || shopsType === '2'"
                             label="E级"
                             value="E级"
                         ></el-option>
-                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1' && shopsType !== '2'"
                             label="一星级"
                             value="一星级"
                         ></el-option>
-                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1' && shopsType !== '2'"
                             label="二星级"
                             value="二星级"
                         ></el-option>
-                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1' && shopsType !== '2'"
                             label="三星级"
                             value="三星级"
                         ></el-option>
-                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1' && shopsType !== '2'"
                             label="四星级"
                             value="四星级"
                         ></el-option>
-                        <el-option  v-if="shopsType !== '0' && shopsType !== '1'"
+                        <el-option  v-if="shopsType !== '0' && shopsType !== '1' && shopsType !== '2'"
                             label="五星级"
                             value="五星级"
                         ></el-option>

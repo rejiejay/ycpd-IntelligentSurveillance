@@ -2,6 +2,7 @@ import apibasics from '@/components/apibasics';
 import config from '@/config';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 import notLoading from '@/components/apibasics-notLoading';
+import upload from '@/components/upload';
 
 /**
  * 获取团队列表
@@ -42,6 +43,14 @@ export function exportTeamUsingGET(keyword) {
     downloadUsingPOST('/cdimms/server/team/exportTeam', {
         keyword: keyword ? keyword : '',
     });
+}
+
+/**
+ * 导入团队信息
+ * @param {files} formData 文件表单
+ */
+export function importTeamUsingFormData(formData) {
+    return upload('/cdimms/server/team/importTeam', formData);
 }
 
 /**

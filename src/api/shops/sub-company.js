@@ -7,10 +7,10 @@ import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 /**
  * 获取支公司信息列表
  * @param {number} pageNo 当前页码
- * @param {number} pageSzie 页面大小
+ * @param {number} pageSize 页面大小
  * @param {number} companyId 支公司 id
  */
-export function queryAllCompanyUsingPOST(pageNo, pageSzie, companyId) {
+export function queryAllCompanyUsingPOST(pageNo, pageSize, companyId) {
     return notLoading({
         url: `${config.url.origin}/cdimms/server/company/queryAllCompany`,
         method: 'post',
@@ -18,7 +18,7 @@ export function queryAllCompanyUsingPOST(pageNo, pageSzie, companyId) {
         data: {
             companyId: companyId ? companyId : '',
             pageNo: pageNo ? pageNo : 1,
-            pageSzie: pageSzie ? pageSzie : 10,
+            pageSize: pageSize ? pageSize : 10,
         }
     });
 }
