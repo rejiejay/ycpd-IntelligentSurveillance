@@ -1,7 +1,7 @@
 import config from '@/config';
 import notFilter from '@/components/apibasics-notFilter';
 import apibasics from '@/components/apibasics';
-import axios from 'axios';
+import { downloadUsingPOST } from '@/components/download';
 import notLoading from '@/components/apibasics-notLoading';
 
 /**
@@ -43,29 +43,8 @@ export function exportAlarmRuleListUsingPOST(indicatorType, objType, alarmName) 
 
     indicatorType ? body.indicatorType = indicatorType : '';
     objType ? body.objType = objType : '';
-
-    return axios({
-        url: `${config.url.origin}/cdimms/server/alarmRule/exportAlarmRuleList`,
-        method: 'post',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        data: body,
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    
+    downloadUsingPOST('/cdimms/server/alarmRule/exportAlarmRuleList', body);
 }
 
 /**

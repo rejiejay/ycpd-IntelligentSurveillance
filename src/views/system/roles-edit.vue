@@ -297,10 +297,6 @@ export default {
                 return this.$notify({title: '提示', message: '角色名称不能为空', duration: 0 });
             }
 
-            if (!this.rolesDes) {
-                return this.$notify({title: '提示', message: '角色介绍不能为空', duration: 0 });
-            }
-
             /**
              * 初始化 权限 菜单列表
              */
@@ -420,13 +416,13 @@ export default {
                         _this.$router.back(-1);
 
                     } else if (val.code === 1001) {
-                        alert('添加异常');
+                        alert('角色代码已被添加');
 
                     } else if (val.code === 1002) {
-                        alert('角色代码重复!');
+                        alert('角色名称已被添加!');
 
                     } else if (val.code === 1003) {
-                        alert('者角色名称重复!');
+                        alert('角色添加异常!');
 
                     } else {
                         alert(`添加失败, ${val.msg}`)
@@ -445,13 +441,13 @@ export default {
                         _this.$router.back(-1);
 
                     } else if (val.code === 1001) {
-                        alert('修改角色异常');
+                        alert('角色代码已被添加');
 
                     } else if (val.code === 1002) {
-                        alert('角色代码重复!');
+                        alert('角色名称已被添加!');
 
                     } else if (val.code === 1003) {
-                        alert('者角色名称重复!');
+                        alert('修改角色异常!');
 
                     } else {
                         alert(`修改角色失败, ${val.msg}`)

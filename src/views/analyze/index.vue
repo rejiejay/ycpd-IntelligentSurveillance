@@ -676,8 +676,8 @@ export default {
 
                     // 初始化 系列列表数据
                     for (let i = 0; i <= differDay; i++) { // 循环相差几天
-                        premiumTemArr.push(1200); // 保费
-                        lossTemArr.push(2300); // 定损
+                        premiumTemArr.push(_this.premiums[i]); // 保费
+                        lossTemArr.push(_this.lossAssessments[i]); // 定损
                     }
 
                     series.push({
@@ -820,8 +820,8 @@ export default {
 
                     // 初始化 系列列表数据
                     for (let i = 0; i <= differMonth; i++) { // 循环相差几月
-                        premiumTemArr.push(1200); // 保费
-                        lossTemArr.push(2300); // 定损
+                        premiumTemArr.push(_this.premiums[i]); // 保费
+                        lossTemArr.push(_this.lossAssessments[i]); // 定损
                     }
 
                     series.push({

@@ -2,6 +2,7 @@ import apibasics from '@/components/apibasics';
 import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 import axios from 'axios';
+import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 
 /**
  * 获取团队列表
@@ -30,58 +31,16 @@ export function queryAllTeamPredictionUsingPOST(pageNo, pageSzie, bcId, teamId, 
  * 导出团队模板
  */
 export function exportTeamPredictionUsingGET(bcId, teamId, month) {
-    return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/exportTeamPrediction`,
-        method: 'post',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        data: {
-            bcId: bcId ? bcId : '',
-            teamId: teamId ? teamId : '',
-            month: month ? month : '',
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingPOST('/cdimms/server/prediction/exportTeamPrediction', {
+        bcId: bcId ? bcId : '',
+        teamId: teamId ? teamId : '',
+        month: month ? month : '',
+    });
 }
 
 /**
  * 下载团队模板
  */
 export function getTeamPreTemplateUsingGET() {
-
-    return axios({
-        url: `${config.url.origin}/cdimms/server/prediction/getTeamPreTemplate`,
-        method: 'get',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingGET('/cdimms/server/prediction/getTeamPreTemplate');
 }

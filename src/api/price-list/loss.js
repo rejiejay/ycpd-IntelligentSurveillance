@@ -1,6 +1,6 @@
 import config from '@/config';
 import apibasics from '@/components/apibasics';
-import axios from 'axios';
+import { downloadUsingGET } from '@/components/download';
 import notLoading from '@/components/apibasics-notLoading';
 
 /**
@@ -57,25 +57,5 @@ export function exportLossAssessmentUsingGET(startDate, endDate, storeId, bcId, 
         urlparam = `?${urlparam.substr(1)}`;
     }
 
-    return axios({
-        url: `${config.url.origin}/cdimms/server/lossAssessment/export${urlparam}`,
-        method: 'get',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingGET(`/cdimms/server/lossAssessment/export${urlparam}`);
 }

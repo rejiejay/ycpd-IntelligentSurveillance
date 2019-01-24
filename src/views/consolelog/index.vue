@@ -122,8 +122,8 @@ export default {
 
         return {
             startendTime: [ // 开始结束时间
-                new Date(new Date().getTime() - 3600 * 1000 * 24),
-                new Date(),
+                '',
+                '',
             ],
             startendTimeOptions: startendTimeOptions, // 开始结束时间 左边选项
 
@@ -169,8 +169,8 @@ export default {
             let currentPage = this.currentPage;
             let pageSize = this.pageSize;
             let arId = this.warnNameSection ? this.warnNameSection : '';
-            let startTime = this.startendTimeOptions[0] ? TimeConver.dateToFormat(this.startendTimeOptions[0]) : '';
-            let endTime = this.startendTimeOptions[1] ? TimeConver.dateToFormat(this.startendTimeOptions[1]) : '';
+            let startTime = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endTime = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
 
             queryAllAlarmLogUsingPOST(currentPage, pageSize, arId, startTime, endTime)
             .then(val => {
@@ -185,14 +185,14 @@ export default {
                     return false;
                 }
 
-                _this.logs = data.objs.map(val => {
+                _this.logs = data.objs.map(item => {
                     let newItem = {};
 
-                    newItem.original = val; // 后端返的原始数据
-                    newItem.sendTime = val.sendTime; // 短信发送时间
-                    newItem.alarmName = val.alarmName; // 预警名称
-                    newItem.content = val.content; // 预警内容
-                    newItem.alarmUser = val.alarmUser; // 被预警人
+                    newItem.original = item; // 后端返的原始数据
+                    newItem.sendTime = item.sendTime; // 短信发送时间
+                    newItem.alarmName = item.alarmName; // 预警名称
+                    newItem.content = item.content; // 预警内容
+                    newItem.alarmUser = item.alarmUser; // 被预警人
                     
                     return newItem;
                 });
@@ -219,9 +219,9 @@ export default {
 
             queryAlarmRuleNameUsingGET()
             .then(res => {
-                console.log(val)
+                console.log(res)
 
-                let data = val.data;
+                let data = res.data;
 
                 if (!data|| !data instanceof Array === false || data.length <= 0) {
                     return false;

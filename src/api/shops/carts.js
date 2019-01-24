@@ -1,6 +1,6 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
-import axios from 'axios';
+import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 import notLoading from '@/components/apibasics-notLoading';
 
 /**
@@ -45,60 +45,18 @@ export function removeStoreUsingGET(storeId) {
  * @param {number} teamId 团队 id
  */
 export function exportStoreUsingGET(companyId, storeId, teamId) {
-    return axios({
-        url: `${config.url.origin}/cdimms/server/store/exportStore`,
-        method: 'post',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        data: {
-            companyId: companyId ? companyId : '',
-            storeId: storeId ? storeId : '',
-            teamId: teamId ? teamId : '',
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingPOST('/cdimms/server/store/exportStore', {
+        companyId: companyId ? companyId : '',
+        storeId: storeId ? storeId : '',
+        teamId: teamId ? teamId : '',
+    });
 }
 
 /**
  * 下载车行导入模板
  */
 export function getStoreTemplateUsingGET() {
-
-    return axios({
-        url: `${config.url.origin}/cdimms/server/store/getStoreTemplate`,
-        method: 'get',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingGET('/cdimms/server/store/getStoreTemplate');
 }
 
 /**

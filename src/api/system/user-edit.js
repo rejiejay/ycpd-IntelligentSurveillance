@@ -40,22 +40,25 @@ export function queryUserUsingGET(userName) {
  * @param {number} state 状态
  */
 export function addUserUsingPOST(userType, bcId, teamId, staffName, staffCode, userName, passwd, phone, roleId, state) {
+    let data = {
+        bcId: bcId,
+        teamId: teamId,
+        staffName: staffName,
+        staffCode: staffCode,
+        userName: userName,
+        passwd: passwd,
+        phone: phone,
+        roleId: roleId,
+    }
+
+    userType ? data.userType = userType : '';
+    state ? data.state = state : '';
+
     return notFilter({
         url: `${config.url.origin}/cdimms/server/user/addUser`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
-        data: {
-            userType: userType,
-            bcId: bcId,
-            teamId: teamId,
-            staffName: staffName,
-            staffCode: staffCode,
-            userName: userName,
-            passwd: passwd,
-            phone: phone,
-            roleId: roleId,
-            state: state,
-        }
+        data: data
     });
 }
 
@@ -74,23 +77,26 @@ export function addUserUsingPOST(userType, bcId, teamId, staffName, staffCode, u
  * @param {number} state 状态
  */
 export function modifyUserUsingPOST(id, userType, bcId, teamId, staffName, staffCode, userName, passwd, phone, roleId, state) {
+    let data = {
+        id: id,
+        bcId: bcId,
+        teamId: teamId,
+        staffName: staffName,
+        staffCode: staffCode,
+        userName: userName,
+        passwd: passwd,
+        phone: phone,
+        roleId: roleId,
+    }
+
+    userType ? data.userType = userType : '';
+    state ? data.state = state : '';
+
     return notFilter({
         url: `${config.url.origin}/cdimms/server/user/modifyUser`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
-        data: {
-            id: id,
-            userType: userType,
-            bcId: bcId,
-            teamId: teamId,
-            staffName: staffName,
-            staffCode: staffCode,
-            userName: userName,
-            passwd: passwd,
-            phone: phone,
-            roleId: roleId,
-            state: state,
-        }
+        data: data
     });
 }
 

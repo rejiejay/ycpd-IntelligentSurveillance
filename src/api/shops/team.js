@@ -1,6 +1,6 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
-import axios from 'axios';
+import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 import notLoading from '@/components/apibasics-notLoading';
 
 /**
@@ -39,58 +39,16 @@ export function removeTeamUsingPOST(teamId) {
  * @param {number} keyword 团队关键词查询
  */
 export function exportTeamUsingGET(keyword) {
-    return axios({
-        url: `${config.url.origin}/cdimms/server/team/exportTeam`,
-        method: 'post',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        data: {
-            keyword: keyword ? keyword : '',
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingPOST('/cdimms/server/team/exportTeam', {
+        keyword: keyword ? keyword : '',
+    });
 }
 
 /**
  * 团队记录列表导入excel模板
  */
 export function getTeamTemplateUsingGET() {
-
-    return axios({
-        url: `${config.url.origin}/cdimms/server/team/getTeamTemplate`,
-        method: 'get',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingGET('/cdimms/server/team/getTeamTemplate');
 }
 
 /**

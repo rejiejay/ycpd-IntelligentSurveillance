@@ -2,7 +2,7 @@ import apibasics from '@/components/apibasics';
 import config from '@/config';
 import notFilter from '@/components/apibasics-notFilter';
 import notLoading from '@/components/apibasics-notLoading';
-import axios from 'axios';
+import { downloadUsingPOST } from '@/components/download';
 
 /**
  * 获取用户列表
@@ -67,26 +67,5 @@ export function exportUserListUsingPOST(userType, bcName, staffName, staffCode, 
 
     userType ? body.userType = userType : '';
 
-    return axios({
-        url: `${config.url.origin}/cdimms/server/user/exportUserList`,
-        method: 'post',
-        headers: {
-            token: window.sessionStorage.cdimmstoken,
-        },
-        data: body,
-        responseType: 'arraybuffer'
-    }).then(response => {
-        let contentdisposition = response.headers['content-disposition']; // "attachment; filename=LossAssessment.xlsx"
-        let myFlieName = contentdisposition.slice(contentdisposition.indexOf('=') + 1);
-        
-        let blob = new Blob([response.data], {type: 'application/vnd.ms-excel;charset=utf-8'});
-        let url = window.URL.createObjectURL(blob);
-        let link = document.createElement('a');
-        link.style.display = 'none';
-        link.href = url;
-        link.setAttribute('download', myFlieName);
-
-        document.body.appendChild(link);
-        link.click();
-    }).catch(error =>  console.log(error));
+    downloadUsingPOST('/cdimms/server/user/exportUserList', body);
 }

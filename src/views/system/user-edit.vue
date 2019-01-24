@@ -301,7 +301,11 @@ export default {
                     let data = val.data;
 
                     _this.userId = data.id;
-                    _this.userTypeSection = `${data.userType ? data.userType : ''}`;
+                    if (data.userType === '') {
+                        _this.userTypeSection = '0';
+                    } else {
+                        _this.userTypeSection = `${data.userType ? data.userType : ''}`;
+                    }
                     _this.userBelongSection = `${data.bcId ? data.bcId : ''}`;
                     _this.teamSection = `${data.teamId ? data.teamId : ''}`;
                     _this.userRealName = data.staffName;
@@ -431,7 +435,7 @@ export default {
                 return this.$notify({title: '提示', message: '登录名已被使用', duration: 0 });
             }
 
-            if (pageType === 'add') {
+            if (this.pageType === 'add') {
                 if (this.password <= 6)  {
                     return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
                 }
