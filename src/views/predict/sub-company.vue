@@ -100,8 +100,8 @@
                             <span>文件上传完成</span>
                         </div>
                         <div class="succeed-tip-main">
-                            <span>成功{{uploadSuccessNum}}条，失败{{uploadErrorNum}}条</span>
-                            <el-button icon="el-icon-download" type="text">下载失败清单</el-button>
+                            <span>成功{{uploadSuccessNum}}条{{uploadErrorNum ? `，失败${uploadErrorNum}条` : ''}}</span>
+                            <el-button icon="el-icon-download" type="text" @click="getErrorTemplate">下载失败清单</el-button>
                         </div>
                     </div>
                 </div>
@@ -131,7 +131,7 @@
 import ModalByZindex from '@/components/ModalByZindex';
 import TimeConver from '@/utils/TimeConver';
 // 请求类
-import { queryAllCompanyPredictionUsingPOST, exportCompanyPredictionUsingGET, getBcPreTemplateUsingGET, importSubCompanyUsingFormData } from "@/api/predict/sub-company";
+import { queryAllCompanyPredictionUsingPOST, exportCompanyPredictionUsingGET, getBcPreTemplateUsingGET, importSubCompanyUsingFormData, getErrorTemplateUsingGET } from "@/api/predict/sub-company";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 
 export default {
@@ -171,6 +171,7 @@ export default {
             uploadSuccessNum: '', // 成功条数
             uploadErrorNum: '', // 失败条数
             uploadErrMsg: '', // 错误信息
+            downError: '', // 下载错误模板的id
 
             /**
              * 分页相关
@@ -299,6 +300,7 @@ export default {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = false; // 上传失败
                         _this.uploadErrMsg = response.data.errMsg; // 失败提示
+                        _this.downError = response.data.downError; // 失败模板的id
 
                     }
                     console.log(res);
@@ -314,6 +316,13 @@ export default {
          * 下载支公司模板
          */
         getBcPreTemplate: () => getBcPreTemplateUsingGET(),
+
+        /**
+         * 下载失败清单
+         */
+        getErrorTemplate: function getErrorTemplate() {
+            getErrorTemplateUsingGET(this.downError);
+        },
 
         /**
          * 分页改变的时候处理函数

@@ -175,8 +175,8 @@
                             <span>文件上传完成</span>
                         </div>
                         <div class="succeed-tip-main">
-                            <span>成功{{uploadSuccessNum}}条，失败{{uploadErrorNum}}条</span>
-                            <el-button icon="el-icon-download" type="text">下载失败清单</el-button>
+                            <span>成功{{uploadSuccessNum}}条{{uploadErrorNum ? `，失败${uploadErrorNum}条` : ''}}</span>
+                            <el-button icon="el-icon-download" type="text" @click="getErrorTemplate">下载失败清单</el-button>
                         </div>
                     </div>
                 </div>
@@ -205,7 +205,7 @@
 // 组件类
 import ModalByZindex from '@/components/ModalByZindex';
 // 请求类
-import { findAllStoreUsingPOST, exportStoreUsingGET, getStoreTemplateUsingGET, removeStoreUsingGET, importStoreUsingFormData } from "@/api/shops/carts";
+import { findAllStoreUsingPOST, exportStoreUsingGET, getStoreTemplateUsingGET, removeStoreUsingGET, importStoreUsingFormData, getErrorTemplateUsingGET } from "@/api/shops/carts";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 import { queryStoreSelectUsingPOST } from "@/api/store";
@@ -290,6 +290,7 @@ export default {
             uploadSuccessNum: '', // 成功条数
             uploadErrorNum: '', // 失败条数
             uploadErrMsg: '', // 错误信息
+            downError: '', // 下载错误模板的id
 
             /**
              * 分页相关
@@ -382,6 +383,13 @@ export default {
         },
 
         /**
+         * 下载失败清单
+         */
+        getErrorTemplate: function getErrorTemplate() {
+            getErrorTemplateUsingGET(this.downError);
+        },
+
+        /**
          * 导入车行信息
          */
         uploadImportStore: function uploadImportStore() {
@@ -403,7 +411,8 @@ export default {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = true; // 上传成功
                         _this.uploadErrMsg = response.data.successNum; // 成功提示
-                        _this.uploadErrMsg = response.data.errorNum; // 成功提示
+                        _this.uploadErrMsg = response.data.errorNum; // 失败提示
+                        _this.downError = response.data.downError; // 失败模板的id
 
                     } else {
                         _this.isUploadModalShow = true; // 显示上传模态框

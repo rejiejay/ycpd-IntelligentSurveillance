@@ -76,6 +76,13 @@ export function getStoreTemplateUsingGET() {
 }
 
 /**
+ * 下载失败清单
+ */
+export function getErrorTemplateUsingGET(downKey) {
+    downloadUsingGET(`/cdimms/server/store/exportStoreError?downKey=${downKey}`);
+}
+
+/**
  * 新增车行网点
  * @param {string} networkNo 车行编码
  * @param {string} networkName 车行名称

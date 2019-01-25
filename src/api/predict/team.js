@@ -46,6 +46,13 @@ export function exportTeamPredictionUsingGET(bcId, teamId, month) {
 }
 
 /**
+ * 下载失败清单
+ */
+export function getErrorTemplateUsingGET(downKey) {
+    downloadUsingGET(`/cdimms/server/prediction/exportTeamPredictionError?downKey=${downKey}`);
+}
+
+/**
  * 下载团队模板
  */
 export function getTeamPreTemplateUsingGET() {

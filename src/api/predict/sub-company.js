@@ -37,6 +37,13 @@ export function exportCompanyPredictionUsingGET(bcId, month) {
 }
 
 /**
+ * 下载失败清单
+ */
+export function getErrorTemplateUsingGET(downKey) {
+    downloadUsingGET(`/cdimms/server/prediction/exportBcPredictionError?downKey=${downKey}`);
+}
+
+/**
  * 导入数据
  * @param {files} formData 文件表单
  */

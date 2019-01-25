@@ -45,6 +45,13 @@ export function exportTeamUsingGET(keyword) {
 }
 
 /**
+ * 下载失败清单
+ */
+export function getErrorTemplateUsingGET(downKey) {
+    downloadUsingGET(`/cdimms/server/team/exportTeamError?downKey=${downKey}`);
+}
+
+/**
  * 导入团队信息
  * @param {files} formData 文件表单
  */
