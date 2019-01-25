@@ -143,7 +143,7 @@
                         <div class="item-left-lable flex-start-bottom">
                             <div :class="`left-lable-item ${item.isSigned ? 'signed-contract' : 'not-signed-contract'}`">{{item.isSigned ? "已合作" : "未合作"}}</div>
                             
-                            <div class="left-lable-item">{{item.rateLable}}</div>
+                            <div class="left-lable-item signed-contract">{{item.rateLable}}</div>
                             <!-- <el-rate
                                 v-model="item.rate"
                                 :max="item.ratemax"
@@ -699,10 +699,10 @@ export default {
                         newItem.label = '其他';
                     }
 
-                    let myStar = _this.starToRate(data.star);
+                    let myStar = _this.starToRate(val.star);
                     newItem.rate = myStar.rate;
                     newItem.ratemax = myStar.ratemax;
-                    newItem.rateLable = data.star;
+                    newItem.rateLable = val.star;
 
                     return newItem
                 });
@@ -776,6 +776,7 @@ export default {
                 let data = val.data;
 
                 if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
+                    this.initBaiduMap(); // 初始化百度地图
                     return false;
                 }
 

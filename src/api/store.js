@@ -7,11 +7,8 @@ import apibasics from '@/components/apibasics';
  */
 export function queryStoreSelectUsingPOST(storeName) {
     return apibasics({
-        url: `${config.url.origin}/cdimms/server/store/queryStoreSelect`,
+        url: `${config.url.origin}/cdimms/server/store/queryStoreSelect?storeName=${storeName}`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
-        data: {
-            storeName: storeName,
-        }
     });
 }
