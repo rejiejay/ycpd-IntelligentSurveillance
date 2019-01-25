@@ -23,7 +23,7 @@
                 v-model="search" 
                 clearable
             >
-                <el-button slot="append" icon="el-icon-search"></el-button>
+                <el-button slot="append" icon="el-icon-search" @click="initTeamMonitorList"></el-button>
             </el-input>
         </div>
     </div>
@@ -136,12 +136,12 @@
                 <div style="width: 200px;"></div>
                 <div class="team-table-premium flex-rest flex-start">
                     <div class="team-table-predicted" :style="`width: ${premiumWarningLine}%`">
-                        <div class="table-predicted-label">{{premiumWarningLine}}%</div>
+                        <!-- <div class="table-predicted-label">{{premiumWarningLine}}%</div> -->
                     </div>
                 </div>
                 <div class="team-table-loss flex-rest flex-start">
                     <div class="team-table-predicted" :style="`width: ${lossSortLine}%`">
-                        <div class="table-predicted-label">{{lossSortLine}}%</div>
+                        <!-- <div class="table-predicted-label">{{lossSortLine}}%</div> -->
                     </div>
                 </div>
                 <div class="team-table-proportion flex-rest flex-start">
@@ -160,6 +160,7 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :page-count="pageTotal"
+            @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
             layout="sizes, prev, pager, next, jumper"
         ></el-pagination>
@@ -169,6 +170,10 @@
 </template>
 
 <script>
+// 请求类
+import { listTeamMonitorUsingGET, exportTeamMonitorUsingGET } from "@/api/monitor/team";
+// 组件类
+import TimeConver from "@/utils/TimeConver";
 
 export default {
     name: 'monitor-team',
@@ -229,6 +234,9 @@ export default {
             ],
             startendTimeOptions: startendTimeOptions, // 开始结束时间 左边选项
 
+            ajaxStartTime: initStartTime, // 数据提交的开始时间
+            ajaxEndTime: initEndTime, // 数据提交的结束时间
+
             search: '', // 搜索
 
             /**
@@ -255,59 +263,283 @@ export default {
              */
             proportionSort: null,
 
-            premiumWarningLine: 50, // 保费 预警线 （百分比1~100）
-            lossSortLine: 50, // 定损 预警线 （百分比1~100）
+            // premiumWarningLine: 50, // 保费 预警线 （百分比1~100）
+            // lossSortLine: 50, // 定损 预警线 （百分比1~100）
             proportionSortLine: 50, // 产保比 预警线 （百分比1~100）
+
+            teamList: [
+                // {
+                //     no: 1, // 排名
+                //     name: '业务二部', // 名称
+                //     subcompany: '深圳市有限公司', // 名称支公司
+                //     premium: 1800, // 保费收入（万元）
+                //     premiumPredicted: 6000, // 保费预测收入（万元）
+                //     premiumPercent: 60, // 保费预测百分比(1~100)
+                //     loss: 1800, // 保费收入（万元）
+                //     lossPredicted: 6000, // 保费预测收入（万元）
+                //     lossPercent: 20, // 保费预测百分比(1~100)
+                //     proportion: 20, // 产保比 (1~100)
+                // }, {
+                //     no: 2,
+                //     name: '业务二部', // 名称
+                //     subcompany: '深圳市有限公司深圳市有限公司深圳市有限公司', // 名称支公司
+                //     premium: 1800, // 保费收入（万元）
+                //     premiumPredicted: 6000, // 保费预测收入（万元）
+                //     premiumPercent: 40, // 保费预测百分比(1~100)
+                //     loss: 1800, // 保费收入（万元）
+                //     lossPredicted: 6000, // 保费预测收入（万元）
+                //     lossPercent: 45, // 保费预测百分比(1~100)
+                //     proportion: 90, // 产保比 (1~100)
+                // }, {
+                //     no: 3,
+                //     name: '业务二部业务二部业务二部业务二部', // 名称
+                //     subcompany: '深圳市有限公司', // 名称支公司
+                //     premium: 1800, // 保费收入（万元）
+                //     premiumPredicted: 6000, // 保费预测收入（万元）
+                //     premiumPercent: 20, // 保费预测百分比(1~100)
+                //     loss: 1800, // 保费收入（万元）
+                //     lossPredicted: 6000, // 保费预测收入（万元）
+                //     lossPercent: 80, // 保费预测百分比(1~100)
+                //     proportion: 60, // 产保比 (1~100)
+                // }, 
+            ],
 
             /**
              * 分页相关
              */
             currentPage: 1, // 当前页码
-            pageSize: 10, // 一个页面多少数据
+            pageSize: 20, // 一个页面多少数据
             pageTotal: 1, // 一共多少条数据 
-
-            teamList: [
-                {
-                    no: 1, // 排名
-                    name: '业务二部', // 名称
-                    subcompany: '深圳市有限公司', // 名称支公司
-                    premium: 1800, // 保费收入（万元）
-                    premiumPredicted: 6000, // 保费预测收入（万元）
-                    premiumPercent: 60, // 保费预测百分比(1~100)
-                    loss: 1800, // 保费收入（万元）
-                    lossPredicted: 6000, // 保费预测收入（万元）
-                    lossPercent: 20, // 保费预测百分比(1~100)
-                    proportion: 20, // 产保比 (1~100)
-                }, {
-                    no: 2,
-                    name: '业务二部', // 名称
-                    subcompany: '深圳市有限公司深圳市有限公司深圳市有限公司', // 名称支公司
-                    premium: 1800, // 保费收入（万元）
-                    premiumPredicted: 6000, // 保费预测收入（万元）
-                    premiumPercent: 40, // 保费预测百分比(1~100)
-                    loss: 1800, // 保费收入（万元）
-                    lossPredicted: 6000, // 保费预测收入（万元）
-                    lossPercent: 45, // 保费预测百分比(1~100)
-                    proportion: 90, // 产保比 (1~100)
-                }, {
-                    no: 3,
-                    name: '业务二部业务二部业务二部业务二部', // 名称
-                    subcompany: '深圳市有限公司', // 名称支公司
-                    premium: 1800, // 保费收入（万元）
-                    premiumPredicted: 6000, // 保费预测收入（万元）
-                    premiumPercent: 20, // 保费预测百分比(1~100)
-                    loss: 1800, // 保费收入（万元）
-                    lossPredicted: 6000, // 保费预测收入（万元）
-                    lossPercent: 80, // 保费预测百分比(1~100)
-                    proportion: 60, // 产保比 (1~100)
-                }, 
-            ],
         } 
     },
 
-	mounted: function mounted() {},
+    computed: {
+        /**
+         * 保费 预警线 （日期 百分比1~100）
+         */
+        premiumWarningLine: function premiumWarningLine() {
+            let nowDateTimestamp = new Date().getTime();
+            let ajaxStartTimetamp = this.ajaxStartTime.getTime();
+            let ajaxEndTimetamp = this.ajaxEndTime.getTime();
+
+            // 判断现在的时间戳 是否小于 开始时间
+            if (nowDateTimestamp < this.ajaxStartTime.getTime()) {
+                return 0
+            }
+
+            // 判断现在的时间戳 是否大于 结束时间
+            if (nowDateTimestamp > ajaxEndTimetamp) {
+                return 100
+            }
+
+            let molecule = (ajaxEndTimetamp - ajaxStartTimetamp) - (ajaxEndTimetamp - nowDateTimestamp);
+            let denominator = ajaxEndTimetamp - ajaxStartTimetamp;
+
+            return Math.floor((molecule / denominator) * 100);
+        }, 
+
+        /**
+         * 定损 预警线 （日期 百分比1~100）
+         */
+        lossSortLine: function lossSortLine() {
+            let nowDateTimestamp = new Date().getTime();
+            let ajaxStartTimetamp = this.ajaxStartTime.getTime();
+            let ajaxEndTimetamp = this.ajaxEndTime.getTime();
+
+            // 判断现在的时间戳 是否小于 开始时间
+            if (nowDateTimestamp < this.ajaxStartTime.getTime()) {
+                return 0
+            }
+
+            // 判断现在的时间戳 是否大于 结束时间
+            if (nowDateTimestamp > ajaxEndTimetamp) {
+                return 100
+            }
+
+            let molecule = (ajaxEndTimetamp - ajaxStartTimetamp) - (ajaxEndTimetamp - nowDateTimestamp);
+            let denominator = ajaxEndTimetamp - ajaxStartTimetamp;
+
+            return Math.floor((molecule / denominator) * 100);
+        }
+    },
+
+    watch: {
+        /**
+         * 开始结束时间
+         */
+        startendTime: function startendTime(newstartendTime) {
+            if (newstartendTime[0] && newstartendTime[1]) {
+                this.initTeamMonitorList();
+            }
+        },
+    },
+
+	mounted: function mounted() {
+        this.initTeamMonitorList(); // 初始化 团队监控
+    },
 
 	methods: {
+        /**
+         * 初始化 支公司监控
+         */
+        initTeamMonitorList: function initTeamMonitorList() {
+            const _this = this;
+            
+            if (!this.startendTime[0]) {
+                return this.$notify({title: '提示', message: '开始时间不能为空', duration: 0 });
+            }
+            
+            if (!this.startendTime[1]) {
+                return this.$notify({title: '提示', message: '结束时间不能为空', duration: 0 });
+            }
+
+            let pageSize = this.pageSize;
+
+            let teamName = this.search ? this.search : '';
+
+            this.ajaxStartTime = this.startendTime[0];
+            this.ajaxEndTime = this.startendTime[1];
+
+            let startDate = TimeConver.dateToFormat(this.ajaxStartTime);
+            let endDate = TimeConver.dateToFormat(this.ajaxEndTime);
+
+            let orderBy = '';
+            let sortType = '';
+            
+            if (this.premiumSort) {
+                orderBy = 'PREMIUM';
+
+                if (this.premiumSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.premiumSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.lossSort) {
+                orderBy = 'LOSS_ASSESSMENT';
+
+                if (this.lossSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.lossSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.proportionSort) {
+                orderBy = 'RATIO';
+
+                if (this.proportionSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.proportionSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+
+            listTeamMonitorUsingGET(pageSize, teamName, startDate, endDate, orderBy, sortType)
+            .then(val => {
+                let data = val.data;
+
+                console.log(data)
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.teamList = data.map((item, key) => {
+                        let newItem = {}
+
+                        newItem.no = (key + 1);
+                        newItem.name = item.teamName; // 团队名称
+                        newItem.subcompany = item.bcName; // 支公司名称
+
+                        newItem.premium = item.sumpremium ? Math.floor(item.sumpremium) : '0'; // 保费金额
+                        newItem.premiumPredicted = item.income ? Math.floor(item.income) : '0'; // 预测保费
+
+                        let premiumPercent = item.sumpremium / item.income;
+                        if (item.sumpremium && item.income && premiumPercent >= 0 && premiumPercent <= 1) {
+                            newItem.premiumPercent = Math.round(premiumPercent * 100) / 100; // 保费预测百分比(1~100)
+                            
+                        } else {
+                            newItem.premiumPercent = 0; // 保费预测百分比(1~100)
+                        }
+
+                        newItem.loss = item.materialfee ? Math.floor(item.materialfee) : '0'; // 定损金额
+                        newItem.lossPredicted = item.expense ? Math.floor(item.expense) : '0'; // 预测定损
+
+                        let lossPercent = item.materialfee / item.expense;
+                        if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
+                            newItem.lossPercent = Math.round(lossPercent * 100) / 100; // 保费预测百分比(1~100)
+                            
+                        } else {
+                            newItem.lossPercent = 0; // 保费预测百分比(1~100)
+                        }
+
+                        newItem.proportion = item.ratio ? item.ratio : '0'; // 定损金额
+
+                        return newItem;
+                    });
+                } else {
+                    _this.teamList = []; // 记得清空
+                }
+
+            }, error => console.log(error));
+        },
+        
+        /**
+         * 导出 支公司监控
+         */
+        exportTeamMonitor: function exportTeamMonitor() {
+            const _this = this;
+            
+            if (!this.startendTime[0]) {
+                return this.$notify({title: '提示', message: '开始时间不能为空', duration: 0 });
+            }
+            
+            if (!this.startendTime[1]) {
+                return this.$notify({title: '提示', message: '结束时间不能为空', duration: 0 });
+            }
+
+            let teamName = this.search ? this.search : '';
+
+            this.ajaxStartTime = this.startendTime[0];
+            this.ajaxEndTime = this.startendTime[1];
+
+            let startDate = TimeConver.dateToFormat(this.ajaxStartTime);
+            let endDate = TimeConver.dateToFormat(this.ajaxEndTime);
+
+            let orderBy = '';
+            let sortType = '';
+            
+            if (this.premiumSort) {
+                orderBy = 'PREMIUM';
+
+                if (this.premiumSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.premiumSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.lossSort) {
+                orderBy = 'LOSS_ASSESSMENT';
+
+                if (this.lossSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.lossSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.proportionSort) {
+                orderBy = 'RATIO';
+
+                if (this.proportionSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.proportionSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+
+            exportTeamMonitorUsingGET(teamName, startDate, endDate, orderBy, sortType)
+        },
+
         /**
          * 排序方式 转为 ICON 样式
          * @param {string} name 排序的方式
@@ -339,6 +571,10 @@ export default {
                 this.premiumSort = null;
 
             }
+
+            this.lossSort = null; // 只要点击就进行清空
+            this.proportionSort = null;
+            this.initTeamMonitorList();
         },
 
         /**
@@ -355,6 +591,10 @@ export default {
                 this.lossSort = null;
 
             }
+
+            this.premiumSort = null; // 只要点击就进行清空
+            this.proportionSort = null;
+            this.initTeamMonitorList();
         },
 
         /**
@@ -371,6 +611,18 @@ export default {
                 this.proportionSort = null;
 
             }
+
+            this.premiumSort = null; // 只要点击就进行清空
+            this.lossSort = null;
+            this.initTeamMonitorList();
+        },
+
+        /**
+         * 分页改变的时候处理函数
+         */
+        pageSizeChangeHandle: function pageSizeChangeHandle(item) {
+            this.pageSize = item;
+            this.initTeamMonitorList();
         },
 
         /**

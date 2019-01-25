@@ -14,7 +14,7 @@
                 end-placeholder="结束日期"
                 :picker-options="startendTimeOptions"
             ></el-date-picker>
-            <el-button icon="el-icon-download" type="primary">导出</el-button>
+            <el-button icon="el-icon-download" type="primary" @click="exportCompanyMonitor">导出</el-button>
         </div>
 
         <div class="company-operate-right">
@@ -23,7 +23,7 @@
                 v-model="search" 
                 clearable
             >
-                <el-button slot="append" icon="el-icon-search"></el-button>
+                <el-button slot="append" icon="el-icon-search" @click="initCompanyMonitorList"></el-button>
             </el-input>
         </div>
     </div>
@@ -153,7 +153,7 @@
 
 <script>
 // 请求类
-import { listCompanyMonitorUsingGET } from "@/api/monitor/subcompany";
+import { listCompanyMonitorUsingGET, exportCompanyMonitorUsingGET } from "@/api/monitor/subcompany";
 // 组件类
 import TimeConver from "@/utils/TimeConver";
 
@@ -215,6 +215,9 @@ export default {
             ],
             startendTimeOptions: startendTimeOptions, // 开始结束时间 左边选项
 
+            ajaxStartTime: initStartTime, // 数据提交的开始时间
+            ajaxEndTime: initEndTime, // 数据提交的结束时间
+
             search: '', // 搜索
 
             /**
@@ -241,8 +244,8 @@ export default {
              */
             proportionSort: null,
 
-            premiumWarningLine: 50, // 保费 预警线 （日期 百分比1~100）
-            lossSortLine: 50, // 定损 预警线 （日期 百分比1~100）
+            // premiumWarningLine: 50, // 保费 预警线 （日期 百分比1~100）
+            // lossSortLine: 50, // 定损 预警线 （日期 百分比1~100）
             proportionSortLine: 60, // 产保比 预警线 （百分比1~100） 这个是固定的
 
             subCompanyList: [
@@ -281,6 +284,67 @@ export default {
         } 
     },
 
+    computed: {
+        /**
+         * 保费 预警线 （日期 百分比1~100）
+         */
+        premiumWarningLine: function premiumWarningLine() {
+            let nowDateTimestamp = new Date().getTime();
+            let ajaxStartTimetamp = this.ajaxStartTime.getTime();
+            let ajaxEndTimetamp = this.ajaxEndTime.getTime();
+
+            // 判断现在的时间戳 是否小于 开始时间
+            if (nowDateTimestamp < this.ajaxStartTime.getTime()) {
+                return 0
+            }
+
+            // 判断现在的时间戳 是否大于 结束时间
+            if (nowDateTimestamp > ajaxEndTimetamp) {
+                return 100
+            }
+
+            let molecule = (ajaxEndTimetamp - ajaxStartTimetamp) - (ajaxEndTimetamp - nowDateTimestamp);
+            let denominator = ajaxEndTimetamp - ajaxStartTimetamp;
+
+            return Math.floor((molecule / denominator) * 100);
+        }, 
+
+        /**
+         * 定损 预警线 （日期 百分比1~100）
+         */
+        lossSortLine: function lossSortLine() {
+            let nowDateTimestamp = new Date().getTime();
+            let ajaxStartTimetamp = this.ajaxStartTime.getTime();
+            let ajaxEndTimetamp = this.ajaxEndTime.getTime();
+
+            // 判断现在的时间戳 是否小于 开始时间
+            if (nowDateTimestamp < this.ajaxStartTime.getTime()) {
+                return 0
+            }
+
+            // 判断现在的时间戳 是否大于 结束时间
+            if (nowDateTimestamp > ajaxEndTimetamp) {
+                return 100
+            }
+
+            let molecule = (ajaxEndTimetamp - ajaxStartTimetamp) - (ajaxEndTimetamp - nowDateTimestamp);
+            let denominator = ajaxEndTimetamp - ajaxStartTimetamp;
+
+            return Math.floor((molecule / denominator) * 100);
+        }
+    },
+
+    watch: {
+        /**
+         * 开始结束时间
+         */
+        startendTime: function startendTime(newstartendTime) {
+            if (newstartendTime[0] && newstartendTime[1]) {
+                this.initCompanyMonitorList();
+            }
+        },
+    },
+
 	mounted: function mounted() {
         this.initCompanyMonitorList(); // 初始化 支公司监控
     },
@@ -291,11 +355,22 @@ export default {
          */
         initCompanyMonitorList: function initCompanyMonitorList() {
             const _this = this;
+            
+            if (!this.startendTime[0]) {
+                return this.$notify({title: '提示', message: '开始时间不能为空', duration: 0 });
+            }
+            
+            if (!this.startendTime[1]) {
+                return this.$notify({title: '提示', message: '结束时间不能为空', duration: 0 });
+            }
 
             let bcName = this.search ? this.search : '';
 
-            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
-            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
+            this.ajaxStartTime = this.startendTime[0];
+            this.ajaxEndTime = this.startendTime[1];
+
+            let startDate = TimeConver.dateToFormat(this.ajaxStartTime);
+            let endDate = TimeConver.dateToFormat(this.ajaxEndTime);
 
             let orderBy = '';
             let sortType = '';
@@ -339,7 +414,7 @@ export default {
                     _this.subCompanyList = data.map((item, key) => {
                         let newItem = {}
 
-                        newItem.no = key;
+                        newItem.no = (key + 1);
                         newItem.name = item.bcName; // 支公司名称
 
                         newItem.premium = item.sumpremium ? Math.floor(item.sumpremium) : '0'; // 保费金额
@@ -373,6 +448,64 @@ export default {
                 }
 
             }, error => console.log(error));
+        },
+
+        /**
+         * 初始化 支公司监控
+         */
+        exportCompanyMonitor: function exportCompanyMonitor() {
+            const _this = this;
+            
+            if (!this.startendTime[0]) {
+                return this.$notify({title: '提示', message: '开始时间不能为空', duration: 0 });
+            }
+            
+            if (!this.startendTime[1]) {
+                return this.$notify({title: '提示', message: '结束时间不能为空', duration: 0 });
+            }
+
+            let bcName = this.search ? this.search : '';
+
+            this.ajaxStartTime = this.startendTime[0];
+            this.ajaxEndTime = this.startendTime[1];
+
+            let startDate = TimeConver.dateToFormat(this.ajaxStartTime);
+            let endDate = TimeConver.dateToFormat(this.ajaxEndTime);
+
+            let orderBy = '';
+            let sortType = '';
+            
+            if (this.premiumSort) {
+                orderBy = 'PREMIUM';
+
+                if (this.premiumSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.premiumSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.lossSort) {
+                orderBy = 'LOSS_ASSESSMENT';
+
+                if (this.lossSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.lossSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.proportionSort) {
+                orderBy = 'RATIO';
+
+                if (this.proportionSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.proportionSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+
+            exportCompanyMonitorUsingGET(bcName, startDate, endDate, orderBy, sortType);
         },
 
         /**

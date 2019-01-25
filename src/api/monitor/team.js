@@ -3,17 +3,19 @@ import config from '@/config';
 import { downloadUsingGET } from '@/components/download';
 
 /**
- * 支公司监控展示
- * @param {string} bcName 按照支公司搜索
+ *  团队监控列表展示
+ * @param {string} pageSize 页面大小
+ * @param {string} teamName 按照支公司搜索
  * @param {string} startDate 开始时间
  * @param {string} endDate 结束时间
  * @param {string} orderBy 根据什么字段排序 PREMIUM:保费, LOSS_ASSESSMENT:定损, RATIO：产保比
  * @param {string} sortType ASC 顺序 DESC:倒叙
  */
-export function listCompanyMonitorUsingGET(bcName, startDate, endDate, orderBy, sortType) {
+export function listTeamMonitorUsingGET(pageSize, teamName, startDate, endDate, orderBy, sortType) {
     let urlparam = '';
 
-    urlparam += bcName ? `&bcName=${bcName}` : '';
+    urlparam += pageSize ? `&pageSize=${pageSize}` : '';
+    urlparam += teamName ? `&teamName=${teamName}` : '';
     urlparam += startDate ? `&startDate=${startDate}` : '';
     urlparam += endDate ? `&endDate=${endDate}` : '';
     urlparam += orderBy ? `&orderBy=${orderBy}` : '';
@@ -24,24 +26,26 @@ export function listCompanyMonitorUsingGET(bcName, startDate, endDate, orderBy, 
     }
     
     return apibasics({
-        url: `${config.url.origin}/cdimms/server/companyMonitor/list${urlparam}`,
+        url: `${config.url.origin}/cdimms/server/teamMonitor/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
     });
 }
 
 /**
- * 支公司监控导出
- * @param {string} bcName 按照支公司搜索
+ * 导出团队监控列表
+ * @param {string} pageSize 页面大小
+ * @param {string} teamName 按照支公司搜索
  * @param {string} startDate 开始时间
  * @param {string} endDate 结束时间
  * @param {string} orderBy 根据什么字段排序 PREMIUM:保费, LOSS_ASSESSMENT:定损, RATIO：产保比
  * @param {string} sortType ASC 顺序 DESC:倒叙
  */
-export function exportCompanyMonitorUsingGET(bcName, startDate, endDate, orderBy, sortType) {
+export function exportTeamMonitorUsingGET(pageSize, teamName, startDate, endDate, orderBy, sortType) {
     let urlparam = '';
 
-    urlparam += bcName ? `&bcName=${bcName}` : '';
+    urlparam += pageSize ? `&pageSize=${pageSize}` : '';
+    urlparam += teamName ? `&teamName=${teamName}` : '';
     urlparam += startDate ? `&startDate=${startDate}` : '';
     urlparam += endDate ? `&endDate=${endDate}` : '';
     urlparam += orderBy ? `&orderBy=${orderBy}` : '';
@@ -51,5 +55,5 @@ export function exportCompanyMonitorUsingGET(bcName, startDate, endDate, orderBy
         urlparam = `?${urlparam.substr(1)}`;
     }
 
-    downloadUsingGET(`/cdimms/server/companyMonitor/export${urlparam}`);
+    downloadUsingGET(`/cdimms/server/teamMonitor/export${urlparam}`);
 }
