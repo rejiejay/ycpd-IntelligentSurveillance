@@ -1,5 +1,4 @@
 import apibasics from '@/components/apibasics';
-import notLoading from '@/components/apibasics-notLoading';
 import notFilter from '@/components/apibasics-notFilter';
 import config from '@/config';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
@@ -11,7 +10,7 @@ import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
  * @param {number} companyId 支公司 id
  */
 export function queryAllCompanyUsingPOST(pageNo, pageSize, companyId) {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/company/queryAllCompany`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

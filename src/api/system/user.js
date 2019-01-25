@@ -1,7 +1,5 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
-import notFilter from '@/components/apibasics-notFilter';
-import notLoading from '@/components/apibasics-notLoading';
 import { downloadUsingPOST } from '@/components/download';
 
 /**
@@ -28,7 +26,7 @@ export function queryUserListUsingPOST(currentPage, pageCount, userType, bcName,
     userType ? body.userType = userType : '';
     state ? body.state = state : '';
 
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/user/queryUserList`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -40,7 +38,7 @@ export function queryUserListUsingPOST(currentPage, pageCount, userType, bcName,
  * 用户角色下拉框
  */
 export function queryRoleListUsingGET() {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/user/queryRoleList`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

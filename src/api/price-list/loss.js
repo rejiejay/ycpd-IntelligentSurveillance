@@ -1,7 +1,6 @@
 import config from '@/config';
 import apibasics from '@/components/apibasics';
 import { downloadUsingGET } from '@/components/download';
-import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 定损明细列表
@@ -25,7 +24,7 @@ export function lossAssessmentUsingGET(pageNo, pageSize, startDate, endDate, sto
     urlparam += lowestMaterialfee ? `&lowestMaterialfee=${lowestMaterialfee}` : '';
     urlparam += highestMaterialfee ? `&highestMaterialfee=${highestMaterialfee}` : '';
 
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/lossAssessment/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

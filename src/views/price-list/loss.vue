@@ -89,6 +89,26 @@
                 prop="lossPlace"
                 label="定损中心"
             ></el-table-column>
+            <el-table-column
+                prop="handlercode"
+                label="定损员"
+            ></el-table-column>
+            <el-table-column
+                prop="materialfee"
+                label="定损金额"
+            ></el-table-column>
+            <el-table-column
+                prop="policyno"
+                label="保单号"
+            ></el-table-column>
+            <el-table-column
+                prop="licenseno"
+                label="标的车牌号"
+            ></el-table-column>
+            <el-table-column
+                prop="modelcode"
+                label="标的车型"
+            ></el-table-column>
         </el-table>
     </div>
 
@@ -299,16 +319,21 @@ export default {
                 _this.losslist = data.lossAssessment.map(val => {
                     let newItem = {};
 
-                    newItem.netCode = val.networkname; // 网点编码
-                    newItem.netName = val.netpointname; // 网点名称	
-                    newItem.netType = val.netpointtype; // 网点类型	
+                    newItem.netCode = val.monopolycode; // 网点编码
+                    newItem.netName = val.repairfactoryname; // 网点名称	
+                    newItem.netType = val.repairfactorytype; // 网点类型	
                     newItem.netRate = val.netpointstart; // 网点星级
-                    newItem.subCompany = val.comcode; // 支公司
-                    newItem.team = val.teamcode; // 业务团队
+                    newItem.subCompany = val.bcName; // 支公司
+                    newItem.team = val.teamName; // 业务团队
 
                     newItem.reportNo = val.registno; // 报案号
                     newItem.lossTime = val.deflossdate; // 定损时间
                     newItem.lossPlace = val.defsite; // 定损中心
+                    newItem.handlercode = val.handlercode; // 定损员
+                    newItem.materialfee = val.materialfee; // 定损金额
+                    newItem.policyno = val.policyno; // 保单号
+                    newItem.licenseno = val.licenseno; // 标的车牌号
+                    newItem.modelcode = val.modelcode; // 标的车型
 
                     return newItem
                 });

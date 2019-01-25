@@ -1,5 +1,4 @@
 import apibasics from '@/components/apibasics';
-import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 
 /**
@@ -39,7 +38,7 @@ export function listStoreToMapUsingGET(startDate, endDate, bcId, teamId, id, isJ
         urlparam = `?${urlparam.substr(1)}`;
     }
     
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/storeMap/list${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
@@ -84,7 +83,7 @@ export function listByIdUsingGET(id) {
  * @param {string} searchParam 车行唯一标识
  */
 export function listStoreToSearchUsingGET(searchParam) {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/storeMap/listToSearch?searchParam=${searchParam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

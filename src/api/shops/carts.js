@@ -1,7 +1,6 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
-import notLoading from '@/components/apibasics-notLoading';
 import upload from '@/components/upload';
 
 /**
@@ -22,7 +21,7 @@ export function findAllStoreUsingPOST(pageNo, pageSzie, companyId, storeId, team
 
     storeId ? data.networkType = parseInt(storeId) : '';
 
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/store/queryAllStore`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

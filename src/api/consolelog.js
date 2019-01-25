@@ -1,5 +1,4 @@
 import apibasics from '@/components/apibasics';
-import notLoading from '@/components/apibasics-notLoading';
 import config from '@/config';
 import { downloadUsingPOST } from '@/components/download';
 
@@ -12,7 +11,7 @@ import { downloadUsingPOST } from '@/components/download';
  * @param {number} endTime 结束时间
  */
 export function queryAllAlarmLogUsingPOST(pageNo, pageSzie, arId, startTime, endTime) {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/alarmlog/queryAllAlarmLog`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
@@ -41,7 +40,7 @@ export function exportAlarmLogUsingGET(arId, startTime, endTime) {
  * 查询预警规则下拉列表
  */
 export function queryAlarmRuleNameUsingGET() {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/alarmRule/queryAlarmRuleName`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},

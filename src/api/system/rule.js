@@ -1,8 +1,6 @@
 import config from '@/config';
-import notFilter from '@/components/apibasics-notFilter';
 import apibasics from '@/components/apibasics';
 import { downloadUsingPOST } from '@/components/download';
-import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 获取告警规则列表
@@ -22,7 +20,7 @@ export function queryAlarmRuleListUsingPOST(currentPage, pageCount, indicatorTyp
     indicatorType ? body.indicatorType = indicatorType : '';
     objType ? body.objType = objType : '';
 
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/alarmRule/queryAlarmRuleList`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

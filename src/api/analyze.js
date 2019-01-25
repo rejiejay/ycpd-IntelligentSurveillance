@@ -1,7 +1,6 @@
 import apibasics from '@/components/apibasics';
 import config from '@/config';
 import { downloadUsingPOST } from '@/components/download';
-import notLoading from '@/components/apibasics-notLoading';
 
 /**
  * 统计分析保费数据
@@ -13,7 +12,7 @@ import notLoading from '@/components/apibasics-notLoading';
  * @param {number} networkId 网点id
  */
 export function statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId) {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/sa/statisticalAnalysis`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},

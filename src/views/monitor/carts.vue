@@ -51,7 +51,7 @@
                     </div>
                     <div class="regionsite-describe-tip flex-start-center">
                         <div class="flex-rest">· 新增网点：<span style="color: #67C23A;">{{newAddStoreNum}}</span></div>
-                        <div class="flex-rest">· 签约率：<span style="color: #67C23A;">{{signingRate}}%</span></div>
+                        <div class="flex-rest">· 签约率：<span style="color: #67C23A;">{{signingRate * 100}}%</span></div>
                     </div>
                 </div>
             </div>
@@ -72,13 +72,14 @@
                     <div class="carts-main-lable flex-start-bottom">
                         <div class="main-lable-item">{{storeisJoin}}</div>
                         <div class="main-lable-item">{{storenetworkType}}</div>
-                        <el-rate
+                        <div class="main-lable-item">{{rateLable}}</div>
+                        <!-- <el-rate
                             v-model="rate"
                             :max="ratemax"
                             disabled
                             :colors="['#F56C6C', '#F56C6C', '#F56C6C']"
                             disabled-void-color="#ddd"
-                        ></el-rate>
+                        ></el-rate> -->
                     </div>
 
                     <div class="carts-main-details">
@@ -109,7 +110,7 @@
                                     <div class="content-item-money" style="color: #F56C6C;">{{materialfee}}</div>
                                 </div>
                             </div>
-                            <div class="details-describe-tip flex-center">· 保费/定损金额比例： <span style="color: #67C23A;">{{materialfee}}%</span></div>
+                            <div class="details-describe-tip flex-center">· 保费/定损金额比例： <span style="color: #67C23A;">{{ (materialfee && sumpremium) ? Math.round(materialfee/sumpremium * 100) / 100 : 0}}%</span></div>
                         </div>
                     </div>
                 </div>
@@ -140,14 +141,16 @@
                         <div class="item-left-title">{{item.title}}</div>
                         <div class="item-left-address">{{item.address}}</div>
                         <div class="item-left-lable flex-start-bottom">
-                            <div :class="`left-lable-item ${item.isSigned ? 'signed-contract' : 'not-signed-contract'}`">{{item.isSigned ? "已签约" : "未签约"}}</div>
-                            <el-rate
+                            <div :class="`left-lable-item ${item.isSigned ? 'signed-contract' : 'not-signed-contract'}`">{{item.isSigned ? "已合作" : "未合作"}}</div>
+                            
+                            <div class="left-lable-item">{{item.rateLable}}</div>
+                            <!-- <el-rate
                                 v-model="item.rate"
                                 :max="item.ratemax"
                                 disabled
                                 :colors="['#F56C6C', '#F56C6C', '#F56C6C']"
                                 disabled-void-color="#ddd"
-                            ></el-rate>
+                            ></el-rate> -->
                         </div>
                     </div>
                     <div class="results-item-img">
@@ -854,23 +857,23 @@ export default {
 
                 _this.storeId = data.id; // 车商id
                 _this.storenetworkName = data.networkName; // 网点名称
-                _this.storeaddress = `${data.province}${data.city}${data.county}${data.address}`; // 网点地址
+                _this.storeaddress = `${data.province ? data.province : ''}${data.city ? data.city : ''}${data.county ? data.county : ''}${data.address}`; // 网点地址
                 _this.storeisJoin = data.isJoin === 1 ? '已合作' : '未合作'; // 是否合作
-                if ( val.networkType === 0 ) {
+                if ( data.networkType === 0 ) {
                     _this.storenetworkType = '4S店';
-                } else if ( val.networkType === 1 ) {
+                } else if ( data.networkType === 1 ) {
                     _this.storenetworkType = '修理厂';
-                } else if ( val.networkType === 2 ) {
+                } else if ( data.networkType === 2 ) {
                     _this.storenetworkType = '二网';
-                } else if ( val.networkType === 3 ) {
+                } else if ( data.networkType === 3 ) {
                     _this.storenetworkType = '二手车行';
-                } else if ( val.networkType === 4 ) {
+                } else if ( data.networkType === 4 ) {
                     _this.storenetworkType = '续保';
-                } else if ( val.networkType === 5 ) {
+                } else if ( data.networkType === 5 ) {
                     _this.storenetworkType = '非车险';
-                } else if ( val.networkType === 6 ) {
+                } else if ( data.networkType === 6 ) {
                     _this.storenetworkType = '网络销售';
-                } else if ( val.networkType === 7 ) {
+                } else if ( data.networkType === 7 ) {
                     _this.storenetworkType = '其他';
                 }
                 let myStar = _this.starToRate(data.star);
@@ -934,6 +937,7 @@ export default {
                 // 图标
                 let baiduMapIcon = new BMap.Icon(
                     _this.img.no_cooperate, // 图片（不合作）
+                    // new BMap.Size(30, 45), // 尺寸大小
                     new BMap.Size(30, 45), // 尺寸大小
                 );
 

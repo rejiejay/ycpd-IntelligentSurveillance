@@ -317,25 +317,25 @@ export default {
                 _this.comparisonlist = data.premiumLossAssessRatios.map(val => {
                     let newItem = {};
 
-                    newItem.netCode = val.networkno; // 网点编码
-                    newItem.netName = val.networkname; // 网点名称	
+                    newItem.netCode = val.networkNo; // 网点编码
+                    newItem.netName = val.networkName; // 网点名称	
 
                     // 网点类型	
-                    if ( val.networktype == 0 ) {
+                    if ( val.networkType == 0 ) {
                         newItem.netType = '4S店';
-                    } else if ( val.networktype == 1 ) {
+                    } else if ( val.networkType == 1 ) {
                         newItem.netType = '修理厂';
-                    } else if ( val.networktype == 2 ) {
+                    } else if ( val.networkType == 2 ) {
                         newItem.netType = '二网';
-                    } else if ( val.networktype == 3 ) {
+                    } else if ( val.networkType == 3 ) {
                         newItem.netType = '二手车行';
-                    } else if ( val.networktype == 4 ) {
+                    } else if ( val.networkType == 4 ) {
                         newItem.netType = '续保';
-                    } else if ( val.networktype == 5 ) {
+                    } else if ( val.networkType == 5 ) {
                         newItem.netType = '非车险';
-                    } else if ( val.networktype == 6 ) {
+                    } else if ( val.networkType == 6 ) {
                         newItem.netType = '网络销售';
-                    } else if ( val.networktype == 7 ) {
+                    } else if ( val.networkType == 7 ) {
                         newItem.netType = '其他';
                     }
                     
@@ -346,7 +346,7 @@ export default {
 
                     newItem.premium = val.sumpremium; // 保费收入
                     newItem.loss = val.materialfee; // 定损支出
-                    newItem.proportion = val.proportion; // 定损支出
+                    newItem.proportion = val.ratio; // 定损支出
 
                     return newItem
                 });

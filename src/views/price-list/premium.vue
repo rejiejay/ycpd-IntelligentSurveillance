@@ -335,13 +335,13 @@ export default {
                 _this.premiumlist = data.premiums.map(val => {
                     let newItem = {};
 
-                    newItem.netCode = val.netpointcode; // 网点编码
-                    newItem.netName = val.netpointname; // 网点名称	
-                    newItem.netType = val.netpointtype; // 网点类型	
+                    newItem.netCode = val.monopolycode; // 网点编码
+                    newItem.netName = val.repairfactoryname; // 网点名称	
+                    newItem.netType = val.repairfactorytype; // 网点类型	
                     newItem.netRate = val.netpointstart; // 网点星级
-                    newItem.subCompany = val.comcode; // 支公司
-                    newItem.team = val.teamcode; // 业务团队
-                    newItem.orderTime = val.maketime ? val.maketime.split(' ')[0] : ''; // 出单时间
+                    newItem.subCompany = val.bcName; // 支公司
+                    newItem.team = val.teamName; // 业务团队
+                    newItem.orderTime = val.operatedate ? val.operatedate.split(' ')[0] : ''; // 出单时间
                     newItem.carNo = val.licenseno; // 标的车牌号
                     newItem.policyno = val.policyno; // 保单号
                     newItem.policyNo = val.sumpremium; // 保费

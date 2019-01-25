@@ -1,4 +1,4 @@
-import notLoading from '@/components/apibasics-notLoading';
+import apibasics from '@/components/apibasics';
 import config from '@/config';
 import { downloadUsingPOST, downloadUsingGET } from '@/components/download';
 import upload from '@/components/upload';
@@ -11,7 +11,7 @@ import upload from '@/components/upload';
  * @param {number} month 月份
  */
 export function queryAllCompanyPredictionUsingPOST(pageNo, pageSzie, bcId, month) {
-    return notLoading({
+    return apibasics({
         url: `${config.url.origin}/cdimms/server/prediction/queryAllCompanyPrediction`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
