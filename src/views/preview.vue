@@ -2,8 +2,7 @@
 <template>
 <div class="preview flex-center"  :style="`height: ${clientHeight - 50}px`">
     <div class="preview-container">
-        <div class="banner flex-center"><img :src="img.picc" alt="picc"></div>
-        <h3 class="title flex-center">PICC智慧监控管理系统</h3>
+        <h3 class="title flex-center">欢迎登录车商智慧监控管理系统</h3>
     </div>
 </div>
 </template>
@@ -44,13 +43,12 @@ $black4: #C0C4CC;
     color: $black2;
     font-size: 14px;
     font-weight: normal;
-    background: #2d3a4b;
 }
 
 .title {
     padding-top: 25px;
     font-size: 24px;
-    color: #fff;
+    color:  $black1;
 }
 
 </style>

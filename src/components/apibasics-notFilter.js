@@ -73,24 +73,36 @@ apibasics.interceptors.response.use(
             return Promise.reject('网络错误, 请检查你的网络');
         }
 
-        if (response.status === 405) {
+        if (response.status === 445) {
             Message({
-                message: `无权限请求, 无资源访问权限`,
+                message: `无资源访问权限或登陆失效`,
                 type: 'error',
                 duration: 2.5 * 1000
             });
             window.sessionStorage.removeItem('cdimmstoken');
             Router.push({ path: '/login' });
-            return Promise.reject('无权限请求, 无资源访问权限');
+            return Promise.reject('无资源访问权限或登陆失效');
         }
 
-        if (response.status === 406) {
+        if (response.status === 446) {
             Message({
                 message: `操作异常`,
                 type: 'error',
                 duration: 2.5 * 1000
             });
             return Promise.reject('操作异常');
+        }
+
+        // 登录过期的情况
+        if (response.status === 447) {
+            Message({
+                message: `用户未登陆或登陆失效, 请重新登录`,
+                type: 'error',
+                duration: 2.5 * 1000
+            });
+            window.sessionStorage.removeItem('cdimmstoken');
+            Router.push({ path: '/login' });
+            return Promise.reject('用户未登陆或登陆失效, 请重新登录');
         }
 
         // 登录过期的情况

@@ -210,7 +210,7 @@ export default {
                     }
                     newItem.target = val.objType === 0 ? '支公司' : '车行' ; // 预警对象
                     newItem.range = val.areaType === 0 ? '全部' : '自定义' ; // 预警范围
-                    newItem.infoPeople = val.userNames; // 通知人
+                    newItem.infoPeople = val.staffNames; // 通知人
                     /**
                      * 通知时间
                      */

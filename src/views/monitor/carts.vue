@@ -644,7 +644,9 @@ export default {
                 let data = val.data;
 
                 if (newsearch === '' || !data || data instanceof Array === false || data.length <= 0) {
-                    _this.searchResults = [];
+                    // 如果搜索为空
+                    _this.searchResults = []; // 清空下来
+                    _this.initListStoreToMap(); // 初始化所有地图
                     return false;
                 }
 

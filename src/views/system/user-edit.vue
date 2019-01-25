@@ -441,8 +441,8 @@ export default {
             }
 
             if (this.pageType === 'add') {
-                if (this.password <= 6)  {
-                    return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
+                if (this.password.length < 6)  {
+                    return this.$notify({title: '提示', message: '密码不能小于6位！', duration: 0 });
                 }
 
             } else {
@@ -451,8 +451,8 @@ export default {
                 if (this.isChangePassword) {
                     if (this.password === '') {
                         return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
-                    } else if (this.password <= 6)  {
-                        return this.$notify({title: '提示', message: '密码 不能为空！', duration: 0 });
+                    } else if (this.password.length < 6)  {
+                        return this.$notify({title: '提示', message: '密码不能小于6位！', duration: 0 });
                     }
                 }
             }

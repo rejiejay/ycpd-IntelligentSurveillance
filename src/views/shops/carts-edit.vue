@@ -410,12 +410,31 @@ export default {
             let query = this.$route.query;
             let id = query.id;
             if (id) {
-                
+                console.log(query)
                 this.pageType = 'edit';
                 this.id = query.id; // 车行唯一标识
                 this.shopsNo = query.networkNo; // 车行编码
                 this.shopsName = query.networkName; // 车行名称
-                this.shopsType = `${query.shopsType}`; // 车行类型
+                
+                // 初始化 车行类型
+                if (query.networkType === '4S店') {
+                    this.shopsType = '0';
+                } else if (query.networkType === '修理厂') {
+                    this.shopsType = '1';
+                } else if (query.networkType === '二网') {
+                    this.shopsType = '2';
+                } else if (query.networkType === '二手车行') {
+                    this.shopsType = '3';
+                } else if (query.networkType === '续保') {
+                    this.shopsType = '4';
+                } else if (query.networkType === '非车险') {
+                    this.shopsType = '5';
+                } else if (query.networkType === '网络销售') {
+                    this.shopsType = '6';
+                } else if (query.networkType === '其他') {
+                    this.shopsType = '7';
+                }
+
                 this.shopsRate = `${query.star}`; // 车行星级
                 this.isJoin = `${query.isJoin}`; // 是否合作
                 this.contactName = `${query.contact}`; // 联系人
@@ -427,6 +446,7 @@ export default {
                 this.linkCode = query.channelCode; // 渠道代码
                 this.remark = query.remark; // 备注
                 this.address = query.address; // 地址
+                this.addressSearch = query.address; // 地址
                 this.longitude = query.longitude; // 经度
                 this.latitude = query.latitude; // 纬度
             }

@@ -185,10 +185,10 @@ export default {
                                     if (chil === '车行监控') {
                                         roles.push(1);
                                     }
-                                    if (chil === '团队监控') {
+                                    if (chil === '支公司监控') {
                                         roles.push(2);
                                     }
-                                    if (chil === '支公司监控') {
+                                    if (chil === '团队监控') {
                                         roles.push(3);
                                     }
                                 });
@@ -317,11 +317,11 @@ export default {
                     }
 
                     if (val === 2) {
-                        roleList.push('团队监控');
+                        roleList.push('支公司监控');
                     }
 
                     if (val === 3) {
-                        roleList.push('支公司监控');
+                        roleList.push('团队监控');
                     }
                 }
 

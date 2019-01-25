@@ -6,7 +6,7 @@
 
         <div class="banner flex-center"><img :src="img.picc" alt="picc"></div>
 
-        <h3 class="title">PICC智慧监控管理系统</h3>
+        <h3 class="title">车商智慧监控管理系统 </h3>
 
         <!-- 账号 -->
         <el-form-item prop="username">

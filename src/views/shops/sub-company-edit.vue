@@ -177,7 +177,6 @@ export default {
                 return this.$notify({title: '提示', message: '请输入正确的分管领导电话号码', duration: 0 });
             }
 
-
             if (!this.adminCode) {
                 return this.$notify({title: '提示', message: '管理员代码不能为空', duration: 0 });
             }

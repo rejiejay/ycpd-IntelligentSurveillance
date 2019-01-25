@@ -174,7 +174,6 @@ export default {
 
             queryAllAlarmLogUsingPOST(currentPage, pageSize, arId, startTime, endTime)
             .then(val => {
-                console.log(val)
 
                 let data = val.data;
 
@@ -219,11 +218,10 @@ export default {
 
             queryAlarmRuleNameUsingGET()
             .then(res => {
-                console.log(res)
 
                 let data = res.data;
 
-                if (!data|| !data instanceof Array === false || data.length <= 0) {
+                if (!data || data instanceof Array === false || data.length <= 0) {
                     return false;
                 }
 

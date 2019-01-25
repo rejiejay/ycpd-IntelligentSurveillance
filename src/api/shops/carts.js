@@ -17,11 +17,10 @@ export function findAllStoreUsingPOST(pageNo, pageSzie, companyId, storeId, team
         pageNo: pageNo ? pageNo : 1,
         pageSzie: pageSzie ? pageSzie : 10,
         companyId: companyId ? companyId : '',
-        networkType: storeId ? storeId : '',
         teamId: teamId ? teamId : '',
     }
 
-    storeId ? data.networkType = storeId : '';
+    storeId ? data.networkType = parseInt(storeId) : '';
 
     return notLoading({
         url: `${config.url.origin}/cdimms/server/store/queryAllStore`,

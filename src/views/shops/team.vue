@@ -248,7 +248,7 @@ export default {
          * 下载团队模板
          */
         getTeamTemplate: function getTeamTemplate() {
-            getTeamTemplateUsingGET(this.keyword);
+            getTeamTemplateUsingGET();
         },
 
         /**
@@ -298,11 +298,7 @@ export default {
          * 数据导出
          */
         exportTeam: function exportTeam() {
-            let companyId = this.subCompanySection ? this.subCompanySection : '';
-            let storeId = this.shopNetSection ? this.shopNetSection : '';
-            let teamId = this.teamSection ? this.teamSection : '';
-            
-            exportTeamUsingGET(companyId, storeId, teamId);
+            exportTeamUsingGET(this.keyword);
         },
 
         /**
