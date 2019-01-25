@@ -126,7 +126,7 @@ export default {
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 2);
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 },{
@@ -289,6 +289,8 @@ export default {
          * 根据支公司唯一id获取团队列表
          */
         queryTeamByBcId: function queryTeamByBcId(bcId) {
+            const _this  = this;
+            
             queryTeamByBcIdUsingGET(bcId)
             .then(val => {
                 let data = val.data;

@@ -182,7 +182,7 @@ export default {
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 2);
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 },{

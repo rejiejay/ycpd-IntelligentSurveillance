@@ -148,21 +148,14 @@
         </div>
 
     </div>
-    
-    <!-- 分页部分 -->
-    <div class="subsidiary-company-pagination flex-center">
-        <el-pagination
-            :current-page="currentPage"
-            :page-size="pageSize"
-            :page-count="pageTotal"
-            @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
-        ></el-pagination>
-    </div>
 </div>
 </template>
 
 <script>
+// 请求类
+import { listCompanyMonitorUsingGET } from "@/api/monitor/subcompany";
+// 组件类
+import TimeConver from "@/utils/TimeConver";
 
 export default {
     name: 'monitor-subsidiary-company',
@@ -176,7 +169,7 @@ export default {
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 2);
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -252,54 +245,136 @@ export default {
             lossSortLine: 50, // 定损 预警线 （日期 百分比1~100）
             proportionSortLine: 60, // 产保比 预警线 （百分比1~100） 这个是固定的
 
-            /**
-             * 分页相关
-             */
-            currentPage: 1, // 当前页码
-            pageSize: 10, // 一个页面多少数据
-            pageTotal: 1, // 一共多少条数据 
-
             subCompanyList: [
-                {
-                    no: 1, // 排名
-                    name: '深圳市有限公司', // 名称
-                    premium: 1800, // 保费收入（万元）
-                    premiumPredicted: 6000, // 保费预测收入（万元）
-                    premiumPercent: 60, // 保费预测百分比(1~100)
-                    loss: 1800, // 保费收入（万元）
-                    lossPredicted: 6000, // 保费预测收入（万元）
-                    lossPercent: 20, // 保费预测百分比(1~100)
-                    proportion: 20, // 产保比 (1~100)
-                }, {
-                    no: 2,
-                    name: '深圳市宝创汽车贸易有限公司爱的萨达四大的',
-                    premium: 1800, // 保费收入（万元）
-                    premiumPredicted: 6000, // 保费预测收入（万元）
-                    premiumPercent: 40, // 保费预测百分比(1~100)
-                    loss: 1800, // 保费收入（万元）
-                    lossPredicted: 6000, // 保费预测收入（万元）
-                    lossPercent: 45, // 保费预测百分比(1~100)
-                    proportion: 90, // 产保比 (1~100)
-                }, {
-                    no: 3,
-                    name: '深圳市宝创汽车贸易有限公司',
-                    premium: 1800, // 保费收入（万元）
-                    premiumPredicted: 6000, // 保费预测收入（万元）
-                    premiumPercent: 20, // 保费预测百分比(1~100)
-                    loss: 1800, // 保费收入（万元）
-                    lossPredicted: 6000, // 保费预测收入（万元）
-                    lossPercent: 80, // 保费预测百分比(1~100)
-                    proportion: 60, // 产保比 (1~100)
-                }, 
+                // {
+                //     no: 1, // 排名
+                //     name: '深圳市有限公司', // 名称
+                //     premium: 1800, // 保费收入（万元）
+                //     premiumPredicted: 6000, // 保费预测收入（万元）
+                //     premiumPercent: 60, // 保费预测百分比(1~100)
+                //     loss: 1800, // 保费收入（万元）
+                //     lossPredicted: 6000, // 保费预测收入（万元）
+                //     lossPercent: 20, // 保费预测百分比(1~100)
+                //     proportion: 20, // 产保比 (1~100)
+                // }, {
+                //     no: 2,
+                //     name: '深圳市宝创汽车贸易有限公司爱的萨达四大的',
+                //     premium: 1800, // 保费收入（万元）
+                //     premiumPredicted: 6000, // 保费预测收入（万元）
+                //     premiumPercent: 40, // 保费预测百分比(1~100)
+                //     loss: 1800, // 保费收入（万元）
+                //     lossPredicted: 6000, // 保费预测收入（万元）
+                //     lossPercent: 45, // 保费预测百分比(1~100)
+                //     proportion: 90, // 产保比 (1~100)
+                // }, {
+                //     no: 3,
+                //     name: '深圳市宝创汽车贸易有限公司',
+                //     premium: 1800, // 保费收入（万元）
+                //     premiumPredicted: 6000, // 保费预测收入（万元）
+                //     premiumPercent: 20, // 保费预测百分比(1~100)
+                //     loss: 1800, // 保费收入（万元）
+                //     lossPredicted: 6000, // 保费预测收入（万元）
+                //     lossPercent: 80, // 保费预测百分比(1~100)
+                //     proportion: 60, // 产保比 (1~100)
+                // }, 
             ],
         } 
     },
 
 	mounted: function mounted() {
-
+        this.initCompanyMonitorList(); // 初始化 支公司监控
     },
 
 	methods: {
+        /**
+         * 初始化 支公司监控
+         */
+        initCompanyMonitorList: function initCompanyMonitorList() {
+            const _this = this;
+
+            let bcName = this.search ? this.search : '';
+
+            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
+            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
+
+            let orderBy = '';
+            let sortType = '';
+            
+            if (this.premiumSort) {
+                orderBy = 'PREMIUM';
+
+                if (this.premiumSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.premiumSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.lossSort) {
+                orderBy = 'LOSS_ASSESSMENT';
+
+                if (this.lossSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.lossSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+            
+            if (this.proportionSort) {
+                orderBy = 'RATIO';
+
+                if (this.proportionSort === 'up') {
+                    sortType = 'ASC';
+                } else if (this.proportionSort === 'down') {
+                    sortType = 'DESC';
+                }
+            }
+
+            listCompanyMonitorUsingGET(bcName, startDate, endDate, orderBy, sortType)
+            .then(val => {
+                let data = val.data;
+
+                console.log(data)
+                if (data && data instanceof Array && data.length > 0) {
+                    _this.subCompanyList = data.map((item, key) => {
+                        let newItem = {}
+
+                        newItem.no = key;
+                        newItem.name = item.bcName; // 支公司名称
+
+                        newItem.premium = item.sumpremium ? Math.floor(item.sumpremium) : '0'; // 保费金额
+                        newItem.premiumPredicted = item.income ? Math.floor(item.income) : '0'; // 预测保费
+
+                        let premiumPercent = item.sumpremium / item.income;
+                        if (item.sumpremium && item.income && premiumPercent >= 0 && premiumPercent <= 1) {
+                            newItem.premiumPercent = Math.round(premiumPercent * 100) / 100; // 保费预测百分比(1~100)
+                            
+                        } else {
+                            newItem.premiumPercent = 0; // 保费预测百分比(1~100)
+                        }
+
+                        newItem.loss = item.materialfee ? Math.floor(item.materialfee) : '0'; // 定损金额
+                        newItem.lossPredicted = item.expense ? Math.floor(item.expense) : '0'; // 预测定损
+
+                        let lossPercent = item.materialfee / item.expense;
+                        if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
+                            newItem.lossPercent = Math.round(lossPercent * 100) / 100; // 保费预测百分比(1~100)
+                            
+                        } else {
+                            newItem.lossPercent = 0; // 保费预测百分比(1~100)
+                        }
+
+                        newItem.proportion = item.ratio ? item.ratio : '0'; // 定损金额
+
+                        return newItem;
+                    });
+                } else {
+                    _this.subCompanyList = []; // 记得清空
+                }
+
+            }, error => console.log(error));
+        },
+
         /**
          * 排序方式 转为 ICON 样式
          * @param {string} name 排序的方式
@@ -331,6 +406,10 @@ export default {
                 this.premiumSort = null;
 
             }
+
+            this.lossSort = null; // 只要点击就进行清空
+            this.proportionSort = null;
+            this.initCompanyMonitorList();
         },
 
         /**
@@ -347,6 +426,10 @@ export default {
                 this.lossSort = null;
 
             }
+
+            this.premiumSort = null; // 只要点击就进行清空
+            this.proportionSort = null;
+            this.initCompanyMonitorList();
         },
 
         /**
@@ -363,6 +446,10 @@ export default {
                 this.proportionSort = null;
 
             }
+
+            this.premiumSort = null; // 只要点击就进行清空
+            this.lossSort = null;
+            this.initCompanyMonitorList();
         },
 
         /**
