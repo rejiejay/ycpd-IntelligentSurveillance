@@ -214,6 +214,7 @@ export default {
          * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
          */
         subCompanySection: function subCompanySection(newsubcompany) {
+            this.teamSection = '';
             this.queryTeamByBcId(newsubcompany);
         },
     },

@@ -462,6 +462,9 @@ export default {
             regionType: '', // 网点类型
             regionTypeList: [
                 {
+                    value: '',
+                    label: '全部网点',
+                }, {
                     value: '0',
                     label: '4S店',
                 }, {
@@ -544,6 +547,7 @@ export default {
          * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
          */
         subcompany: function subcompany(newsubcompany) {
+            this.team = '';
             this.queryTeamByBcId(newsubcompany);
         },
 
@@ -578,6 +582,10 @@ export default {
                         value: item[0],
                         label: item[1],
                     }));
+                    _this.cartsStoreList.unshift({
+                        value: '',
+                        label: '全部车行',
+                    });
                 } else {
                     _this.cartsStoreList = []; // 记得清空
                 }
@@ -600,6 +608,10 @@ export default {
                         value: item[0],
                         label: item[1],
                     }));
+                    _this.subcompanyList.unshift({
+                        value: '',
+                        label: '全部支公司',
+                    });
                 }
 
             }, error => console.log(error))
@@ -614,12 +626,17 @@ export default {
             queryTeamByBcIdUsingGET(bcId)
             .then(val => {
                 let data = val.data;
+                console.log(data)
 
                 if (data && data instanceof Array && data.length > 0) {
                     _this.teamList = data.map(item => ({
                         value: item[0],
                         label: item[1],
                     }));
+                    _this.teamList.unshift({
+                        value: '',
+                        label: '全部团队',
+                    });
                 } else {
                     _this.teamList = []; // 记得清空
                 }

@@ -385,13 +385,12 @@ export default {
                 }
             });
         },
-    },
 
-    watch: {
         /**
          * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
          */
         subCompanyName: function subCompanyName(newsubcompany) {
+            this.team = '';
             this.queryTeamByBcId(newsubcompany);
         },
     },
