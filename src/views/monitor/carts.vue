@@ -532,6 +532,7 @@ export default {
             storenetworkType: '', // 网点名称
             rate: 5, // 评分
             ratemax: 5, // 最大
+            rateLable: '', // 评分标签
             storesuperiorGroup: '', // 机构：
             storenetworkNo: '', // 送修码
             storecontact: '', // 联系人
@@ -698,6 +699,7 @@ export default {
                     let myStar = _this.starToRate(data.star);
                     newItem.rate = myStar.rate;
                     newItem.ratemax = myStar.ratemax;
+                    newItem.rateLable = data.star;
 
                     return newItem
                 });
@@ -853,7 +855,7 @@ export default {
                 _this.storeId = data.id; // 车商id
                 _this.storenetworkName = data.networkName; // 网点名称
                 _this.storeaddress = `${data.province}${data.city}${data.county}${data.address}`; // 网点地址
-                _this.storeisJoin = data.isJoin === 1 ? '已签约' : '未签约'; // 是否合作
+                _this.storeisJoin = data.isJoin === 1 ? '已合作' : '未合作'; // 是否合作
                 if ( val.networkType === 0 ) {
                     _this.storenetworkType = '4S店';
                 } else if ( val.networkType === 1 ) {
@@ -874,6 +876,7 @@ export default {
                 let myStar = _this.starToRate(data.star);
                 _this.rate = myStar.rate;
                 _this.ratemax = myStar.ratemax;
+                _this.rateLable = data.star;
                 _this.storesuperiorGroup = data.superiorGroup; // 机构：
                 _this.storenetworkNo = data.networkNo; // 网点编码 这个就是 送修码
                 _this.storecontact = data.contact; // 联系人

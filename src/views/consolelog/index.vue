@@ -86,11 +86,11 @@ export default {
         let startendTimeOptions = {
             shortcuts: [
                 {
-                    text: '今天',
+                    text: '昨天',
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24);
+                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 2);
                         picker.$emit('pick', [start, end]);
                     }
                 },{
