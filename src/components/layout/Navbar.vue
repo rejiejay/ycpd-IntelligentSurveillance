@@ -30,11 +30,11 @@
             </transition-group>
         </el-breadcrumb>
 
-        <el-dropdown class="avatar-container" trigger="click">
+        <el-dropdown class="avatar-container flex-start-center" trigger="click">
             <!-- 头像部分 -->
-            <div class="avatar-wrapper">
-                <svg width="40" height="40" class="user-avatar" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="组件" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="图片" transform="translate(-412.000000, -158.000000)"><g id="默认头像" transform="translate(412.000000, 158.000000)"><rect id="Rectangle-13" fill="#E6EAF0" x="0" y="0" width="256" height="256"></rect><circle id="Oval-10" fill="#B8C5D1" cx="128" cy="85" r="45"></circle><path d="M128,140 L128,140 C177.705627,140 218,180.294373 218,230 L218,256 L38,256 L38,230 C38,180.294373 78.2943725,140 128,140 Z" id="Rectangle" fill="#FFFFFF"></path></g></g></g></svg>
-                <span v-if="username">{{username}}</span>
+            <div class="avatar-wrapper flex-start-center">
+                <svg width="36" height="36" class="user-avatar" viewBox="0 0 256 256" version="1.1" xmlns="http://www.w3.org/2000/svg"><g id="组件" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="图片" transform="translate(-412.000000, -158.000000)"><g id="默认头像" transform="translate(412.000000, 158.000000)"><rect id="Rectangle-13" fill="#E6EAF0" x="0" y="0" width="256" height="256"></rect><circle id="Oval-10" fill="#B8C5D1" cx="128" cy="85" r="45"></circle><path d="M128,140 L128,140 C177.705627,140 218,180.294373 218,230 L218,256 L38,256 L38,230 C38,180.294373 78.2943725,140 128,140 Z" id="Rectangle" fill="#FFFFFF"></path></g></g></g></svg>
+                <span class="flex-center" v-if="username">{{username}}</span>
                 <i class="el-icon-caret-bottom"></i>
             </div>
 
@@ -231,15 +231,15 @@ export default {
             line-height: initial;
 
             .user-avatar {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
                 border-radius: 10px;
             }
 
             span {
+                display: block;
+                line-height: 36px;
                 padding-left: 10px;
-                position: relative;
-                bottom: 5px;
             }
 
             .el-icon-caret-bottom {

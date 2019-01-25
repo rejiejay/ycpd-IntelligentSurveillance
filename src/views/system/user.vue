@@ -111,9 +111,10 @@
             :current-page="currentPage"
             :page-count="pageCount"
             :page-size="pageSize"
+            :total="total"
             @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="total, sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
@@ -197,6 +198,7 @@ export default {
             currentPage: 1, // 当前页码
             pageCount: 1, // 一共多少页
             pageSize: 10, // 页码大小
+            total: 1,
         } 
     },
 
@@ -242,6 +244,7 @@ export default {
 
                 // 初始化一共多少条数据
                 _this.pageCount = data.pageSize; 
+                _this.total = data.total;
 
                 // 初始化用户列表
                 if (data.users && data.users instanceof Array && data.users.length > 0) {

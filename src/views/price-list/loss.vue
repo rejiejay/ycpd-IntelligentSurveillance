@@ -100,7 +100,7 @@
             :total="pageTotal"
             @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="total, sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 

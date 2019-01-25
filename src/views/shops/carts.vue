@@ -151,9 +151,10 @@
             :current-page="currentPage"
             :page-size="pageSize"
             :page-count="pageTotal"
+            :total="totalElements"
             @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="total, sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 
@@ -295,7 +296,8 @@ export default {
              */
             currentPage: 1, // 当前页码
             pageSize: 10, // 一个页面多少数据
-            pageTotal: 1, // 一共多少条数据 
+            pageTotal: 1, // 一共多少页数据 
+            totalElements: 1, // 一共多少条
         }
     },
 
@@ -333,6 +335,7 @@ export default {
                 let data = val.data;
 
                 _this.pageTotal = data.totalPages;
+                _this.totalElements = data.totalElements;
 
                 if (!data || !data.objs || data.objs instanceof Array === false || data.objs.length <= 0) {
                     _this.cartsList = []; // 记得清空

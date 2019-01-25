@@ -676,7 +676,24 @@ export default {
                     newItem.title = val.networkName; // 车行名称
                     newItem.address = val.address; // 车行名称
                     newItem.isSigned = val.isJoin === 1 ? true : false; // 是否合作
-                    newItem.label = val.networkType === 0 ? '4S店' : '修理厂'; // 网点名称
+
+                    if ( val.networkType === 0 ) {
+                        newItem.label = '4S店';
+                    } else if ( val.networkType === 1 ) {
+                        newItem.label = '修理厂';
+                    } else if ( val.networkType === 2 ) {
+                        newItem.label = '二网';
+                    } else if ( val.networkType === 3 ) {
+                        newItem.label = '二手车行';
+                    } else if ( val.networkType === 4 ) {
+                        newItem.label = '续保';
+                    } else if ( val.networkType === 5 ) {
+                        newItem.label = '非车险';
+                    } else if ( val.networkType === 6 ) {
+                        newItem.label = '网络销售';
+                    } else if ( val.networkType === 7 ) {
+                        newItem.label = '其他';
+                    }
 
                     let myStar = _this.starToRate(data.star);
                     newItem.rate = myStar.rate;

@@ -84,9 +84,10 @@
             :current-page="currentPage"
             :page-count="pageCount"
             :page-size="pageSize"
+            :total="total"
             @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="total, sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 </div>
@@ -146,6 +147,7 @@ export default {
             currentPage: 1, // 当前页码
             pageCount: 1, // 一共多少页
             pageSize: 10, // 页码大小
+            total: 1,
         } 
     },
 
@@ -184,6 +186,7 @@ export default {
                 let data = val.data;
 
                 _this.pageCount = data.pageSize;
+                _this.total = data.total;
 
                 if (!data || !data.alarmRules || data.alarmRules instanceof Array === false || data.alarmRules.length <= 0) {
                     _this.ruleList = []; // 记得清空

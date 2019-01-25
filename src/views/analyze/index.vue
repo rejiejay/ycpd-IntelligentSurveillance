@@ -15,14 +15,14 @@
                 v-model="startDataTime"
                 @change="startDataHandle"
                 type="date"
-                placeholder="开始日期"
+                placeholder="开始时间"
             ></el-date-picker>
 
             <el-date-picker
                 v-model="endDataTime"
                 @change="endDataHandle"
                 type="date"
-                placeholder="结束日期"
+                placeholder="结束时间"
             ></el-date-picker>
         </div>
 
@@ -31,14 +31,14 @@
                 v-model="startMonthTime"
                 @change="startMonthHandle"
                 type="month"
-                placeholder="开始日期"
+                placeholder="开始时间"
             ></el-date-picker>
 
             <el-date-picker
                 v-model="endMonthTime"
                 @change="endMonthHandle"
                 type="month"
-                placeholder="结束日期"
+                placeholder="结束时间"
             ></el-date-picker>
         </div>
 
@@ -1087,19 +1087,19 @@ export default {
 
                         if (nowMonthTimestamp === thisMapTimestamp) { 
                             // 两个时间点交错 （今天）
-                            proportionRealArr.push(30);
-                            proportionPredictArr.push(30);
+                            proportionRealArr.push(_this.ratios[i]);
+                            proportionPredictArr.push(_this.ratios[i]);
 
                         } else if (thisMapTimestamp > nowMonthTimestamp) {
                             // 如果循环的时间 大于现在的时间 表示预测数据
                             // 预测数据的时候 真实数据是 null
                             proportionRealArr.push(null);
                             // 预测数据
-                            proportionPredictArr.push(30);
+                            proportionPredictArr.push(_this.ratios[i]);
 
                         } else {
                             // 表示真实数据的情况
-                            proportionRealArr.push(40);
+                            proportionRealArr.push(_this.ratios[i]);
                             //真实数据的情况 预测数据传入 null 即可
                             proportionPredictArr.push(null);
                         }
@@ -1144,7 +1144,7 @@ export default {
 
                     // 初始化 系列列表数据
                     for (let i = 0; i <= differMonth; i++) { // 循环相差几月
-                        proportionTemArr.push(50); // 产保比
+                        proportionTemArr.push(_this.ratios[i]); // 产保比
                     }
 
                     series.push({

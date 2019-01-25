@@ -100,7 +100,7 @@
             :total="pageTotal"
             @size-change="pageSizeChangeHandle"
             @current-change="pageChangeHandle"
-            layout="sizes, prev, pager, next, jumper"
+            layout="total, sizes, prev, pager, next, jumper"
         ></el-pagination>
     </div>
 
@@ -317,12 +317,33 @@ export default {
                 _this.comparisonlist = data.premiumLossAssessRatios.map(val => {
                     let newItem = {};
 
-                    newItem.netCode = val.networkname; // 网点编码
-                    newItem.netName = val.netpointname; // 网点名称	
-                    newItem.netType = val.netpointtype; // 网点类型	
-                    newItem.netRate = val.netpointstart; // 网点星级
-                    newItem.subCompany = val.comcode; // 支公司
-                    newItem.team = val.teamcode; // 业务团队
+                    newItem.netCode = val.networkno; // 网点编码
+                    newItem.netName = val.networkname; // 网点名称	
+
+                    // 网点类型	
+                    if ( val.networktype == 0 ) {
+                        newItem.netType = '4S店';
+                    } else if ( val.networktype == 1 ) {
+                        newItem.netType = '修理厂';
+                    } else if ( val.networktype == 2 ) {
+                        newItem.netType = '二网';
+                    } else if ( val.networktype == 3 ) {
+                        newItem.netType = '二手车行';
+                    } else if ( val.networktype == 4 ) {
+                        newItem.netType = '续保';
+                    } else if ( val.networktype == 5 ) {
+                        newItem.netType = '非车险';
+                    } else if ( val.networktype == 6 ) {
+                        newItem.netType = '网络销售';
+                    } else if ( val.networktype == 7 ) {
+                        newItem.netType = '其他';
+                    }
+                    
+                    newItem.netRate = val.star; // 网点星级
+
+                    newItem.subCompany = val.bcName; // 支公司
+                    newItem.team = val.teamName; // 业务团队
+
                     newItem.premium = val.sumpremium; // 保费收入
                     newItem.loss = val.materialfee; // 定损支出
                     newItem.proportion = val.proportion; // 定损支出
