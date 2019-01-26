@@ -457,50 +457,56 @@ export default {
         submit: function submit() {
             const _this = this;
 
-            if (!this.shopsNo) {
-                return this.$notify({title: '提示', message: '车行编码不能为空', duration: 0 });
-            }
             if (!this.shopsName) {
                 return this.$notify({title: '提示', message: '车行名称不能为空', duration: 0 });
             }
-            if (!this.shopsType) {
-                return this.$notify({title: '提示', message: '请选择车行类型', duration: 0 });
-            }
-            if (!this.shopsRate) {
-                return this.$notify({title: '提示', message: '请选择车行星级', duration: 0 });
-            }
+            
             if (!this.isJoin) {
                 return this.$notify({title: '提示', message: '请选择是否合作', duration: 0 });
             }
-            if (!this.contactName) {
-                return this.$notify({title: '提示', message: '联系人不能为空', duration: 0 });
-            }
 
-            let phone = this.contactPhone ? this.contactPhone.replace(/\s+/g,"") : ''; // 联系电话
-            let cutphone = phone.replace(/-/g,"");
-            if (!phone) {
-                return this.$notify({title: '提示', message: '联系电话不能为空', duration: 0 });
-            } else if (/^[0-9]*$/.test(cutphone) === false) {
-                return this.$notify({title: '提示', message: '请输入正确的电话号码', duration: 0 });
-            }
+            if (this.isJoin === '1') {
+                if (!this.shopsNo) {
+                    return this.$notify({title: '提示', message: '车行编码不能为空', duration: 0 });
+                }
+                if (!this.shopsType) {
+                    return this.$notify({title: '提示', message: '请选择车行类型', duration: 0 });
+                }
+                if (!this.shopsRate) {
+                    return this.$notify({title: '提示', message: '请选择车行星级', duration: 0 });
+                }
+                if (!this.contactName) {
+                    return this.$notify({title: '提示', message: '联系人不能为空', duration: 0 });
+                }
 
-            if (!this.brand) {
-                return this.$notify({title: '提示', message: '品牌不能为空', duration: 0 });
-            }
-            if (!this.parCompany) {
-                return this.$notify({title: '提示', message: '上级集团不能为空', duration: 0 });
-            }
-            if (!this.subCompanyName) {
-                return this.$notify({title: '提示', message: '请选择支公司', duration: 0 });
-            }
-            if (!this.team) {
-                return this.$notify({title: '提示', message: '请选择团队', duration: 0 });
-            }
-            if (!this.linkCode) {
-                return this.$notify({title: '提示', message: '渠道代码不能为空', duration: 0 });
-            }
-            if (!this.address || !this.longitude || !this.latitude ) {
-                return this.$notify({title: '提示', message: '请选择地址', duration: 0 });
+                let phone = this.contactPhone ? this.contactPhone.replace(/\s+/g,"") : ''; // 联系电话
+                let cutphone = phone.replace(/-/g,"");
+                if (!phone) {
+                    return this.$notify({title: '提示', message: '联系电话不能为空', duration: 0 });
+                } else if (/^[0-9]*$/.test(cutphone) === false) {
+                    return this.$notify({title: '提示', message: '请输入正确的电话号码', duration: 0 });
+                }
+
+                if (!this.brand) {
+                    return this.$notify({title: '提示', message: '品牌不能为空', duration: 0 });
+                }
+                if (!this.parCompany) {
+                    return this.$notify({title: '提示', message: '上级集团不能为空', duration: 0 });
+                }
+
+                if (!this.subCompanyName) {
+                    return this.$notify({title: '提示', message: '请选择支公司', duration: 0 });
+                }
+                if (!this.team) {
+                    return this.$notify({title: '提示', message: '请选择团队', duration: 0 });
+                }
+
+                if (!this.linkCode) {
+                    return this.$notify({title: '提示', message: '渠道代码不能为空', duration: 0 });
+                }
+                if (!this.address || !this.longitude || !this.latitude ) {
+                    return this.$notify({title: '提示', message: '请选择地址', duration: 0 });
+                }
             }
 
             let id = this.id; // 车行唯一标识

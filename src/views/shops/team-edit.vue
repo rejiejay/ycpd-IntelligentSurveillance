@@ -125,7 +125,7 @@ export default {
                 this.teamName = this.$route.query.teamName; // 团队名称
                 this.teamLeader = this.$route.query.manager; // 团队经理
                 this.phone = this.$route.query.phone; // 分管领导电话
-                this.subCompany = this.$route.query.bcId; // 支公司名称
+                this.subCompany = this.$route.query.bcId ? this.$route.query.bcId : ''; // 支公司名称
                 this.remark = this.$route.query.remark; // 备注
             }
         },

@@ -494,7 +494,7 @@ export default {
             let staffCode = this.userCode;
             let userName = this.userName;
             let passwd = this.password;
-            let roleId = this.rolesSection;
+            let roleId = this.rolesSection ? this.rolesSection : '';
             let state = this.userStatusSection;
 
             /**

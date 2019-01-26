@@ -461,10 +461,10 @@ export default {
                             newItem.premiumPercent = 0; // 保费预测百分比(1~100)
                         }
 
-                        newItem.loss = item.materialfee ? Math.floor(item.materialfee) : '0'; // 定损金额
+                        newItem.loss = item.sumlossfee ? Math.floor(item.sumlossfee) : '0'; // 定损金额
                         newItem.lossPredicted = item.expense ? Math.floor(item.expense) : '0'; // 预测定损
 
-                        let lossPercent = item.materialfee / item.expense;
+                        let lossPercent = item.sumlossfee / item.expense;
                         if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
                             newItem.lossPercent = Math.round(lossPercent * 100) / 100; // 保费预测百分比(1~100)
                             

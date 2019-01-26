@@ -36,7 +36,6 @@
 
         <div class="manage-operate-right">
             <el-button icon="el-icon-download" type="text" @click="getTeamPreTemplate">下载模板</el-button>
-            <el-button icon="el-icon-tickets" type="primary" plain @click="$refs.uploadFile.click()">上传清单</el-button>
             <el-button icon="el-icon-tickets" type="primary" @click="$refs.uploadFile.click()">数据设置</el-button>
         </div>
     </div>

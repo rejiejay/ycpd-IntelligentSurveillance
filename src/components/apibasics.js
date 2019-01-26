@@ -135,7 +135,7 @@ apibasics.interceptors.response.use(
         }
     
         // 服务器正在升级或异常
-        if (response.status === 502) {
+        if (response.status === 502 || response.status === 504) {
             Message({
                 message: `服务器正在升级或异常,请稍后再试!`,
                 type: 'error',

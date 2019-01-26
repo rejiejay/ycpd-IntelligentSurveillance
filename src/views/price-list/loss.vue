@@ -41,7 +41,7 @@
             ></el-option>
         </el-select>
 
-        <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低损保比"></el-input>
+        <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低定损金额"></el-input>
 
         <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
 

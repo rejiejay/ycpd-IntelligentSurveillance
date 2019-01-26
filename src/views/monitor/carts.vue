@@ -333,6 +333,7 @@ import ModalByZindex from '@/components/ModalByZindex';
 import TimeConver from '@/utils/TimeConver';
 // 资源类
 import no_cooperate from '@/assets/baidu_map/no_cooperate.svg';
+import percentage_none from '@/assets/baidu_map/percentage_none.svg';
 import percentage_0 from '@/assets/baidu_map/percentage_0.svg';
 import percentage_10 from '@/assets/baidu_map/percentage_10.svg';
 import percentage_20 from '@/assets/baidu_map/percentage_20.svg';
@@ -372,6 +373,7 @@ export default {
 
             img: {
                 no_cooperate: no_cooperate,
+                percentage_none: percentage_none,
                 percentage_0: percentage_0,
                 percentage_10: percentage_10,
                 percentage_20: percentage_20,
@@ -904,6 +906,9 @@ export default {
             this.mountBaiduMap = new BMap.Map('BaiduMap'); // 创建地图实例  
             this.mountBaiduMap.centerAndZoom(new BMap.Point(114.059560, 22.542860), 13); // 初始化地图，设置中心点坐标(深圳福田) 和地图级别  
             this.mountBaiduMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
+            this.mountBaiduMap.addControl(new BMap.NavigationControl({
+                offset: new BMap.Size(10, 65),
+            }));    
 
             this.renderMarkerPoint();
         },
@@ -938,18 +943,36 @@ export default {
                 // 图标
                 let baiduMapIcon = new BMap.Icon(
                     _this.img.no_cooperate, // 图片（不合作）
-                    // new BMap.Size(30, 45), // 尺寸大小
-                    new BMap.Size(30, 45), // 尺寸大小
+                    new BMap.Size(24, 38), // 尺寸大小
                 );
 
                 /**
                  * 判断是否 【合作】
-                 * 判断 percentage 是否 【有效】
-                 * 定损金额/保费金额 有误的时候会报错, 所以需要校验 percentage 是否 【有效】
+                 * ---- 不合作的情况下 使用 小一点的灰色 大小 24px 38px
+                 * ---- 合作的情况下
+                 * -------- 判断 percentage 是否 【有效】（定损金额/保费金额 有误的时候会报错, 所以需要校验 percentage 是否 【有效】）
+                 * -------------无效的情况下, 有保费，没有定损金额用 绿色 percentage_0 40, 48.5
+                 * -------------无效的情况下, 有定损，没有保费金额用 红色 percentage_100 40, 48.5
+                 * -------------无效的情况下, 既没有定损，也没有保费 使用 percentage_none 30px 45px
                  */
-                if (val.isCooperate && percentage >= 0 && percentage <= 1) {
-                    let myImg = calculateImg(percentage); // 计算图片
-                    baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(40, 48.5));
+                if (val.isCooperate) {
+
+                    if (percentage >= 0 && percentage <= 1) {
+                        let myImg = calculateImg(percentage); // 计算图片
+                        baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(40, 48.5));
+
+                    // 有保费，没有定损金额用
+                    } else if (val.premiumAmount && !val.lossAmount) {
+                        baiduMapIcon = new BMap.Icon(calculateImg(0), new BMap.Size(40, 48.5));
+                        
+                    // 有定损，没有保费金额用
+                    } else if (!val.premiumAmount && val.lossAmount) {
+                        baiduMapIcon = new BMap.Icon(calculateImg(100), new BMap.Size(40, 48.5));
+                        
+                    } else {
+                        // 既没有定损，也没有保费
+                        baiduMapIcon = new BMap.Icon( _this.img.percentage_none, new BMap.Size(30, 45));
+                    }
                 }
 
                 // 当前位置点
