@@ -93,8 +93,8 @@
                             <span>文件上传完成</span>
                         </div>
                         <div class="succeed-tip-main">
-                            <span>成功{{uploadSuccessNum}}条{{uploadErrorNum ? `，失败${uploadErrorNum}条` : ''}}</span>
-                            <el-button icon="el-icon-download" type="text" @click="getErrorTemplate">下载失败清单</el-button>
+                            <span>成功{{uploadSuccessNum}}条{{(uploadErrorNum != 0 || uploadErrorNum != '0') ? `，失败${uploadErrorNum}条` : ''}}</span>
+                            <el-button v-if="(uploadErrorNum != 0 || uploadErrorNum != '0')" icon="el-icon-download" type="text" @click="getErrorTemplate">下载失败清单</el-button>
                         </div>
                     </div>
                 </div>
@@ -337,18 +337,22 @@ export default {
                         _this.uploadErrorNum = response.data.errorNum ? response.data.errorNum : ''; // 失败提示
                         _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
 
+                        _this.currentPage = 1;
+                        _this.queryAllTeam();
+
                     } else {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = false; // 上传失败
-                        if (response.data && response.data.errMsg) {
-                            _this.uploadErrMsg = response.data.errMsg; // 失败提示
+                        if (response.data) {
+                            _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
 
-                        } else {
-                            _this.uploadErrMsg = response.msg; // 失败提示
+                            if (response.data.errMsg) {
+                                _this.uploadErrMsg = response.data.errMsg; // 失败提示
 
+                            } else {
+                                _this.uploadErrMsg = response.msg; // 失败提示
+                            }
                         }
-                        _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
-
                     }
                     console.log(res);
 

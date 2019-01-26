@@ -32,7 +32,7 @@
             ></el-option>
         </el-select>
 
-        <el-select v-model="regionSection" placeholder="选择车行">
+        <el-select v-model="regionSection" placeholder="车行类型">
             <el-option
                 v-for="item in regionOptions"
                 :key="item.value"

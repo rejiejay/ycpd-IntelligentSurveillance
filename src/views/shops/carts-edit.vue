@@ -441,7 +441,7 @@ export default {
                 this.brand = `${query.brand}`; // 品牌
                 this.parCompany = query.superiorGroup; // 上级集团
                 this.subCompanyName = query.bcId ? `${query.bcId}` : ''; // 支公司代码
-                this.team = `${query.teamId}`; // 团队
+                this.team = query.teamId ? `${query.teamId}` : ''; // 团队
                 this.linkCode = query.channelCode; // 渠道代码
                 this.remark = query.remark; // 备注
                 this.address = query.address; // 地址

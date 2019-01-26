@@ -57,8 +57,6 @@ export function importStoreUsingFormData(formData) {
  */
 export function exportStoreUsingGET(companyId, storeId, teamId) {
     let data = {
-        pageNo: pageNo ? pageNo : 1,
-        pageSize: pageSize ? pageSize : 10,
         companyId: companyId ? companyId : '',
         teamId: teamId ? teamId : '',
     }
