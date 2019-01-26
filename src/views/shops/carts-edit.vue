@@ -440,7 +440,7 @@ export default {
                 this.contactPhone = `${query.phone}`; // 联系电话
                 this.brand = `${query.brand}`; // 品牌
                 this.parCompany = query.superiorGroup; // 上级集团
-                this.subCompanyName = `${query.bcCode}`; // 支公司代码
+                this.subCompanyName = query.bcId ? `${query.bcId}` : ''; // 支公司代码
                 this.team = `${query.teamId}`; // 团队
                 this.linkCode = query.channelCode; // 渠道代码
                 this.remark = query.remark; // 备注
@@ -477,9 +477,10 @@ export default {
             }
 
             let phone = this.contactPhone ? this.contactPhone.replace(/\s+/g,"") : ''; // 联系电话
+            let cutphone = phone.replace(/-/g,"");
             if (!phone) {
                 return this.$notify({title: '提示', message: '联系电话不能为空', duration: 0 });
-            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(phone) === false) {
+            } else if (/^[0-9]*$/.test(cutphone) === false) {
                 return this.$notify({title: '提示', message: '请输入正确的电话号码', duration: 0 });
             }
 

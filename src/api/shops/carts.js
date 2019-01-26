@@ -6,15 +6,15 @@ import upload from '@/components/upload';
 /**
  * 获取车行列表
  * @param {number} pageNo 当前页码
- * @param {number} pageSzie 页面大小
+ * @param {number} pageSize 页面大小
  * @param {number} companyId 支公司 id
  * @param {number} storeId 网点 id
  * @param {number} teamId 团队 id
  */
-export function findAllStoreUsingPOST(pageNo, pageSzie, companyId, storeId, teamId) {
+export function findAllStoreUsingPOST(pageNo, pageSize, companyId, storeId, teamId) {
     let data = {
         pageNo: pageNo ? pageNo : 1,
-        pageSzie: pageSzie ? pageSzie : 10,
+        pageSize: pageSize ? pageSize : 10,
         companyId: companyId ? companyId : '',
         teamId: teamId ? teamId : '',
     }
@@ -58,7 +58,7 @@ export function importStoreUsingFormData(formData) {
 export function exportStoreUsingGET(companyId, storeId, teamId) {
     let data = {
         pageNo: pageNo ? pageNo : 1,
-        pageSzie: pageSzie ? pageSzie : 10,
+        pageSize: pageSize ? pageSize : 10,
         companyId: companyId ? companyId : '',
         teamId: teamId ? teamId : '',
     }

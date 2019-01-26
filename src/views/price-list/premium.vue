@@ -41,9 +41,9 @@
             ></el-option>
         </el-select>
 
-        <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低损保比"></el-input>
+        <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低保费"></el-input>
 
-        <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
+        <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高保费"></el-input>
 
         <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; listPremiu();">查询</el-button>
         <el-button icon="el-icon-download" type="success" @click="exportPremium">导出</el-button>
@@ -86,8 +86,16 @@
                 label="车牌号码"
             ></el-table-column>
             <el-table-column
-                prop="policyNo"
+                prop="policyno"
                 label="保单号"
+            ></el-table-column>
+            <el-table-column
+                prop="sumpremium"
+                label="保费"
+            ></el-table-column>
+            <el-table-column
+                prop="startdate"
+                label="起保时间"
             ></el-table-column>
         </el-table>
     </div>
@@ -126,7 +134,8 @@ export default {
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+                        start.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 },{
@@ -346,8 +355,8 @@ export default {
                     newItem.orderTime = val.operatedate ? val.operatedate.split(' ')[0] : ''; // 出单时间
                     newItem.carNo = val.licenseno; // 标的车牌号
                     newItem.policyno = val.policyno; // 保单号
-                    newItem.policyNo = val.sumpremium; // 保费
-                    newItem.startdate = val.startdate; // 起保时间
+                    newItem.sumpremium = val.sumpremium; // 保费
+                    newItem.startdate = val.startdate ? val.startdate.split(' ')[0] : ''; // 起保时间
 
                     return newItem
                 });

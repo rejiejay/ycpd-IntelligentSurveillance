@@ -458,10 +458,12 @@ export default {
                 }
             }
 
-            if (this.phone === '') {
+            let phone = this.phone ? this.phone.replace(/\s+/g,"") : ''; //  分管领导电话
+            let cutphone = phone.replace(/-/g,"");
+            if (phone === '') {
                 return this.$notify({title: '提示', message: '手机号 不能为空！', duration: 0 });
 
-            } else if (/^(?=\d{11}$)^1(?:3\d|4[57]|5[^4\D]|66|7[^249\D]|8\d|9[89])\d{8}$/.test(this.phone) === false) {
+            } else if (/^[0-9]*$/.test(cutphone) === false) {
                 return this.$notify({title: '提示', message: '请输入正确的手机号码格式！', duration: 0 });
                 
             }
@@ -492,7 +494,6 @@ export default {
             let staffCode = this.userCode;
             let userName = this.userName;
             let passwd = this.password;
-            let phone = this.phone;
             let roleId = this.rolesSection;
             let state = this.userStatusSection;
 

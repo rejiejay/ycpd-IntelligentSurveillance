@@ -5,19 +5,19 @@ import { downloadUsingPOST } from '@/components/download';
 /**
  * 获取预警日志列表
  * @param {number} pageNo 当前页码
- * @param {number} pageSzie 页面大小
+ * @param {number} pageSize 页面大小
  * @param {number} arId 预警id
  * @param {number} startTime 开始时间
  * @param {number} endTime 结束时间
  */
-export function queryAllAlarmLogUsingPOST(pageNo, pageSzie, arId, startTime, endTime) {
+export function queryAllAlarmLogUsingPOST(pageNo, pageSize, arId, startTime, endTime) {
     return apibasics({
         url: `${config.url.origin}/cdimms/server/alarmlog/queryAllAlarmLog`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
             pageNo: pageNo ? pageNo : 1,
-            pageSzie: pageSzie ? pageSzie : 10,
+            pageSize: pageSize ? pageSize : 10,
             arId: arId ? arId : '',
             startTime: startTime ? startTime : '',
             endTime: endTime ? endTime : '',

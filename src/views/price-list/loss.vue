@@ -148,7 +148,8 @@ export default {
                     onClick(picker) {
                         const end = new Date();
                         const start = new Date();
-                        start.setTime(start.getTime() - 3600 * 1000 * 24 * 1);
+                        start.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 },{
@@ -327,7 +328,7 @@ export default {
                     newItem.team = val.teamName; // 业务团队
 
                     newItem.reportNo = val.registno; // 报案号
-                    newItem.lossTime = val.deflossdate; // 定损时间
+                    newItem.lossTime = val.deflossdate ? val.deflossdate.split(' ')[0] : ''; // 定损时间
                     newItem.lossPlace = val.defsite; // 定损中心
                     newItem.handlercode = val.handlercode; // 定损员
                     newItem.materialfee = val.materialfee; // 定损金额

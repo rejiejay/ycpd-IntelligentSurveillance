@@ -290,17 +290,24 @@ export default {
                     _this.$refs.uploadFile.value = ''; // 因为考虑到用户会重复上传, 重复上传不会触发 onchange 所以要清空一下
 
                     // 判断是否上传成功
-                    if (response.code === 1000) {
+                    if (response.code === 1000 && response.data) {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = true; // 上传成功
-                        _this.uploadErrMsg = response.data.successNum; // 成功提示
-                        _this.uploadErrMsg = response.data.errorNum; // 成功提示
+                        _this.uploadSuccessNum = response.data.successNum ? response.data.successNum : ''; // 成功提示
+                        _this.uploadErrorNum = response.data.errorNum ? response.data.errorNum : ''; // 失败提示
+                        _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
 
                     } else {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = false; // 上传失败
-                        _this.uploadErrMsg = response.data.errMsg; // 失败提示
-                        _this.downError = response.data.downError; // 失败模板的id
+                        if (response.data && response.data.errMsg) {
+                            _this.uploadErrMsg = response.data.errMsg; // 失败提示
+
+                        } else {
+                            _this.uploadErrMsg = response.msg; // 失败提示
+
+                        }
+                        _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
 
                     }
                     console.log(res);

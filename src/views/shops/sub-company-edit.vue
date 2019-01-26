@@ -171,9 +171,10 @@ export default {
             }
             
             let leaderPhone = this.leadershipPhone ? this.leadershipPhone.replace(/\s+/g,"") : ''; //  分管领导电话
+            let cutleaderPhone = leaderPhone.replace(/-/g,"");
             if (!leaderPhone) {
                 return this.$notify({title: '提示', message: '分管领导电话不能为空', duration: 0 });
-            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(leaderPhone) === false) {
+            } else if (/^[0-9]*$/.test(cutleaderPhone) === false) {
                 return this.$notify({title: '提示', message: '请输入正确的分管领导电话号码', duration: 0 });
             }
 
@@ -185,9 +186,10 @@ export default {
             }
             
             let adminPhone = this.adminPhone ? this.adminPhone.replace(/\s+/g,"") : ''; //  管理员电话
+            let cutadminPhone = adminPhone.replace(/-/g,"");
             if (!adminPhone) {
                 return this.$notify({title: '提示', message: '管理员电话不能为空', duration: 0 });
-            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(adminPhone) === false) {
+            } else if (/^[0-9]*$/.test(cutadminPhone) === false) {
                 return this.$notify({title: '提示', message: '请输入正确的管理员电话号码', duration: 0 });
             }
 

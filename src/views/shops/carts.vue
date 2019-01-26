@@ -410,14 +410,21 @@ export default {
                     if (response.code === 1000) {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = true; // 上传成功
-                        _this.uploadErrMsg = response.data.successNum; // 成功提示
-                        _this.uploadErrMsg = response.data.errorNum; // 失败提示
-                        _this.downError = response.data.downError; // 失败模板的id
+                        _this.uploadSuccessNum = response.data.successNum ? response.data.successNum : ''; // 成功提示
+                        _this.uploadErrorNum = response.data.errorNum ? response.data.errorNum : ''; // 失败提示
+                        _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
 
                     } else {
                         _this.isUploadModalShow = true; // 显示上传模态框
                         _this.isUploadSuccess = false; // 上传失败
-                        _this.uploadErrMsg = response.data.errMsg; // 失败提示
+                        if (response.data && response.data.errMsg) {
+                            _this.uploadErrMsg = response.data.errMsg; // 失败提示
+
+                        } else {
+                            _this.uploadErrMsg = response.msg; // 失败提示
+
+                        }
+                        _this.downError = response.data.downError ? response.data.downError : ''; // 失败模板的id
 
                     }
                     console.log(res);

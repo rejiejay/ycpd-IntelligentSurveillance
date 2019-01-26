@@ -6,19 +6,19 @@ import upload from '@/components/upload';
 /**
  * 获取团队列表
  * @param {number} pageNo 当前页码
- * @param {number} pageSzie 页面大小
+ * @param {number} pageSize 页面大小
  * @param {number} bcId 支公司 id
  * @param {number} teamId 支公司 id
  * @param {number} month 月份
  */
-export function queryAllTeamPredictionUsingPOST(pageNo, pageSzie, bcId, teamId, month) {
+export function queryAllTeamPredictionUsingPOST(pageNo, pageSize, bcId, teamId, month) {
     return apibasics({
         url: `${config.url.origin}/cdimms/server/prediction/queryAllTeamPrediction`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
             pageNo: pageNo ? pageNo : 1,
-            pageSzie: pageSzie ? pageSzie : 10,
+            pageSize: pageSize ? pageSize : 10,
             bcId: bcId ? bcId : '',
             teamId: teamId ? teamId : '',
             month: month ? month : '',

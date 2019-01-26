@@ -6,17 +6,17 @@ import upload from '@/components/upload';
 /**
  * 获取团队列表
  * @param {number} pageNo 当前页码
- * @param {number} pageSzie 页面大小
+ * @param {number} pageSize 页面大小
  * @param {number} keyword 团队关键词查询
  */
-export function queryAllTeamUsingPOST(pageNo, pageSzie, keyword) {
+export function queryAllTeamUsingPOST(pageNo, pageSize, keyword) {
     return apibasics({
         url: `${config.url.origin}/cdimms/server/team/queryAllTeam`,
         method: 'post',
         headers: {'Content-Type': 'application/json'},
         data: {
             pageNo: pageNo ? pageNo : 1,
-            pageSzie: pageSzie ? pageSzie : 10,
+            pageSize: pageSize ? pageSize : 10,
             keyword: keyword ? keyword : '',
         }
     });

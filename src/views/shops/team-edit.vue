@@ -147,9 +147,10 @@ export default {
             }
 
             let phone = this.phone ? this.phone.replace(/\s+/g,"") : ''; //  分管领导电话
+            let cutphone = phone.replace(/-/g,"");
             if (!phone) {
                 return this.$notify({title: '提示', message: '分管领导电话不能为空', duration: 0 });
-            } else if (/^[+]{0,1}(\d){1,3}[ ]?([-]?((\d)|[ ]){1,12})+$/.test(phone) === false) {
+            } else if (/^[0-9]*$/.test(cutphone) === false) {
                 return this.$notify({title: '提示', message: '请输入正确的电话号码', duration: 0 });
             }
 
