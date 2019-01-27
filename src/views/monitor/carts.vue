@@ -544,7 +544,7 @@ export default {
             storephone: '', // 电话
             materialfee: '', // 定损
             sumpremium: '', // 保费
-            materialfee: '0', // 百分比
+            proportion: '0', // 百分比
         } 
     },
 
@@ -651,12 +651,6 @@ export default {
         },
 
         /**
-         * 选中车行
-         */
-        cartsIdHandle: function cartsIdHandle() {
-        },
-
-        /**
          * 搜索框查询车行列表
          */
         listToSearch: function listToSearch(newsearch) {
@@ -742,7 +736,7 @@ export default {
                 newItem.address = val.address; // 车行地址
                 newItem.isSelected = false; // 是否被选中
                 newItem.isCooperate = val.isJoin === 1 ? true : false; // 是否合作
-                newItem.lossAmount = val.materialfee; // 定损金额
+                newItem.lossAmount = val.sumlossfee; // 定损金额
                 newItem.premiumAmount = val.sumpremium; // 保费金额
                 newItem.longitude = val.longitude; // 经度
                 newItem.latitude = val.latitude; // 纬度
@@ -888,10 +882,10 @@ export default {
                 _this.storecontact = data.contact; // 联系人
                 _this.storephone = data.phone; // 电话
 
-                _this.materialfee = data.materialfee; // 定损金额
+                _this.materialfee = data.sumlossfee; // 定损金额
                 _this.sumpremium = data.sumpremium; // 保费金额
-                if (data.materialfee && data.sumpremium) {
-                    _this.proportion = Math.floor((data.materialfee / data.sumpremium) * 100); // 定损金额/保费金额
+                if (data.sumlossfee && data.sumpremium) {
+                    _this.proportion = Math.floor((data.sumlossfee / data.sumpremium) * 100); // 定损金额/保费金额
                 } else {
                     _this.proportion = '0';
                 }
@@ -908,7 +902,7 @@ export default {
             this.mountBaiduMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
             this.mountBaiduMap.addControl(new BMap.NavigationControl({
                 offset: new BMap.Size(10, 65),
-            }));    
+            }));
 
             this.renderMarkerPoint();
         },
@@ -963,11 +957,11 @@ export default {
 
                     // 有保费，没有定损金额用
                     } else if (val.premiumAmount && !val.lossAmount) {
-                        baiduMapIcon = new BMap.Icon(calculateImg(0), new BMap.Size(40, 48.5));
+                        baiduMapIcon = new BMap.Icon(_this.img.percentage_0, new BMap.Size(40, 48.5));
                         
                     // 有定损，没有保费金额用
                     } else if (!val.premiumAmount && val.lossAmount) {
-                        baiduMapIcon = new BMap.Icon(calculateImg(100), new BMap.Size(40, 48.5));
+                        baiduMapIcon = new BMap.Icon(_this.img.percentage_100, new BMap.Size(40, 48.5));
                         
                     } else {
                         // 既没有定损，也没有保费

@@ -331,7 +331,7 @@ export default {
                     newItem.lossTime = val.deflossdate ? val.deflossdate.split(' ')[0] : ''; // 定损时间
                     newItem.lossPlace = val.defsite; // 定损中心
                     newItem.handlercode = val.handlercode; // 定损员
-                    newItem.materialfee = val.materialfee; // 定损金额
+                    newItem.materialfee = val.sumlossfee; // 定损金额
                     newItem.policyno = val.policyno; // 保单号
                     newItem.licenseno = val.licenseno; // 标的车牌号
                     newItem.modelcode = val.modelcode; // 标的车型

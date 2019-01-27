@@ -346,7 +346,7 @@ export default {
                     newItem.team = val.teamName; // 业务团队
 
                     newItem.premium = val.sumpremium; // 保费收入
-                    newItem.loss = val.materialfee; // 定损支出
+                    newItem.loss = val.sumlossfee; // 定损支出
                     newItem.proportion = val.ratio; // 定损支出
 
                     return newItem
