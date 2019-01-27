@@ -247,13 +247,19 @@ export default {
             .then(val => {
                 let data = val.data;
                 
-                _this.premiums = data.premiums.concat(data.futureDay4Premiums);
-                _this.lossAssessments = data.lossAssessments.concat(data.futureDay4LossAssessments);
-                _this.ratios = data.ratios.concat(data.futureDay4Ratios);
+                // 将真实数据 与 测试数据 链接起来
+                let premiums = data.premiums.concat(data.futureDay4Premiums);
+                let lossAssessments = data.lossAssessments.concat(data.futureDay4LossAssessments);
+                let ratios = data.ratios.concat(data.futureDay4Ratios);
+
+                // 转化为万元单位，并且保留两位小数
+                _this.premiums = premiums.map(item => item ? (Math.round(item / 100) / 100) : 0);
+                _this.lossAssessments = lossAssessments.map(item => item ? (Math.round(item / 100) / 100) : 0);
+                _this.ratios = ratios.map(item => item ? (Math.round(item / 100) / 100) : 0);
 
                 _this.initAnalyzeCharts(); // 初始化 图表
 
-            }, error => console.log(error))
+            }, error => console.log(error));
 
             return '下面的是测试数据!';
 

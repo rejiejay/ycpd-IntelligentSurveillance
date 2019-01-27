@@ -418,8 +418,8 @@ export default {
                         newItem.no = (key + 1);
                         newItem.name = item.bcName; // 支公司名称
 
-                        newItem.premium = item.sumpremium ? Math.floor(item.sumpremium) : '0'; // 保费金额
-                        newItem.premiumPredicted = item.income ? Math.floor(item.income) : '0'; // 预测保费
+                        newItem.premium = item.sumpremium ? (Math.round(item.sumpremium / 100) / 100)/** 转化为万元为单位 */ : '0'; // 保费金额
+                        newItem.premiumPredicted = item.income ? (Math.round(item.income / 100) / 100) : '0'; // 预测保费
 
                         let premiumPercent = item.sumpremium / item.income;
                         if (item.sumpremium && item.income && premiumPercent >= 0 && premiumPercent <= 1) {
@@ -429,8 +429,8 @@ export default {
                             newItem.premiumPercent = 0; // 保费预测百分比(1~100)
                         }
 
-                        newItem.loss = item.sumlossfee ? Math.floor(item.sumlossfee) : '0'; // 定损金额
-                        newItem.lossPredicted = item.expense ? Math.floor(item.expense) : '0'; // 预测定损
+                        newItem.loss = item.sumlossfee ? (Math.round(item.sumlossfee / 100) / 100)  : '0'; // 定损金额
+                        newItem.lossPredicted = item.expense ? (Math.round(item.expense / 100) / 100)  : '0'; // 预测定损
 
                         let lossPercent = item.sumlossfee / item.expense;
                         if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
@@ -440,7 +440,7 @@ export default {
                             newItem.lossPercent = 0; // 保费预测百分比(1~100)
                         }
 
-                        newItem.proportion = item.ratio ? item.ratio : '0'; // 定损金额
+                        newItem.proportion = item.ratio ? (Math.round(item.ratio * 100) / 100)/** 保留两位小数 */ : '0'; // 定损金额
 
                         return newItem;
                     });
