@@ -27,7 +27,14 @@
                         </el-button>
                     </div>
 
-                    <div class="filter-main-subcompany" v-if="subcompanyLable">{{subcompanyLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="subcompanyLable">支公司：{{subcompanyLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="teamLable">团队：{{teamLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="networkNameLable">网点：{{networkNameLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="networkTypeLable">车行：{{networkTypeLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="isJoinLable">是否合作：{{isJoinLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="sumpremiumLable">{{sumpremiumLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="materialfeeLable">{{materialfeeLable}}</div>
+                    <div class="filter-main-item flex-start-center" v-if="proportionLable">{{proportionLable}}</div>
                 </div>
             </div>
         </div>
@@ -110,7 +117,7 @@
                                     <div class="content-item-money" style="color: #F56C6C;">{{materialfee}}</div>
                                 </div>
                             </div>
-                            <div class="details-describe-tip flex-center">· 保费/定损金额比例： <span style="color: #67C23A;">{{ (materialfee && sumpremium) ? Math.round(materialfee/sumpremium * 100) / 100 : 0}}%</span></div>
+                            <div class="details-describe-tip flex-center">· 产保比： <span style="color: #67C23A;">{{ (materialfee && sumpremium) ? Math.round(materialfee/sumpremium * 10000) / 100 : 0}}%</span></div>
                         </div>
                     </div>
                 </div>
@@ -522,9 +529,21 @@ export default {
 
             /**
              * 筛选后展示的数据
+             * 查询条件
              */
             startendTimeLable: `${TimeConver.dateToFormat(initStartTime)} 至 ${TimeConver.dateToFormat(initEndTime)}`,
             subcompanyLable: '',
+            teamLable: '',
+            networkNameLable: '',
+            networkTypeLable: '',
+            isJoinLable: '',
+            sumpremiumLable: '',
+            materialfeeLable: '',
+            proportionLable: '',
+
+            /**
+             * 网点详情
+             */
             isJoinNum: '', // 合作网点数
             isNotJoinNum: '', // 未合作网点数
             newAddStoreNum: '', // 新增网点
@@ -753,8 +772,15 @@ export default {
         initListStoreToMap: function initListStoreToMap() {
             const _this = this;
 
-            let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
-            let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
+            /**
+             * 初始化提交的数据
+             */
+            let startDate = '';
+            let endDate = '';
+            if (this.startendTime[0] && this.startendTime[1]) {
+                startDate = TimeConver.dateToFormat(this.startendTime[0]);
+                endDate = TimeConver.dateToFormat(this.startendTime[1]);
+            }
             let bcId = this.subcompany ? this.subcompany : ''; 
             let teamId = this.team ? this.team : ''; 
             let networkName = this.cartsStore ? this.cartsStore : ''; // 车行
@@ -765,7 +791,119 @@ export default {
             let lowestMaterialfee = this.minLoss ? this.minLoss : ''; 
             let highestMaterialfee = this.maxLoss ? this.maxLoss : ''; 
             let lowestProportion = this.minProportion ? this.minProportion : ''; 
-            let highestProportion = this.maxProportion ? this.maxProportion : ''; 
+            let highestProportion = this.maxProportion ? this.maxProportion : '';
+
+            /**
+             * 提交数据的筛选条件展示
+             */
+            if (startDate && endDate) {
+                this.startendTimeLable = `${startDate} 至 ${endDate}`;
+            } else {
+                this.startendTimeLable = ''; // 这个是要记得清空
+            }
+            if (bcId) {
+                let filter = ''
+                this.subcompanyList.map(val => {
+                    if (val.value === bcId) {
+                        filter = val.label;
+                    }
+                    return val;
+                });
+
+                if (filter) {
+                    this.subcompanyLable = filter;
+                } else {
+                    this.subcompanyLable = ''; // 记得清空
+                }
+            } else {
+                this.subcompanyLable = ''; // 记得清空
+            }
+            if (teamId) {
+                let filter = ''
+                this.teamList.map(val => {
+                    if (val.value === teamId) {
+                        filter = val.label;
+                    }
+                    return val;
+                });
+
+                if (filter) {
+                    this.teamLable = filter;
+                } else {
+                    this.teamLable = ''; // 记得清空
+                }
+            } else {
+                this.teamLable = ''; // 记得清空
+            }
+            if (networkName) {
+                let filter = ''
+                this.cartsStoreList.map(val => {
+                    if (val.value === networkName) {
+                        filter = val.label;
+                    }
+                    return val;
+                });
+
+                if (filter) {
+                    this.networkNameLable = filter;
+                } else {
+                    this.networkNameLable = ''; // 记得清空
+                }
+            } else {
+                this.networkNameLable = ''; // 记得清空
+            }
+            if (networkType) {
+                let filter = ''
+                this.regionTypeList.map(val => {
+                    if (val.value === networkType) {
+                        filter = val.label;
+                    }
+                    return val;
+                });
+
+                if (filter) {
+                    this.networkTypeLable = filter;
+                } else {
+                    this.networkTypeLable = ''; // 记得清空
+                }
+            } else {
+                this.networkTypeLable = ''; // 记得清空
+            }
+            if (isJoin) {
+                this.isJoinLable = (isJoin === '1') ? '合作' : '不合作';
+            } else {
+                this.isJoinLable = ''; // 记得清空
+            }
+            // 保费区间
+            if (lowestSumpremium || highestSumpremium) {
+                this.sumpremiumLable = `保费区间:${
+                    lowestSumpremium ? `最低保费: ${lowestSumpremium}` : ''
+                }${
+                    highestSumpremium ? `最高保费: ${highestSumpremium}` : ''
+                }`;
+            } else {
+                this.sumpremiumLable = ''; // 清空
+            }
+            // 定损金额区间
+            if (lowestMaterialfee || highestMaterialfee) {
+                this.materialfeeLable = `定损金额区间:${
+                    lowestMaterialfee ? `最低定损: ${lowestMaterialfee}` : ''
+                }${
+                    highestMaterialfee ? `最高定损: ${highestMaterialfee}` : ''
+                }`;
+            } else {
+                this.materialfeeLable = ''; // 清空
+            }  
+            // 保费/定损金额占比
+            if (lowestProportion || highestProportion) {
+                this.proportionLable = `保费/定损占比:${
+                    lowestProportion ? `最低占比: ${lowestProportion}` : ''
+                }${
+                    highestProportion ? `最高占比: ${highestProportion}` : ''
+                }`;
+            } else {
+                this.proportionLable = ''; // 清空
+            }   
 
             listStoreToMapUsingGET(startDate, endDate, bcId, teamId, networkName, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion)
             .then(val => {
@@ -1106,9 +1244,9 @@ $black4: #C0C4CC;
                 line-height: 35.6px;
             }
 
-            .filter-main-subcompany {
+            .filter-main-item {
                 padding-left: 15px;
-                line-height: 40px;
+                height: 35px;
             }
         }
     }

@@ -456,6 +456,8 @@ export default {
          */
         submit: function submit() {
             const _this = this;
+            
+            let phone = this.contactPhone ? this.contactPhone.replace(/\s+/g,"") : ''; // 联系电话
 
             if (!this.shopsName) {
                 return this.$notify({title: '提示', message: '车行名称不能为空', duration: 0 });
@@ -479,7 +481,6 @@ export default {
                     return this.$notify({title: '提示', message: '联系人不能为空', duration: 0 });
                 }
 
-                let phone = this.contactPhone ? this.contactPhone.replace(/\s+/g,"") : ''; // 联系电话
                 let cutphone = phone.replace(/-/g,"");
                 if (!phone) {
                     return this.$notify({title: '提示', message: '联系电话不能为空', duration: 0 });

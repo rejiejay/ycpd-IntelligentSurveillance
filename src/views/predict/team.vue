@@ -35,6 +35,7 @@
         </div>
 
         <div class="manage-operate-right">
+            <input type="file" name="file" ref="uploadFile" id="uploadFile" style="display: none;" />
             <el-button icon="el-icon-download" type="text" @click="getTeamPreTemplate">下载模板</el-button>
             <el-button icon="el-icon-tickets" type="primary" @click="$refs.uploadFile.click()">数据设置</el-button>
         </div>
