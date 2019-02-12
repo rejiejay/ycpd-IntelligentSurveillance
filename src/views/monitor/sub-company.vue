@@ -71,17 +71,17 @@
                                 item.premiumPercent < premiumWarningLine ? '#E6A23C' : '#67C23A'
                             };`"
                         >
-                            <div class="flex-rest" v-if="item.premiumPercent < 70 /** 这里设置最大宽度为 70% 因为最后有 1800 / 6000 万元 怕会被挡住 */" ></div>
-                            <div v-else style="width: 70%;"></div>
+                            <div class="flex-rest" v-if="item.premiumPercent < 40 /** 这里设置最大宽度为 40% 因为最后有 1800 / 6000 万元 怕会被挡住 */" ></div>
+                            <div v-else style="width: 40%;"></div>
                             <div class="table-activate-percent" v-if="item.premiumPercent >= 30 /** 当百分比大于30 的时候显示在这边即可 */">
-                                <span>{{`${item.premiumPercent}%`}}</span>
+                                <span>{{`${item.premiumPercentLable}%`}}</span>
                             </div>
                         </div>
                         
                         <div class="company-table-disable flex-rest flex-start-center">
                             <span 
                                 v-if="item.premiumPercent < 30 /** 当百分比小于30的显示在这边，因为怕会被挤掉 */"
-                            >{{`${item.premiumPercent}%`}}</span>
+                            >{{`${item.premiumPercentLable}%`}}</span>
                         </div>
                         
                         <div class="company-table-lable">{{`${item.premium} / ${item.premiumPredicted} 万元`}}</div>
@@ -91,17 +91,17 @@
                     <div class="company-table-container flex-start">
 
                         <div class="company-table-activate flex-start-center"
-                            :style="`width: ${item.lossPercent}%; background: ${item.lossPercent < premiumWarningLine ? '#E6A23C' : '#67C23A'};`"
+                            :style="`width: ${item.lossPercent}%; background: ${item.lossPercent > lossSortLine ? '#E6A23C' : '#67C23A'};`"
                         >
-                            <div class="flex-rest" v-if="item.lossPercent < 70" ></div>
-                            <div v-else style="width: 70%;"></div>
+                            <div class="flex-rest" v-if="item.lossPercent < 40" ></div>
+                            <div v-else style="width: 40%;"></div>
                             <div class="table-activate-percent" v-if="item.lossPercent >= 30">
-                                <span>{{`${item.lossPercent}%`}}</span>
+                                <span>{{`${item.lossPercentLable}%`}}</span>
                             </div>
                         </div>
                         
                         <div class="company-table-disable flex-rest flex-start-center">
-                            <span v-if="item.lossPercent < 30">{{`${item.lossPercent}%`}}</span>
+                            <span v-if="item.lossPercent < 30">{{`${item.lossPercentLable}%`}}</span>
                         </div>
                         
                         <div class="company-table-lable">{{`${item.loss} / ${item.lossPredicted} 万元`}}</div>
@@ -110,7 +110,7 @@
                 <div class="company-table-proportion flex-rest">
                     <div class="company-table-container flex-start">
                         <div class="company-table-activate flex-start-center"
-                            :style="`width: ${item.proportion}%; background: ${item.proportion < premiumWarningLine ? '#E6A23C' : '#67C23A'};`"
+                            :style="`width: ${item.proportion}%; background: ${item.proportion > proportionSortLine ? '#E6A23C' : '#67C23A'};`"
                         >
                             <div class="flex-rest"></div>
                             <div class="table-activate-percent" v-if="item.proportion >= 30">
@@ -421,26 +421,44 @@ export default {
                         newItem.premium = item.sumpremium ? (Math.round(item.sumpremium / 100) / 100)/** 转化为万元为单位 */ : '0'; // 保费金额
                         newItem.premiumPredicted = item.income ? (Math.round(item.income / 100) / 100) : '0'; // 预测保费
 
+                        /** 渲染百分比的比例 */
                         let premiumPercent = item.sumpremium / item.income;
-                        if (item.sumpremium && item.income && premiumPercent >= 0 && premiumPercent <= 1) {
-                            newItem.premiumPercent = Math.round(premiumPercent * 100) / 100; // 保费预测百分比(1~100)
+                        if (item.sumpremium && item.income && premiumPercent > 1) {
+                            newItem.premiumPercent = 100;
+                        } else if (item.sumpremium && item.income && premiumPercent >= 0 && premiumPercent <= 1) {
+                            newItem.premiumPercent = Math.round(premiumPercent * 10000) / 100; // 保费预测百分比(1~100)
                             
                         } else {
                             newItem.premiumPercent = 0; // 保费预测百分比(1~100)
+                        }
+                        /** 渲染百分比的标签 */
+                        if (item.sumpremium && item.income && premiumPercent >= 0) {
+                            newItem.premiumPercentLable = Math.round(premiumPercent * 100); // 不保留小数
+                        } else {
+                            newItem.premiumPercentLable = 0; // 注意清空为零
                         }
 
                         newItem.loss = item.sumlossfee ? (Math.round(item.sumlossfee / 100) / 100)  : '0'; // 定损金额
                         newItem.lossPredicted = item.expense ? (Math.round(item.expense / 100) / 100)  : '0'; // 预测定损
 
+                        /** 渲染百分比的比例 */
                         let lossPercent = item.sumlossfee / item.expense;
-                        if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
-                            newItem.lossPercent = Math.round(lossPercent * 100) / 100; // 保费预测百分比(1~100)
+                        if (item.sumpremium && item.income && lossPercent > 1) {
+                            newItem.lossPercent = 100;
+                        } else if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
+                            newItem.lossPercent = Math.round(lossPercent * 10000) / 100; // 保费预测百分比(1~100)
                             
                         } else {
                             newItem.lossPercent = 0; // 保费预测百分比(1~100)
                         }
+                        /** 渲染百分比的标签 */
+                        if (item.sumpremium && item.income && lossPercent >= 0) {
+                            newItem.lossPercentLable = Math.round(lossPercent * 100); // 不保留小数
+                        } else {
+                            newItem.lossPercentLable = 0; // 注意清空为零
+                        }
 
-                        newItem.proportion = item.ratio ? (Math.round(item.ratio * 100) / 100)/** 保留两位小数 */ : '0'; // 定损金额
+                        newItem.proportion = item.ratio ? (Math.round(item.ratio * 10000) / 100)/** 保留两位小数 */ : '0'; // 定损金额
 
                         return newItem;
                     });

@@ -735,6 +735,8 @@ export default {
             this.cartsMaplist = newCartsMaplist.map(val => {
                 if (val.id === id) {
                     val.isSelected = true;
+                } else {
+                    val.isSelected = false;
                 }
                 return val;
             });

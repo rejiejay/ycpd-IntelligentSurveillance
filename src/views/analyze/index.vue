@@ -74,7 +74,7 @@
             ></el-option>
         </el-select>
 
-        <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; searchByConditions();">查询</el-button>
+        <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
         <el-button icon="el-icon-download" type="success" @click="exportStatisticalAnalysis">导出</el-button>
         <el-button size="mini" type="danger" round @click="clearConditions">清空查询条件</el-button>
     </div>
@@ -255,43 +255,43 @@ export default {
                 // 转化为万元单位，并且保留两位小数
                 _this.premiums = premiums.map(item => item ? (Math.round(item / 100) / 100) : 0);
                 _this.lossAssessments = lossAssessments.map(item => item ? (Math.round(item / 100) / 100) : 0);
-                _this.ratios = ratios.map(item => item ? (Math.round(item / 100) / 100) : 0);
+                _this.ratios = ratios.map(item => item ? (Math.round(item  * 10000) / 100) : 0);
 
                 _this.initAnalyzeCharts(); // 初始化 图表
 
             }, error => console.log(error));
 
-            return '下面的是测试数据!';
+            // return '下面的是测试数据!';
 
-            /**
-             * 获取循环多少次
-             */
-            let differ = 0;
-            let startTimestamp = this.startDataTime.getTime(); // 开始时间
-            let endTimestamp = this.endDataTime.getTime(); // 结束时间
-            if (this.analyzeTimeSection === '0') {
-                differ = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
-            } else {
-                let endTimeMonth = (this.endMonthTime.getFullYear() * 12) + (this.endMonthTime.getMonth() + 1); // 结束一共多少个月
-                let startTimeMonth = (this.startMonthTime.getFullYear() * 12) + (this.startMonthTime.getMonth() + 1); // 开始一共多少个月
-                differ = endTimeMonth - startTimeMonth; // 相差几个月
-            }
+            // /**
+            //  * 获取循环多少次
+            //  */
+            // let differ = 0;
+            // let startTimestamp = this.startDataTime.getTime(); // 开始时间
+            // let endTimestamp = this.endDataTime.getTime(); // 结束时间
+            // if (this.analyzeTimeSection === '0') {
+            //     differ = (endTimestamp - startTimestamp) / (1000 * 60 * 60 * 24); // 相差几天
+            // } else {
+            //     let endTimeMonth = (this.endMonthTime.getFullYear() * 12) + (this.endMonthTime.getMonth() + 1); // 结束一共多少个月
+            //     let startTimeMonth = (this.startMonthTime.getFullYear() * 12) + (this.startMonthTime.getMonth() + 1); // 开始一共多少个月
+            //     differ = endTimeMonth - startTimeMonth; // 相差几个月
+            // }
 
-            let premiums = [];
-            let lossAssessments = [];
-            let ratios = [];
+            // let premiums = [];
+            // let lossAssessments = [];
+            // let ratios = [];
 
-            for (let i = 0; i <= differ; i++) {
-                premiums.push(123321);
-                lossAssessments.push(321123);
-                ratios.push(12);
-            }
+            // for (let i = 0; i <= differ; i++) {
+            //     premiums.push(123321);
+            //     lossAssessments.push(321123);
+            //     ratios.push(12);
+            // }
             
-            this.premiums = premiums;
-            this.lossAssessments = lossAssessments;
-            this.ratios = ratios;
+            // this.premiums = premiums;
+            // this.lossAssessments = lossAssessments;
+            // this.ratios = ratios;
 
-            this.initAnalyzeCharts(); // 初始化 图表
+            // this.initAnalyzeCharts(); // 初始化 图表
         },
 
         /**
@@ -349,7 +349,7 @@ export default {
                         date: date,
                         premium: premium,
                         loss: loss,
-                        proportion: `${proportion * 100}%`,
+                        proportion: `${proportion}%`,
                         type: type,
                     });
                 }
@@ -1356,7 +1356,7 @@ export default {
                 }
             }
 
-            this.initAnalyzeCharts(); // 初始化 图表
+            this.initStatisticalAnalys(); // 初始化 图表
         },
 
         /**

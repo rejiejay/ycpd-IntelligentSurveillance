@@ -37,7 +37,10 @@ export function exportCompanyUsingGET(companyId) {
  * @param {number} companyId 支公司 id
  */
 export function removeCompanyUsingGET(companyId) {
-    downloadUsingGET(`/cdimms/server/company/removeCompany${companyId ? `?companyId=${companyId}` : ''}`);
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/company/removeCompany${companyId ? `?companyId=${companyId}` : ''}`,
+        method: 'get',
+    });
 }
 
 /**
