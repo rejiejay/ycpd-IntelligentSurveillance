@@ -218,13 +218,13 @@ export default {
             let currentPage = this.currentPage;
             let pageCount = this.pageSize;
             let userType = this.userTypeSection ? this.userTypeSection : ''; // 用户类型
-            let bcName = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
+            let bcId = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
             let staffName = this.userName ? this.userName : ''; // 用户姓名
             let staffCode = this.userCode ? this.userCode : ''; // 用户代码
             let roleName = this.rolesSection ? this.rolesSection : ''; // 角色
             let state = this.userStatusSection ? this.userStatusSection : ''; // 状态
 
-            queryUserListUsingPOST(currentPage, pageCount, userType, bcName, staffName, staffCode, roleName, state)
+            queryUserListUsingPOST(currentPage, pageCount, userType, bcId, staffName, staffCode, roleName, state)
             .then(val => {
                 if (val.code === 1001) {
                     return alert('查询数据为空');
@@ -288,12 +288,12 @@ export default {
             const _this  = this;
 
             let userType = this.userTypeSection ? this.userTypeSection : ''; // 用户类型
-            let bcName = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
+            let bcId = this.userBelongSection ? this.userBelongSection : ''; // 用户归属
             let staffName = this.userName ? this.userName : ''; // 用户姓名
             let staffCode = this.userCode ? this.userCode : ''; // 用户代码
             let roleName = this.rolesSection ? this.rolesSection : ''; // 角色
             let state = this.userStatusSection ? this.userStatusSection : ''; // 状态
-            exportUserListUsingPOST(userType, bcName, staffName, staffCode, roleName, state);
+            exportUserListUsingPOST(userType, bcId, staffName, staffCode, roleName, state);
         },
 
         /**
@@ -308,7 +308,7 @@ export default {
 
                 if (data && data instanceof Array && data.length > 0) {
                     _this.userBelongOptions = data.map(item => ({
-                        value: item[1],
+                        value: item[0],
                         label: item[1],
                     }));
                 }

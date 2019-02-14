@@ -7,17 +7,17 @@ import { downloadUsingPOST } from '@/components/download';
  * @param {number} currentPage 当前页码
  * @param {number} pageCount 当前页大小
  * @param {number} userType 用户类型
- * @param {number || string} bcName 用户归属
+ * @param {number || string} bcId 用户归属
  * @param {number || string} staffName 用户姓名
  * @param {number || string} staffCode 用户代码
  * @param {number || string} roleName 角色
  * @param {number || string} state 状态
  */
-export function queryUserListUsingPOST(currentPage, pageCount, userType, bcName, staffName, staffCode, roleName, state) {
+export function queryUserListUsingPOST(currentPage, pageCount, userType, bcId, staffName, staffCode, roleName, state) {
     let body = {
         currentPage: currentPage ? currentPage : 1,
         pageCount: pageCount ? pageCount : 10,
-        bcName: bcName ? bcName : '',
+        bcId: bcId ? bcId : '',
         staffName: staffName ? staffName : '',
         staffCode: staffCode ? staffCode : '',
         roleName: roleName ? roleName : '',
@@ -48,15 +48,15 @@ export function queryRoleListUsingGET() {
 /**
  * 导出用户列表
  * @param {number} userType 用户类型
- * @param {number || string} bcName 用户归属
+ * @param {number || string} bcId 用户归属
  * @param {number || string} staffName 用户姓名
  * @param {number || string} staffCode 用户代码
  * @param {number || string} roleName 角色
  * @param {number || string} state 状态
  */
-export function exportUserListUsingPOST(userType, bcName, staffName, staffCode, roleName, state) {
+export function exportUserListUsingPOST(userType, bcId, staffName, staffCode, roleName, state) {
     let body = {
-        bcName: bcName ? bcName : '',
+        bcId: bcId ? bcId : '',
         staffName: staffName ? staffName : '',
         staffCode: staffCode ? staffCode : '',
         roleName: roleName ? roleName : '',
