@@ -265,13 +265,13 @@ export default {
         exportPremium: function exportPremium() {
             let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
             let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
-            let storeId = this.regionSection ? this.regionSection : ''; 
+            let networkType = this.regionSection ? this.regionSection : ''; 
             let bcId = this.subCompanySection ? this.subCompanySection : ''; 
             let teamId = this.teamSection ? this.teamSection : ''; 
             let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
             let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
 
-            exportPremiumUsingGET(startDate, endDate, storeId, bcId, teamId, lowestSumpremium, highestSumpremium);
+            exportPremiumUsingGET(startDate, endDate, networkType, bcId, teamId, lowestSumpremium, highestSumpremium);
         },
 
         /**
@@ -326,13 +326,13 @@ export default {
             let pageSize = this.pageSize;
             let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
             let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
-            let storeId = this.regionSection ? this.regionSection : ''; 
+            let networkType = this.regionSection ? this.regionSection : ''; 
             let bcId = this.subCompanySection ? this.subCompanySection : ''; 
             let teamId = this.teamSection ? this.teamSection : ''; 
             let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
             let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
 
-            listPremiumUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, lowestSumpremium, highestSumpremium)
+            listPremiumUsingGET(pageNo, pageSize, startDate, endDate, networkType, bcId, teamId, lowestSumpremium, highestSumpremium)
             .then(val => {
                 let data = val.data;
 

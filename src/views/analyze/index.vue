@@ -238,8 +238,19 @@ export default {
             const _this  = this;
 
             let type = this.analyzeTimeSection;
-            let startDate = TimeConver.dateToFormat(this.startDataTime); 
-            let endDate = TimeConver.dateToFormat(this.endDataTime); 
+
+            let startDate = '';
+            let endDate = '';
+            /**
+             * 统计分时间段 是 按日分析 还是 按月分析
+             */
+            if (this.analyzeTimeSection === '0') {
+                startDate = TimeConver.dateToFormat(this.startDataTime); 
+                endDate = TimeConver.dateToFormat(this.endDataTime); 
+            } else {
+                startDate = TimeConver.dateToFormat(this.startMonthTime); 
+                endDate = TimeConver.dateToFormat(this.endMonthTime); 
+            }
             let bcId = this.subCompanySection; 
             let teamId = this.teamSection; 
             let networkId = this.regionSection;

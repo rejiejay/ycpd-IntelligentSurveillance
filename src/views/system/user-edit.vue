@@ -167,6 +167,7 @@
 // 请求类
 import { queryRoleListUsingGET } from "@/api/system/user";
 import { existUserUsingGET, queryUserUsingGET, addUserUsingPOST, modifyUserUsingPOST } from "@/api/system/user-edit";
+import { getUserType } from "@/api/login";
 import { queryTeamByBcIdUsingGET } from "@/api/team";
 import { queryCompanyListUsingGET } from "@/api/subcompany";
 
@@ -186,16 +187,17 @@ export default {
 
             userTypeSection: '', // 用户类型
             userTypeOptions: [
+                // {
+                //     value: '0',
+                //     label: '系统管理员',
+                // }, {
+                //     value: '1',
+                //     label: '分公司管理员',
+                // }, {
+                //     value: '2',
+                //     label: '支公司管理员',
+                // }, 
                 {
-                    value: '0',
-                    label: '系统管理员',
-                }, {
-                    value: '1',
-                    label: '分公司管理员',
-                }, {
-                    value: '2',
-                    label: '支公司管理员',
-                }, {
                     value: '3',
                     label: '团队经理',
                 }
@@ -266,9 +268,68 @@ export default {
 
         this.queryCompanyList(); // 用户归属下拉框
         this.queryRoleList(); // 用户角色下拉框
+        this.initUserTypeOptions(); // 初始化用户类型
     },
 
 	methods: {
+        /**
+         * 初始化用户类型
+         */
+        initUserTypeOptions: function initUserTypeOptions() {
+            const _this = this;
+
+            getUserType()
+            .then(val => {
+                let data = val.data;
+
+                /**
+                 * 系统管理员
+                 * 分公司管理员
+                 */
+                if (data == 0 || data == 1) {
+                    _this.userTypeOptions = [
+                        {
+                            value: '0',
+                            label: '系统管理员',
+                        }, {
+                            value: '1',
+                            label: '分公司管理员',
+                        }, {
+                            value: '2',
+                            label: '支公司管理员',
+                        }, {
+                            value: '3',
+                            label: '团队经理',
+                        }
+                    ];
+                } else if (data == 2) {
+                    /**
+                     * 支公司管理员
+                     */
+                    _this.userTypeOptions = [
+                        {
+                            value: '2',
+                            label: '支公司管理员',
+                        }, {
+                            value: '3',
+                            label: '团队经理',
+                        }
+                    ];
+                } else if (data == 3) {
+                    /**
+                     * 团队经理
+                     */
+                    _this.userTypeOptions = [
+                        {
+                            value: '3',
+                            label: '团队经理',
+                        }
+                    ];
+                }
+
+            }, error => console.log(error))
+        },
+
         /**
          * 根据支公司唯一id获取团队列表
          */
@@ -292,7 +353,7 @@ export default {
         },
 
         /**
-         * 跳转到路由
+         * 初始化页面数据
          * @param {object} query 携带的参数 非必填
          */
         initPageData: function initPageData() {

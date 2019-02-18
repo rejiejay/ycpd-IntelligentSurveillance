@@ -138,7 +138,6 @@ import TimeConver from '@/utils/TimeConver';
 export default {
     name: 'loss',
 
-
 	data: function data() { 
         // 选择时间段 左边选项列表选项
         let startendTimeOptions = {
@@ -281,13 +280,13 @@ export default {
 
             let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
             let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
-            let storeId = this.regionSection ? this.regionSection : ''; 
+            let networkType = this.regionSection ? this.regionSection : ''; 
             let bcId = this.subCompanySection ? this.subCompanySection : ''; 
             let teamId = this.teamSection ? this.teamSection : ''; 
             let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
             let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
 
-            exportLossAssessmentUsingGET(startDate, endDate, storeId, bcId, teamId, lowestSumpremium, highestSumpremium);
+            exportLossAssessmentUsingGET(startDate, endDate, networkType, bcId, teamId, lowestSumpremium, highestSumpremium);
         },
 
         /**
@@ -300,13 +299,13 @@ export default {
             let pageSize = this.pageSize;
             let startDate = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
             let endDate = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : ''; 
-            let storeId = this.regionSection ? this.regionSection : ''; 
+            let networkType = this.regionSection ? this.regionSection : ''; 
             let bcId = this.subCompanySection ? this.subCompanySection : ''; 
             let teamId = this.teamSection ? this.teamSection : ''; 
             let lowestSumpremium = this.minProportion ? this.minProportion : ''; 
             let highestSumpremium = this.maxProportion ? this.maxProportion : ''; 
 
-            lossAssessmentUsingGET(pageNo, pageSize, startDate, endDate, storeId, bcId, teamId, lowestSumpremium, highestSumpremium)
+            lossAssessmentUsingGET(pageNo, pageSize, startDate, endDate, networkType, bcId, teamId, lowestSumpremium, highestSumpremium)
             .then(val => {
                 let data = val.data;
 

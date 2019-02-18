@@ -40,3 +40,13 @@ export function getlogout() {
         method: 'get'
     });
 }
+
+/**
+ * 返回用户类型
+ */
+export function getUserType() {
+    return apibasics({
+        url: `${config.url.origin}/cdimms/server/user/getUserType`,
+        method: 'get'
+    });
+}
