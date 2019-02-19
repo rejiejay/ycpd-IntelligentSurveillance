@@ -44,11 +44,10 @@
                 <router-link class="inlineBlock" to="/">
                     <el-dropdown-item>首页</el-dropdown-item>
                 </router-link>
-                
-                <el-dropdown-item divided>
-                    <span style="display:block;" @click="logout">退出</span>
-                </el-dropdown-item>
-                
+
+                <span style="display: block;" @click="logout">
+                    <el-dropdown-item divided>退出</el-dropdown-item>
+                </span>
             </el-dropdown-menu>
         </el-dropdown>
     </el-menu>

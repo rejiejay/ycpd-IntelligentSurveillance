@@ -41,9 +41,9 @@
             ></el-option>
         </el-select>
 
-        <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低损保比"></el-input>
+        <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低产保比"></el-input>
 
-        <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
+        <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高产保比"></el-input>
 
         <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; listPremiumLossAssessRatio();">查询</el-button>
         <el-button icon="el-icon-download" type="success" @click="exportPremium">导出</el-button>

@@ -183,6 +183,8 @@ export default {
              */
             pageType: 'add',
 
+            isEditLoading: false, // 是否正在加载编辑
+
             userId: '', // 用户唯一标识
 
             userTypeSection: '', // 用户类型
@@ -258,7 +260,15 @@ export default {
          * 当用户归属 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
          */
         userBelongSection: function userBelongSection(newUserBelongSection) {
-            this.teamSection = '';
+            /**
+             * 如果正在加载编辑数据 不清空团队数据
+             */
+            if (this.isEditLoading === false) {
+                this.teamSection = '';
+            } else {
+                this.isEditLoading = false;
+            }
+
             this.queryTeamByBcId(newUserBelongSection);
         }
     },
@@ -363,6 +373,7 @@ export default {
             let userName = this.$route.query.userName;
             if (userName) {
                 this.pageType = 'edit';
+                this.isEditLoading = true;
                 queryUserUsingGET(userName)
                 .then(val => {
                     let data = val.data;

@@ -21,8 +21,8 @@ export function listPremiumLossAssessRatioUsingGET(pageNo, pageSize, startDate, 
     urlparam += bcId ? `&bcId=${bcId}` : '';
     urlparam += teamId ? `&teamId=${teamId}` : '';
     urlparam += networkType ? `&networkType=${networkType}` : '';
-    urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
-    urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
+    urlparam += lowestProportion ? `&lowestRatio=${lowestProportion}` : '';
+    urlparam += highestProportion ? `&highestRatio=${highestProportion}` : '';
 
     return apibasics({
         url: `${config.url.origin}/cdimms/server/premiumLossAssessRatio/list${urlparam}`,
@@ -49,8 +49,8 @@ export function exportPremiumLossAssessRatioUsingGET(startDate, endDate, bcId, t
     urlparam += bcId ? `&bcId=${bcId}` : '';
     urlparam += teamId ? `&teamId=${teamId}` : '';
     urlparam += networkType ? `&networkType=${networkType}` : '';
-    urlparam += lowestProportion ? `&lowestProportion=${lowestProportion}` : '';
-    urlparam += highestProportion ? `&highestProportion=${highestProportion}` : '';
+    urlparam += lowestProportion ? `&lowestRatio=${lowestProportion}` : '';
+    urlparam += highestProportion ? `&highestRatio=${highestProportion}` : '';
 
     if (urlparam.indexOf('&') !== -1) {
         urlparam = `?${urlparam.substr(1)}`;

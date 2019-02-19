@@ -310,14 +310,14 @@
                         v-model="minProportion"
                         type="number"
                         clearable
-                    ></el-input>
+                    ><template slot="append">%</template></el-input>
                     <div style="width: 30px;"></div>
                     <el-input
                         placeholder="最高占比"
                         v-model="maxProportion"
                         type="number"
                         clearable
-                    ></el-input>
+                    ><template slot="append">%</template></el-input>
                 </div>
             </div>
 
@@ -682,11 +682,10 @@ export default {
                 if (newsearch === '' || !data || data instanceof Array === false || data.length <= 0) {
                     // 如果搜索为空
                     _this.searchResults = []; // 清空下来
-                    _this.initListStoreToMap(); // 初始化所有地图
                     return false;
                 }
 
-                _this.renderBaiduMapData(data);
+                // _this.renderBaiduMapData(data); // 不用重新渲染地图
 
                 _this.searchResults = data.map(val => {
                     let newItem = {};
@@ -744,7 +743,6 @@ export default {
             this.initBaiduMap(); // 初始化百度地图
         },
 
-
         /**
          * 根据数据库的数据渲染百度地图
          */
@@ -792,8 +790,8 @@ export default {
             let highestSumpremium = this.maxPremium ? this.maxPremium : ''; 
             let lowestMaterialfee = this.minLoss ? this.minLoss : ''; 
             let highestMaterialfee = this.maxLoss ? this.maxLoss : ''; 
-            let lowestProportion = this.minProportion ? this.minProportion : ''; 
-            let highestProportion = this.maxProportion ? this.maxProportion : '';
+            let lowestProportion = this.minProportion ? (this.minProportion / 100) : ''; 
+            let highestProportion = this.maxProportion ? (this.maxProportion / 100) : '';
 
             /**
              * 提交数据的筛选条件展示
@@ -912,7 +910,7 @@ export default {
                 let data = val.data;
 
                 if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
-                    this.initBaiduMap(); // 初始化百度地图
+                    _this.renderBaiduMapData([]); // 初始化百度地图
                     return false;
                 }
 
@@ -1091,8 +1089,13 @@ export default {
                  */
                 if (val.isCooperate) {
 
-                    if (percentage >= 0 && percentage <= 1) {
-                        let myImg = calculateImg(percentage); // 计算图片
+                    if (percentage >= 0 && val.lossAmount && val.premiumAmount) {
+                        let myImg = _this.img.percentage_100; // 无法计算图片，使用最大的图片
+
+                        if (percentage <= 1) {
+                            myImg = calculateImg(percentage); // 计算图片
+                        }
+
                         baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(40, 48.5));
 
                     // 有保费，没有定损金额用
@@ -1156,6 +1159,9 @@ export default {
                     );
                     // 打开信息窗口
                     _this.mountBaiduMap.openInfoWindow(infoWindow, baiduMapPoint); 
+
+                    let myZoom = _this.mountBaiduMap.getZoom();
+                    _this.mountBaiduMap.centerAndZoom(baiduMapPoint, myZoom); 
                 }
 
                 // 绑定事件

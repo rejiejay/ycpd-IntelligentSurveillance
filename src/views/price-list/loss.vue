@@ -43,7 +43,7 @@
 
         <el-input v-model="minProportion" type="number" :clearable="true" placeholder="最低定损金额"></el-input>
 
-        <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高损保比"></el-input>
+        <el-input v-model="maxProportion" type="number" :clearable="true" placeholder="最高定损金额"></el-input>
 
         <el-button icon="el-icon-search" type="primary" @click="currentPage = 1; lossAssessment();">查询</el-button>
         <el-button icon="el-icon-download" type="success" @click="exportLossAssessment">导出</el-button>
