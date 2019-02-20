@@ -896,10 +896,10 @@ export default {
             }  
             // 保费/定损金额占比
             if (lowestProportion || highestProportion) {
-                this.proportionLable = `保费/定损占比:${
-                    lowestProportion ? `最低占比: ${lowestProportion}` : ''
+                this.proportionLable = `产保比:${
+                    lowestProportion ? `最低占比: ${lowestProportion * 100}%` : ''
                 }${
-                    highestProportion ? `最高占比: ${highestProportion}` : ''
+                    highestProportion ? `最高占比: ${highestProportion * 100}%` : ''
                 }`;
             } else {
                 this.proportionLable = ''; // 清空
@@ -1000,7 +1000,7 @@ export default {
 
                 _this.storeId = data.id; // 车商id
                 _this.storenetworkName = data.networkName; // 网点名称
-                _this.storeaddress = `${data.province ? data.province : ''}${data.city ? data.city : ''}${data.county ? data.county : ''}${data.address}`; // 网点地址
+                _this.storeaddress = `${data.address}`; // 网点地址
                 _this.storeisJoin = data.isJoin === 1 ? '已合作' : '未合作'; // 是否合作
                 if ( data.networkType === 0 ) {
                     _this.storenetworkType = '4S店';

@@ -1284,7 +1284,7 @@ export default {
             let spanTimestamp = 3600 * 1000 * 24 * 31; // 31天跨度的时间戳
             if ((this.endDataTime.getTime() - date.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
-                this.endDataTime = new Date(this.startDataTime.getTime() + spanTimestamp ); // 设置为最大跨度的时间
+                this.endDataTime = new Date(this.startDataTime.getTime() + (spanTimestamp - 3600 * 1000 * 24) ); // 设置为最大跨度的时间
                 return this.$message({
                     message: '最多可统计31天的数据',
                     type: 'warning'
@@ -1322,7 +1322,7 @@ export default {
             let spanTimestamp = 3600 * 1000 * 24 * 31; // 31天跨度的时间戳
             if ((date.getTime() - this.startDataTime.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
-                this.startDataTime = new Date(this.endDataTime.getTime() - spanTimestamp ); // 设置为最大跨度的时间
+                this.startDataTime = new Date(this.endDataTime.getTime() - (spanTimestamp - 3600 * 1000 * 24) ); // 设置为最大跨度的时间
                 return this.$message({
                     message: '按日分析最多可统计31天的数据',
                     type: 'warning'
@@ -1360,7 +1360,7 @@ export default {
             let spanTimestamp = 3600 * 1000 * 24 * 364; // 12个月跨度的时间戳
             if ((this.endMonthTime.getTime() - date.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
-                this.endMonthTime = new Date(this.startMonthTime.getTime() + spanTimestamp); // 设置为最大跨度的时间
+                this.endMonthTime = new Date(this.startMonthTime.getTime() + (spanTimestamp - 3600 * 1000 * 24 * 31)); // 设置为最大跨度的时间
                 return this.$message({
                     message: '按月分析最多可统计12个月的数据',
                     type: 'warning'
@@ -1398,7 +1398,7 @@ export default {
             let spanTimestamp = 3600 * 1000 * 24 * 364; // 12个月跨度的时间戳
             if ((date.getTime() - this.startMonthTime.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
-                this.startMonthTime = new Date(this.endMonthTime.getTime() - spanTimestamp); // 设置为最大跨度的时间
+                this.startMonthTime = new Date(this.endMonthTime.getTime() - (spanTimestamp - 3600 * 1000 * 24 * 31)); // 设置为最大跨度的时间
                 return this.$message({
                     message: '按月分析最多可统计12个月的数据',
                     type: 'warning'
