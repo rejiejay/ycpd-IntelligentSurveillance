@@ -303,7 +303,7 @@
             </div>
 
             <div class="modal-main-district">
-                <div class="main-district-title">保费/定损金额占比</div>
+                <div class="main-district-title">产保比</div>
                 <div class="main-district-content flex-start">
                     <el-input
                         placeholder="最低占比"
@@ -323,7 +323,7 @@
 
             <div class="modal-main-operate flex-start">
                 <div class="main-operate-item flex-rest flex-center">
-                    <el-button type="success" icon="el-icon-search" @click="initListStoreToMap(); isFilterModalShow = false;">查询</el-button>
+                    <el-button type="success" icon="el-icon-search" @click="initListStoreToMap">查询</el-button>
                 </div>
                 <div class="main-operate-item flex-rest flex-center">
                     <el-button type="info" icon="el-icon-close" @click="isFilterModalShow = false">关闭</el-button>
@@ -777,7 +777,7 @@ export default {
              */
             let startDate = '';
             let endDate = '';
-            if (this.startendTime[0] && this.startendTime[1]) {
+            if (this.startendTime && this.startendTime[0] && this.startendTime[1]) {
                 startDate = TimeConver.dateToFormat(this.startendTime[0]);
                 endDate = TimeConver.dateToFormat(this.startendTime[1]);
             }
@@ -903,16 +903,12 @@ export default {
                 }`;
             } else {
                 this.proportionLable = ''; // 清空
-            }   
+            }
 
+            this.isFilterModalShow = false; // 开始请求, 关闭模态框
             listStoreToMapUsingGET(startDate, endDate, bcId, teamId, networkName, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion)
             .then(val => {
                 let data = val.data;
-
-                if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
-                    _this.renderBaiduMapData([]); // 初始化百度地图
-                    return false;
-                }
 
                 // 初始化统计
                 let storeToMapCount = data.storeToMapCount;
@@ -921,6 +917,11 @@ export default {
                 _this.isNotJoinNum = storeToMapCount.isNotJoinNum;
                 _this.newAddStoreNum = storeToMapCount.newAddStoreNum;
                 _this.signingRate = storeToMapCount.signingRate;
+
+                if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
+                    _this.renderBaiduMapData([]); // 初始化百度地图
+                    return false;
+                }
 
                 _this.renderBaiduMapData(data.storeMaps); // 渲染百度地图
 
@@ -984,7 +985,14 @@ export default {
         getStoreById: function getStoreById(id) {
             const _this = this;
 
-            listByIdUsingGET(id)
+            let startDate = '';
+            let endDate = '';
+            if (this.startendTime && this.startendTime[0] && this.startendTime[1]) {
+                startDate = TimeConver.dateToFormat(this.startendTime[0]);
+                endDate = TimeConver.dateToFormat(this.startendTime[1]);
+            }
+
+            listByIdUsingGET(id, startDate, endDate)
             .then(val => {
                 let data = val.data;
 
@@ -1058,7 +1066,7 @@ export default {
              * @param {number} param 百分比 例如 0.01
              */
             let calculateImg = param => {
-                let scope = 10 - Math.round(param * 10); // 0~10
+                let scope = Math.round(param * 10); // 0~10
 
                 if (scope === 0) {
                     return _this.img.percentage_0
@@ -1122,7 +1130,7 @@ export default {
                  * 需要 判断是否 【合作】
                  * 需要 判断 percentage 是否 【有效】
                  */
-                if (val.isCooperate && percentage >= 0 && percentage <= 1) {
+                if (val.isCooperate && percentage >= 0 && val.lossAmount && val.premiumAmount) {
                     let labelContent = `${Math.floor(percentage * 100)}%`;
                     let baiduMapLabel = new BMap.Label(
                         labelContent, // 文本内容 

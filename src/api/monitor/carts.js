@@ -48,31 +48,17 @@ export function listStoreToMapUsingGET(startDate, endDate, bcId, teamId, id, isJ
 /**
  * 根据ID,查询车行详情信
  * @param {string} id 车行唯一标识
+ * @param {string} startDate 开始日期 2018-01-01 (必填)
+ * @param {string} endDate 结束日期 2018-01-01 (必填)
  */
-export function listByIdUsingGET(id) {
-	// /** 主键，UUID */ id;
-	// /** 网点编码 */ networkNo ;
-    // /** 网点名称 */ networkName ;
-    // /** 类型;0：4S店，1：修理厂 */ networkType ;
-    // /** 网点星级 */ star ;
-    // /** 是否合作;0：未合作 1：合作 */ isJoin ;
-    // /** 省 */ province ;
-    // /** 市 */ city ;
-    // /** 区/县 */ county ;
-    // /** 详细地址 */ address ;
-    // /** 经度 */ longitude ;
-    // /** 纬度 */ latitude ;
-    // /** 联系人 */ contact ;
-    // /** 电话 */ phone ;
-    // /** 品牌 */ brand ;
-    // /** 上级集团 */ superiorGroup ;
-    // /** 支公司id */ bcId ;
-    // /** 渠道代码 */ channelCode ;
-    // /** 团队id */ teamId ;
-    // /** 备注 */ remark ;
-    // /** Logo */ logo ;
+export function listByIdUsingGET(id, startDate, endDate) {
+    let urlparam = `id=${id}`;
+
+    urlparam += startDate ? `&startDate=${startDate}` : '';
+    urlparam += endDate ? `&endDate=${endDate}` : '';
+
     return apibasics({
-        url: `${config.url.origin}/cdimms/server/storeMap/listById?id=${id}`,
+        url: `${config.url.origin}/cdimms/server/storeMap/listById?${urlparam}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
     });

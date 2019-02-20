@@ -14,7 +14,7 @@
                 end-placeholder="结束日期"
                 :picker-options="startendTimeOptions"
             ></el-date-picker>
-            <el-button icon="el-icon-download" type="primary">导出</el-button>
+            <el-button icon="el-icon-download" type="primary" @click="exportTeamMonitor">导出</el-button>
         </div>
 
         <div class="team-operate-right">

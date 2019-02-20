@@ -260,9 +260,55 @@ export default {
                 let data = val.data;
                 
                 // 将真实数据 与 测试数据 链接起来
-                let premiums = data.premiums.concat(data.futureDay4Premiums);
-                let lossAssessments = data.lossAssessments.concat(data.futureDay4LossAssessments);
-                let ratios = data.ratios.concat(data.futureDay4Ratios);
+                let premiums = [];
+                let lossAssessments = [];
+                let ratios = [];
+
+                if (this.analyzeTimeSection === '0') {
+                    if (data.premiums && data.futureDay4Premiums) {
+                        premiums = data.premiums.concat(data.futureDay4Premiums);
+                    } else {
+                        data.premiums ? premiums = data.premiums : null;
+                        data.futureDay4Premiums ? premiums = data.futureDay4Premiums : null;
+                    }
+
+                    if (data.lossAssessments && data.futureDay4LossAssessments) {
+                        lossAssessments = data.lossAssessments.concat(data.futureDay4LossAssessments);
+                    } else {
+                        data.lossAssessments ? lossAssessments = data.lossAssessments : null;
+                        data.futureDay4LossAssessments ? lossAssessments = data.futureDay4LossAssessments : null;
+                    }
+                    
+                    if (data.ratios && data.futureDay4Ratios) {
+                        ratios = data.ratios.concat(data.futureDay4Ratios);
+                    } else {
+                        data.ratios ? ratios = data.ratios : null;
+                        data.futureDay4Ratios ? ratios = data.futureDay4Ratios : null;
+                    }
+
+                } else {
+                    if (data.premiums && data.futureMonth4Premiums) {
+                        premiums = data.premiums.concat(data.futureMonth4Premiums);
+                    } else {
+                        data.premiums ? premiums = data.premiums : null;
+                        data.futureMonth4Premiums ? premiums = data.futureMonth4Premiums : null;
+                    }
+
+                    if (data.lossAssessments && data.futureMonth4LossAssessments) {
+                        lossAssessments = data.lossAssessments.concat(data.futureMonth4LossAssessments);
+                    } else {
+                        data.lossAssessments ? lossAssessments = data.lossAssessments : null;
+                        data.futureMonth4LossAssessments ? lossAssessments = data.futureMonth4LossAssessments : null;
+                    }
+                    
+                    if (data.ratios && data.futureMonth4Ratios) {
+                        ratios = data.ratios.concat(data.futureMonth4Ratios);
+                    } else {
+                        data.ratios ? ratios = data.ratios : null;
+                        data.futureMonth4Ratios ? ratios = data.futureMonth4Ratios : null;
+                    }
+
+                }
 
                 // 转化为万元单位，并且保留两位小数
                 _this.premiums = premiums.map(item => item ? (Math.round(item / 100) / 100) : 0);
@@ -1022,14 +1068,14 @@ export default {
                     series.push({
                         name: '产保比',
                         type: 'line',
-                        itemStyle: { color: '#67C23A' },
+                        itemStyle: { color: '#ff9800' },
                         lineStyle: { width: 2, type: 'solid' },
                         data: proportionRealArr,
                     });
                     series.push({
                         name: '产保比预测',
                         type: 'line',
-                        itemStyle: { color: '#67C23A' },
+                        itemStyle: { color: '#ff9800' },
                         lineStyle: { width: 2, type: 'dotted' },
                         data: proportionPredictArr,
                     });
@@ -1061,7 +1107,7 @@ export default {
                     series.push({
                         name: isPredict ? '产保比预测' : '产保比',
                         type: 'line',
-                        itemStyle: { color: '#67C23A' },
+                        itemStyle: { color: '#ff9800' },
                         lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
                         data: proportionTemArr,
                     });
@@ -1138,14 +1184,14 @@ export default {
                     series.push({
                         name: '产保比',
                         type: 'line',
-                        itemStyle: { color: '#67C23A' },
+                        itemStyle: { color: '#ff9800' },
                         lineStyle: { width: 2, type: 'solid' },
                         data: proportionRealArr,
                     });
                     series.push({
                         name: '产保比预测',
                         type: 'line',
-                        itemStyle: { color: '#67C23A' },
+                        itemStyle: { color: '#ff9800' },
                         lineStyle: { width: 2, type: 'dotted' },
                         data: proportionPredictArr,
                     });
@@ -1177,7 +1223,7 @@ export default {
                     series.push({
                         name: isPredict ? '产保比预测' : '产保比',
                         type: 'line',
-                        itemStyle: { color: '#67C23A' },
+                        itemStyle: { color: '#ff9800' },
                         lineStyle: { width: 2, type: isPredict ? 'dotted' : 'solid' },
                         data: proportionTemArr,
                     });
@@ -1236,9 +1282,9 @@ export default {
 
             // 判断跨度是否大于 31天
             let spanTimestamp = 3600 * 1000 * 24 * 31; // 31天跨度的时间戳
-            if ((this.endDataTime.getTime() - date.getTime()) > spanTimestamp) {
+            if ((this.endDataTime.getTime() - date.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
-                this.endDataTime = new Date(this.startDataTime.getTime() + spanTimestamp); // 设置为最大跨度的时间
+                this.endDataTime = new Date(this.startDataTime.getTime() + spanTimestamp ); // 设置为最大跨度的时间
                 return this.$message({
                     message: '最多可统计31天的数据',
                     type: 'warning'
@@ -1274,9 +1320,9 @@ export default {
 
             // 判断跨度是否大于 31天
             let spanTimestamp = 3600 * 1000 * 24 * 31; // 31天跨度的时间戳
-            if ((date.getTime() - this.startDataTime.getTime()) > spanTimestamp) {
+            if ((date.getTime() - this.startDataTime.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
-                this.startDataTime = new Date(this.endDataTime.getTime() - spanTimestamp); // 设置为最大跨度的时间
+                this.startDataTime = new Date(this.endDataTime.getTime() - spanTimestamp ); // 设置为最大跨度的时间
                 return this.$message({
                     message: '按日分析最多可统计31天的数据',
                     type: 'warning'
@@ -1311,12 +1357,12 @@ export default {
             }
 
             // 判断跨度是否大于 12个月
-            let spanTimestamp = 3600 * 1000 * 24 * 365; // 12个月跨度的时间戳
-            if ((this.endMonthTime.getTime() - date.getTime()) > spanTimestamp) {
+            let spanTimestamp = 3600 * 1000 * 24 * 364; // 12个月跨度的时间戳
+            if ((this.endMonthTime.getTime() - date.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
                 this.endMonthTime = new Date(this.startMonthTime.getTime() + spanTimestamp); // 设置为最大跨度的时间
                 return this.$message({
-                    message: '最多可统计12个月的数据',
+                    message: '按月分析最多可统计12个月的数据',
                     type: 'warning'
                 });
             }
@@ -1349,12 +1395,12 @@ export default {
             }
 
             // 判断跨度是否大于 12个月
-            let spanTimestamp = 3600 * 1000 * 24 * 365; // 12个月跨度的时间戳
-            if ((date.getTime() - this.startMonthTime.getTime()) > spanTimestamp) {
+            let spanTimestamp = 3600 * 1000 * 24 * 364; // 12个月跨度的时间戳
+            if ((date.getTime() - this.startMonthTime.getTime()) >= spanTimestamp) {
                 // 超过跨度, 弹出提示
                 this.startMonthTime = new Date(this.endMonthTime.getTime() - spanTimestamp); // 设置为最大跨度的时间
                 return this.$message({
-                    message: '按日分析最多可统计12个月的数据',
+                    message: '按月分析最多可统计12个月的数据',
                     type: 'warning'
                 });
             }

@@ -424,6 +424,9 @@ export default {
                     } else if (val.code === 1003) {
                         alert('角色添加异常!');
 
+                    } else if (val.code === 1004) {
+                        alert('权限不足!');
+
                     } else {
                         alert(`添加失败, ${val.msg}`)
                     }
@@ -448,6 +451,9 @@ export default {
 
                     } else if (val.code === 1003) {
                         alert('修改角色异常!');
+
+                    } else if (val.code === 1004) {
+                        alert('权限不足!');
 
                     } else {
                         alert(`修改角色失败, ${val.msg}`)
