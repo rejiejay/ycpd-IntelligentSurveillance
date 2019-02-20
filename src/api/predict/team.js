@@ -7,11 +7,11 @@ import upload from '@/components/upload';
  * 获取团队列表
  * @param {number} pageNo 当前页码
  * @param {number} pageSize 页面大小
- * @param {number} bcId 支公司 id
+ * @param {number} companyId 支公司 id
  * @param {number} teamId 支公司 id
  * @param {number} month 月份
  */
-export function queryAllTeamPredictionUsingPOST(pageNo, pageSize, bcId, teamId, month) {
+export function queryAllTeamPredictionUsingPOST(pageNo, pageSize, companyId, teamId, month) {
     return apibasics({
         url: `${config.url.origin}/cdimms/server/prediction/queryAllTeamPrediction`,
         method: 'post',
@@ -19,7 +19,7 @@ export function queryAllTeamPredictionUsingPOST(pageNo, pageSize, bcId, teamId, 
         data: {
             pageNo: pageNo ? pageNo : 1,
             pageSize: pageSize ? pageSize : 10,
-            bcId: bcId ? bcId : '',
+            companyId: companyId ? companyId : '',
             teamId: teamId ? teamId : '',
             month: month ? month : '',
         }

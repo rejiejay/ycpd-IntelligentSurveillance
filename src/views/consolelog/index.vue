@@ -241,8 +241,11 @@ export default {
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
-            this.subCompanySection = null;
-            this.monthSection = null;
+            this.startendTime = [ // 开始结束时间
+                '',
+                '',
+            ];
+            this.warnNameSection = '';
         },
 
         /**

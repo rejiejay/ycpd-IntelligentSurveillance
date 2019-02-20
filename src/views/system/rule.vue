@@ -211,7 +211,7 @@ export default {
                         newItem.standard = '产保比';
 
                     }
-                    newItem.target = val.objType === 0 ? '支公司' : '车行' ; // 预警对象
+                    newItem.target = val.objType === 0 ? '支公司' : '团队' ; // 预警对象
                     newItem.range = val.areaType === 0 ? '全部' : '自定义' ; // 预警范围
                     newItem.infoPeople = val.staffNames; // 通知人
                     /**
@@ -254,8 +254,9 @@ export default {
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
-            this.rolesCodeSection = null;
-            this.rolesNameSection = null;
+            this.warningStandardSection = null;
+            this.warningTargetSection = null;
+            this.search = null;
         },
 
         /**

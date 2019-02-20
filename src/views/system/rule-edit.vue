@@ -61,7 +61,7 @@
                         v-model="ruleInfoPeopleSection" 
                         multiple 
                         placeholder="预警通知人"
-                        :disabled="ruleRangeSection !== '1'"
+                        :disabled="ruleRangeSection !== '1' || ruleTargetSection === ''"
                     >
                         <el-option
                             v-for="item in ruleInfoPeopleOptions"
@@ -214,7 +214,7 @@ export default {
                 }
             ],
 
-            ruleInfoPeopleSection: '', // 预警通知人
+            ruleInfoPeopleSection: [], // 预警通知人
             ruleInfoPeopleOptions: [
                 // {
                 //     value: '预警通知人',
@@ -233,9 +233,29 @@ export default {
         }
     },
 
+    watch: {
+        /**
+         * 预警对象 发生改变的时候, 需要重新加载预警通知人的下拉列表
+         */
+        ruleTargetSection: function ruleTargetSection(newRuleTargetSection) {
+            this.ruleInfoPeopleSection = [];
+            this.queryUserName();
+        },
+        
+        /**
+         * 预警范围 改变为 全部的时候， 清空预警通知人
+         */
+        ruleRangeSection: function ruleRangeSection(newRuleRangeSection) {
+            if (newRuleRangeSection === '0') {
+                this.ruleInfoPeopleSection = [];
+            }
+        },
+    },
+
 	mounted: function mounted() {
         this.initPageData(); // 初始化页面数据
-        this.queryUserName(); // 初始化 预警通知人
+
+        // this.queryUserName(); // 初始化 预警通知人
     },
 
 	methods: {
@@ -290,7 +310,9 @@ export default {
         queryUserName: function queryUserName() {
             const _this  = this;
 
-            queryUserNameUsingGET()
+            let objType = this.ruleTargetSection ? this.ruleTargetSection : '';
+
+            queryUserNameUsingGET(objType)
             .then(val => {
                 let data = val.data;
 

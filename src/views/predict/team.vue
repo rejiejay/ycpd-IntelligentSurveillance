@@ -237,11 +237,11 @@ export default {
 
             let currentPage = this.currentPage;
             let pageSize = this.pageSize;
-            let bcId = this.subCompanySection ? this.subCompanySection : '';
+            let companyId = this.subCompanySection ? this.subCompanySection : '';
             let teamId = this.teamSection ? this.teamSection : '';
             let month = this.monthSection ? TimeConver.dateToFormat(this.monthSection) : '';
 
-            queryAllTeamPredictionUsingPOST(currentPage, pageSize, bcId, teamId, month)
+            queryAllTeamPredictionUsingPOST(currentPage, pageSize, companyId, teamId, month)
             .then(val => {
                 console.log(val)
 

@@ -367,9 +367,7 @@ export default {
          * 清空查询条件
          */
         clearConditions: function clearConditions() {
-            this.subCompanySection = null;
-            this.shopNetSection = null;
-            this.teamSection = null;
+            this.keyword = null;
         },
 
         /**
