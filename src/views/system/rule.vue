@@ -180,7 +180,7 @@ export default {
                     return alert('查询数据为空');
                 }
                 if (val.code === 1004) {
-                    return alert('查询告警规则列表异常');
+                    return alert('查询预警规则列表异常');
                 }
 
                 let data = val.data;

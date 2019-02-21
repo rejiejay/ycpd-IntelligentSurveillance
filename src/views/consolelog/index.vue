@@ -101,6 +101,7 @@ export default {
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
                         picker.$emit('pick', [start, end]);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                     }
                 }, {
                     text: '最近一个月',
@@ -109,6 +110,7 @@ export default {
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
                         picker.$emit('pick', [start, end]);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                     }
                 }, {
                     text: '最近三个月',
@@ -117,6 +119,7 @@ export default {
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
                         picker.$emit('pick', [start, end]);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                     }
                 }
             ]

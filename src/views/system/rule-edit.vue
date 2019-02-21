@@ -146,6 +146,7 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() + 3600 * 1000 * 24 * 7);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -154,6 +155,7 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() + 3600 * 1000 * 24 * 30);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -162,6 +164,7 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() + 3600 * 1000 * 24 * 90);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }
@@ -175,6 +178,8 @@ export default {
              * @param {string} edit 编辑
              */
             pageType: 'add',
+
+            isEditLoading: false, // 是否正在加载编辑
             
             ruleId: '', // 预警唯一标识
             ruleName: '', // 预警名称
@@ -238,7 +243,15 @@ export default {
          * 预警对象 发生改变的时候, 需要重新加载预警通知人的下拉列表
          */
         ruleTargetSection: function ruleTargetSection(newRuleTargetSection) {
-            this.ruleInfoPeopleSection = [];
+            /**
+             * 如果正在加载编辑数据 不清空团队数据
+             */
+            if (this.isEditLoading === false) {
+                this.ruleInfoPeopleSection = [];
+            } else {
+                this.isEditLoading = false;
+            }
+            
             this.queryUserName();
         },
         
@@ -267,10 +280,11 @@ export default {
             const _this = this;
 
             // 如果 页面状态 存在 id 表示编辑状态
-            let ruleId = this.$route.query.id
+            let ruleId = this.$route.query.id;
             if (ruleId) {
                 this.pageType = 'edit';
                 this.ruleId = ruleId;
+                this.isEditLoading = true;
 
                 queryAlarmRuleUsingGET(ruleId)
                 .then(val => {
@@ -286,8 +300,10 @@ export default {
                         _this.ruleFrequencySection = alarmRule.frequency ? `${alarmRule.frequency}` : '0'; //  通知时间
                         _this.ruleValiditySection = alarmRule.activeType ? `${alarmRule.activeType}` : '0'; //  通知有效期
                         if (alarmRule.startDate && alarmRule.endDate) {
-                            _this.startendTime[0] = new Date(TimeConver.YYYYmmDDToTimestamp(alarmRule.startDate)); //  通知有效期
-                            _this.startendTime[1] = new Date(TimeConver.YYYYmmDDToTimestamp(alarmRule.endDate)); //  通知有效期
+                            _this.startendTime = [
+                                new Date(TimeConver.YYYYmmDDhhMMssToTimestamp(alarmRule.startDate)), //  通知有效期
+                                new Date(TimeConver.YYYYmmDDhhMMssToTimestamp(alarmRule.endDate)), //  通知有效期
+                            ];
                         }
 
                     }
@@ -299,7 +315,6 @@ export default {
                         _this.ruleInfoPeopleSection = userNames ? userNames.map(item => item[0]) : [];
                     }
 
-
                 }, error => console.log(error));
             }
         },
@@ -310,9 +325,19 @@ export default {
         queryUserName: function queryUserName() {
             const _this  = this;
 
-            let objType = this.ruleTargetSection ? this.ruleTargetSection : '';
+            let userType = '';
 
-            queryUserNameUsingGET(objType)
+            if (this.ruleTargetSection) {
+                let objType = this.ruleTargetSection; // 根据 objType 来判断 userType
+                if (objType === '0') {
+                    userType = '2';
+                }
+                if (objType === '1') {
+                    userType = '3';
+                }
+            }
+
+            queryUserNameUsingGET(userType)
             .then(val => {
                 let data = val.data;
 
@@ -370,7 +395,7 @@ export default {
             let endDate = ''; // 通知有效期
             if (activeType === '1') {
                 startDate = `${TimeConver.dateToFormat(this.startendTime[0])} 00:00:00`; // 通知有效期
-                endDate = `${TimeConver.dateToFormat(this.startendTime[1])} 00:00:00`; // 通知有效期
+                endDate = `${TimeConver.dateToFormat(this.startendTime[1])} 23:59:59`; // 通知有效期
             }
             let userIds = this.ruleInfoPeopleSection; // 预警通知人 [id, id, id, id]
 
@@ -387,7 +412,7 @@ export default {
                         _this.$router.back(-1);
                         
                     } else if (val.code === 1001) {
-                        return _this.$alert('添加告警规则异常', '添加失败');
+                        return _this.$alert('添加预警规则异常', '添加失败');
                     } else {
                         return _this.$alert(val.msg, '添加失败');
                     }
@@ -407,7 +432,7 @@ export default {
                         _this.$router.back(-1);
                         
                     } else if (val.code === 1001) {
-                        return _this.$alert('修改告警规则异常', '修改失败');
+                        return _this.$alert('修改预警规则异常', '修改失败');
                     } else {
                         return _this.$alert(val.msg, '修改失败');
                     }

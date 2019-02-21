@@ -72,7 +72,7 @@
                                 item.premiumPercent
                             }%; background: ${
                                 /** 小于警戒线会显示黄色 */
-                                item.premiumPercent < premiumWarningLine ? '#E6A23C' : '#67C23A'
+                                item.premiumPercentLable < premiumWarningLine ? '#E6A23C' : '#67C23A'
                             };`"
                         >
                             <div class="flex-rest" v-if="item.premiumPercent < 40 /** 这里设置最大宽度为 40% 因为最后有 1800 / 6000 万元 怕会被挡住 */" ></div>
@@ -95,7 +95,7 @@
                     <div class="team-table-container flex-start">
 
                         <div class="team-table-activate flex-start-center"
-                            :style="`width: ${item.lossPercent}%; background: ${item.lossPercent > premiumWarningLine ? '#E6A23C' : '#67C23A'};`"
+                            :style="`width: ${item.lossPercent}%; background: ${item.lossPercentLable > premiumWarningLine ? '#E6A23C' : '#67C23A'};`"
                         >
                             <div class="flex-rest" v-if="item.lossPercent < 40" ></div>
                             <div v-else style="width: 40%;"></div>
@@ -197,6 +197,7 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -205,6 +206,7 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }, {
@@ -213,6 +215,7 @@ export default {
                         const end = new Date();
                         const start = new Date();
                         start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+                        end.setTime(new Date().getTime() - 3600 * 1000 * 24 * 1);
                         picker.$emit('pick', [start, end]);
                     }
                 }
@@ -453,7 +456,9 @@ export default {
                         newItem.premium = item.sumpremium ? (Math.round(item.sumpremium / 100) / 100)/** 转化为万元并且保留两位小数 */ : '0'; // 保费金额
                         newItem.premiumPredicted = item.income ? (Math.round(item.income / 100) / 100) : '0'; // 预测保费
 
-                        
+                        /**
+                         * 保费收入
+                         */
                         /** 渲染百分比的比例 */
                         let premiumPercent = item.sumpremium / item.income;
                         if (item.sumpremium && item.income && premiumPercent > 1) {
@@ -474,23 +479,29 @@ export default {
                         newItem.loss = item.sumlossfee ? (Math.round(item.sumlossfee / 100) / 100) : '0'; // 定损金额
                         newItem.lossPredicted = item.expense ? (Math.round(item.expense / 100) / 100) : '0'; // 预测定损
 
+                        /**
+                         * 定损支出
+                         */
                         /** 渲染百分比的比例 */
                         let lossPercent = item.sumlossfee / item.expense;
-                        if (item.sumpremium && item.income && lossPercent > 1) {
+                        if (item.sumlossfee && item.expense && lossPercent > 1) {
                             newItem.lossPercent = 100;
-                        } else if (item.sumpremium && item.income && lossPercent >= 0 && lossPercent <= 1) {
+                        } else if (item.sumlossfee && item.expense && lossPercent >= 0 && lossPercent <= 1) {
                             newItem.lossPercent = Math.round(lossPercent * 10000) / 100; // 保费预测百分比(1~100)
                             
                         } else {
                             newItem.lossPercent = 0; // 保费预测百分比(1~100)
                         }
                         /** 渲染百分比的标签 */
-                        if (item.sumpremium && item.income && lossPercent >= 0) {
+                        if (item.sumlossfee && item.expense && lossPercent >= 0) {
                             newItem.lossPercentLable = Math.round(lossPercent * 100); // 不保留小数
                         } else {
                             newItem.lossPercentLable = 0; // 注意清空为零
                         }
 
+                        /**
+                         * 产保比
+                         */
                         newItem.proportion = item.ratio ? (Math.round(item.ratio * 10000) / 100) : '0'; // 定损金额
 
                         return newItem;

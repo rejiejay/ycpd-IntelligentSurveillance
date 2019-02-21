@@ -68,11 +68,11 @@ export function modifyAlarmRuleUsingPOST(id, alarmName, indicatorType, objType, 
 
 /**
  * 预警通知人下拉框
- * @param {string} objType  预警对象
+ * @param {string} userType 预警对象
  */
-export function queryUserNameUsingGET(objType) {
+export function queryUserNameUsingGET(userType) {
     return apibasics({
-        url: `${config.url.origin}/cdimms/server/alarmRule/queryUserName${objType ? `?objType=${objType}` : ''}`,
+        url: `${config.url.origin}/cdimms/server/alarmRule/queryUserName${userType ? `?userType=${userType}` : ''}`,
         method: 'get',
         headers: {'Content-Type': 'application/json'},
     });
