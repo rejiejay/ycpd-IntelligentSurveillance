@@ -349,9 +349,9 @@ export default {
 
                     newItem.premium = val.sumpremium; // 保费收入
                     newItem.loss = val.sumlossfee; // 定损支出
-                    newItem.proportion = val.ratio; // 定损支出
+                    newItem.proportion = val.ratio ? `${Math.floor(val.ratio * 10000) / 100}%` : ''; // 产保比
 
-                    return newItem
+                    return newItem;
                 });
 
             }, error => console.log(error));

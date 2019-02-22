@@ -136,16 +136,19 @@
                 <div style="width: 200px;"></div>
                 <div class="team-table-premium flex-rest flex-start">
                     <div class="team-table-predicted" :style="`width: ${premiumWarningLine}%`">
+                        <div class="table-predicted-tip">预测线</div>
                         <!-- <div class="table-predicted-label">{{premiumWarningLine}}%</div> -->
                     </div>
                 </div>
                 <div class="team-table-loss flex-rest flex-start">
                     <div class="team-table-predicted" :style="`width: ${lossSortLine}%`">
+                        <div class="table-predicted-tip">预测线</div>
                         <!-- <div class="table-predicted-label">{{lossSortLine}}%</div> -->
                     </div>
                 </div>
                 <div class="team-table-proportion flex-rest flex-start">
                     <div class="team-table-predicted" :style="`width: ${proportionSortLine}%`">
+                        <div class="table-predicted-tip">预警线</div>
                         <div class="table-predicted-label">{{proportionSortLine}}%</div>
                     </div>
                 </div>
@@ -706,7 +709,7 @@ $black4: #C0C4CC;
     .team-table-title {
         color: $black1;
         font-size: 16px;
-        padding-bottom: 15px;
+        padding-bottom: 22px;
         
 
         span {
@@ -822,12 +825,20 @@ $black4: #C0C4CC;
             .team-table-predicted {
                 position: relative;
                 height: 100%;
-                border-right: 1px solid #F56C6C;
+                border-right: 1px dashed #F56C6C;
 
                 .table-predicted-label {
                     position: absolute;
                     bottom: -24px;
                     right: -15px;
+                }
+
+                .table-predicted-tip {
+                    position: absolute;
+                    top: -18px;
+                    right: -15px;
+                    font-size: 10px;
+                    color: $black2;
                 }
             }
         }

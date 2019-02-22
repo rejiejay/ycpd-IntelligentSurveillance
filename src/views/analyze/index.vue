@@ -353,12 +353,22 @@ export default {
         },
 
         /**
-         * 初始化表单统计
+         * 导出图表数据
          */
         exportStatisticalAnalysis: function exportStatisticalAnalysis() {
             let type = this.analyzeTimeSection;
-            let startDate = TimeConver.dateToFormat(this.startDataTime); 
-            let endDate = TimeConver.dateToFormat(this.endDataTime); 
+            /**
+             * 统计分时间段 是 按日分析 还是 按月分析
+             */
+            let startDate = ''; 
+            let endDate = ''; 
+            if (type === '0') {
+                startDate = TimeConver.dateToFormat(this.startDataTime); 
+                endDate = TimeConver.dateToFormat(this.endDataTime); 
+            } else {
+                startDate = TimeConver.dateToFormat(this.startMonthTime); 
+                endDate = TimeConver.dateToFormat(this.endMonthTime); 
+            }
             let bcId = this.subCompanySection; 
             let teamId = this.teamSection; 
             let networkId = this.regionSection;
@@ -479,20 +489,6 @@ export default {
             }
 
             this.statistics = statistics;
-        },
-
-        /**
-         * 导出图表数据
-         */
-        exportStatisticalAnalys: function exportStatisticalAnalys() {
-            let type = this.analyzeTimeSection;
-            let startDate = TimeConver.dateToFormat(this.startDataTime); 
-            let endDate = TimeConver.dateToFormat(this.endDataTime); 
-            let bcId = this.subCompanySection; 
-            let teamId = this.teamSection; 
-            let networkId = this.regionSection;
-
-            statisticalAnalysisUsingPOST(type, startDate, endDate, bcId, teamId, networkId)
         },
         
         /**

@@ -364,12 +364,12 @@ export default {
                 return this.$notify({title: '提示', message: '预警指标不能为空', duration: 0 });
             }
             if (!this.ruleTargetSection) {
-                return this.$notify({title: '提示', message: '预预警对象不能为空', duration: 0 });
+                return this.$notify({title: '提示', message: '预警对象不能为空', duration: 0 });
             }
             if (!this.ruleRangeSection) {
                 return this.$notify({title: '提示', message: '预警范围不能为空', duration: 0 });
             }
-            if (this.ruleRangeSection === '1' && !this.ruleInfoPeopleSection) {
+            if (this.ruleRangeSection === '1' && this.ruleInfoPeopleSection.length <= 0) {
                 return this.$notify({title: '提示', message: '预警通知人不能为空', duration: 0 });
             }
             if (!this.ruleFrequencySection) {

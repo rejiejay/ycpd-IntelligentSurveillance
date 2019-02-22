@@ -20,6 +20,7 @@
             <el-col :span="8">
                 <div class="details-form-item">
                     <div class="form-item-title">车行类型</div>
+                    <!-- 4S店，修理厂，二网的时候使用，ABCD。 其他的使用一星二星三星 -->
                     <el-select v-model="shopsType" placeholder="请选择车行类型">
                         <el-option
                             v-for="item in shopsTypeOptions"
@@ -278,6 +279,8 @@ export default {
              * @param {string} edit 编辑
              */
             pageType: 'add',
+
+            isEditLoading: false, // 是否正在加载编辑
             
             mountBaiduMap: new BMap.Map('BaiduMap'), // 百度地图实例 
 
@@ -390,8 +393,36 @@ export default {
          * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
          */
         subCompanyName: function subCompanyName(newsubcompany) {
-            this.team = '';
+            /**
+             * 如果正在加载编辑数据 不清空团队数据
+             */
+            if (this.isEditLoading === false) {
+                this.team = '';
+            } else {
+                this.isEditLoading = false;
+            }
+
             this.queryTeamByBcId(newsubcompany);
+        },
+
+        /**
+         * 就是支公司 发生改变的时候 根据支公司唯一id获取团队列表
+         */
+        shopsType: function shopsType(newshopsType, oldshopsType) {
+            /**
+             * 如果从 4S店，修理厂，二网 切换到 其他
+             * ABCD 会变为 一二三四星
+             */
+            if (oldshopsType === '0' || oldshopsType === '1' || oldshopsType === '2') {
+                
+                if (newshopsType !== '0' && newshopsType !== '1' && newshopsType !== '2') {
+                    this.shopsRate = '';
+                }
+            } else {
+                if (newshopsType === '0' || newshopsType === '1' || newshopsType === '2') {
+                    this.shopsRate = '';
+                }
+            }
         },
     },
 
@@ -408,6 +439,8 @@ export default {
             // 如果 页面状态 存在 id 表示编辑状态
             let query = this.$route.query;
             let id = query.id;
+            this.isEditLoading = true;
+
             if (id) {
                 console.log(query)
                 this.pageType = 'edit';

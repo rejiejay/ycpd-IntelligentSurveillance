@@ -175,8 +175,8 @@ export default {
             let currentPage = this.currentPage;
             let pageSize = this.pageSize;
             let arId = this.warnNameSection ? this.warnNameSection : '';
-            let startTime = this.startendTime[0] ? TimeConver.dateToFormat(this.startendTime[0]) : '';
-            let endTime = this.startendTime[1] ? TimeConver.dateToFormat(this.startendTime[1]) : '';
+            let startTime = this.startendTime[0] ? `${TimeConver.dateToFormat(this.startendTime[0])} 00:00:00` : '';
+            let endTime = this.startendTime[1] ? `${TimeConver.dateToFormat(this.startendTime[1])} 23:59:59` : '';
 
             queryAllAlarmLogUsingPOST(currentPage, pageSize, arId, startTime, endTime)
             .then(val => {
