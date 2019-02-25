@@ -1091,9 +1091,9 @@ export default {
                  * ---- 不合作的情况下 使用 小一点的灰色 大小 24px 38px
                  * ---- 合作的情况下
                  * -------- 判断 percentage 是否 【有效】（定损金额/保费金额 有误的时候会报错, 所以需要校验 percentage 是否 【有效】）
-                 * -------------无效的情况下, 有保费，没有定损金额用 绿色 percentage_0 40, 48.5
-                 * -------------无效的情况下, 有定损，没有保费金额用 红色 percentage_100 40, 48.5
-                 * -------------无效的情况下, 既没有定损，也没有保费 使用 percentage_none 30px 45px
+                 * -------------无效的情况下, 有保费，没有定损金额用 绿色 percentage_0 32, 38.5
+                 * -------------无效的情况下, 有定损，没有保费金额用 红色 percentage_100 32, 38.5
+                 * -------------无效的情况下, 既没有定损，也没有保费 使用 percentage_none 24 38
                  */
                 if (val.isCooperate) {
 
@@ -1104,19 +1104,19 @@ export default {
                             myImg = calculateImg(percentage); // 计算图片
                         }
 
-                        baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(40, 48.5));
+                        baiduMapIcon = new BMap.Icon(myImg, new BMap.Size(32, 38.5));
 
                     // 有保费，没有定损金额用
                     } else if (val.premiumAmount && !val.lossAmount) {
-                        baiduMapIcon = new BMap.Icon(_this.img.percentage_0, new BMap.Size(40, 48.5));
+                        baiduMapIcon = new BMap.Icon(_this.img.percentage_0, new BMap.Size(32, 38.5));
                         
                     // 有定损，没有保费金额用
                     } else if (!val.premiumAmount && val.lossAmount) {
-                        baiduMapIcon = new BMap.Icon(_this.img.percentage_100, new BMap.Size(40, 48.5));
+                        baiduMapIcon = new BMap.Icon(_this.img.percentage_100, new BMap.Size(32, 38.5));
                         
                     } else {
                         // 既没有定损，也没有保费
-                        baiduMapIcon = new BMap.Icon( _this.img.percentage_none, new BMap.Size(30, 45));
+                        baiduMapIcon = new BMap.Icon( _this.img.percentage_none, new BMap.Size(24, 38));
                     }
                 }
 
@@ -1135,7 +1135,7 @@ export default {
                     let baiduMapLabel = new BMap.Label(
                         labelContent, // 文本内容 
                         { 
-                            offset: new BMap.Size(20, -15), // 偏移量
+                            offset: new BMap.Size(17, -15), // 偏移量
                             position: baiduMapPoint, // 位置 
                         }
                     );
