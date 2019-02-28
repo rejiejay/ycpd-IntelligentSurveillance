@@ -58,7 +58,7 @@
                     </div>
                     <div class="regionsite-describe-tip flex-start-center">
                         <div class="flex-rest">· 新增网点：<span style="color: #67C23A;">{{newAddStoreNum}}</span></div>
-                        <div class="flex-rest">· 签约率：<span style="color: #67C23A;">{{signingRate * 100}}%</span></div>
+                        <div class="flex-rest">· 签约率：<span style="color: #67C23A;">{{(signingRate * 100).toFixed(2)}}%</span></div>
                     </div>
                 </div>
             </div>
@@ -169,6 +169,52 @@
         </div>
     </div>
 
+    <!-- 底部提示框 -->
+    <div class="monitor-carts-tip" v-if="isShowMapTip">
+        <div class="carts-tip-close" @click="closeMapTipHandle">
+            <svg width="13" height="13" viewBox="0 0 26 26" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="123" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="人保地图" transform="translate(-472.000000, -760.000000)" fill="#808080" fill-rule="nonzero"><g id="图例" transform="translate(95.000000, 740.000000)"><path d="M387.888532,33 L377,22.1114679 L379.111468,20 L390,30.8885321 L400.888532,20 L403,22.1114679 L392.111468,33 L403,43.8885321 L400.888532,46 L390,35.1114679 L379.111468,46 L377,43.8885321 L387.888532,33 Z" id="close"></path></g></g></g></svg>
+        </div>
+        <div class="carts-tip-item flex-start-center">
+            <div class="tip-item-icon flex-center">
+                <svg width="27" height="32" viewBox="0 0 54 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="123" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="人保地图" transform="translate(-134.000000, -784.000000)"><g id="图例" transform="translate(95.000000, 740.000000)"><g id="保费金额" transform="translate(40.000000, 45.000000)"><path d="M13.8490285,49.5561353 C5.10998567,45.0396526 -0.5,36.0192158 -0.5,26 C-0.5,11.3644541 11.3644541,-0.5 26,-0.5 C40.6355459,-0.5 52.5,11.3644541 52.5,26 C52.5,36.0192158 46.8900143,45.0396526 38.1509715,49.5561353 L26,61.7071068 L13.8490285,49.5561353 Z M26,33.5 C30.1421356,33.5 33.5,30.1421356 33.5,26 C33.5,21.8578644 30.1421356,18.5 26,18.5 C21.8578644,18.5 18.5,21.8578644 18.5,26 C18.5,30.1421356 21.8578644,33.5 26,33.5 Z" id="合并形状" stroke="#DDDDDD" fill="#FFFFFF"></path><path d="M26,50 C12.745166,50 2,39.254834 2,26 C2,12.745166 12.745166,2 26,2 C39.254834,2 50,12.745166 50,26 C50,39.254834 39.254834,50 26,50 Z M26,36 C31.5228475,36 36,31.5228475 36,26 C36,20.4771525 31.5228475,16 26,16 C20.4771525,16 16,20.4771525 16,26 C16,31.5228475 20.4771525,36 26,36 Z" id="椭圆形" fill="#E74741" fill-rule="nonzero"></path></g></g></g></g></svg>
+            </div>
+            <div class="tip-item-describe">网点定损金额</div>
+        </div>
+
+        <div class="carts-tip-item flex-start-center">
+            <div class="tip-item-icon flex-center">
+                <svg width="27" height="32" viewBox="0 0 54 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="123" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="人保地图" transform="translate(-134.000000, -870.000000)"><g id="图例" transform="translate(95.000000, 740.000000)"><g id="定损支出" transform="translate(40.000000, 131.000000)"><path d="M13.8490285,49.5561353 C5.10998567,45.0396526 -0.5,36.0192158 -0.5,26 C-0.5,11.3644541 11.3644541,-0.5 26,-0.5 C40.6355459,-0.5 52.5,11.3644541 52.5,26 C52.5,36.0192158 46.8900143,45.0396526 38.1509715,49.5561353 L26,61.7071068 L13.8490285,49.5561353 Z M26,33.5 C30.1421356,33.5 33.5,30.1421356 33.5,26 C33.5,21.8578644 30.1421356,18.5 26,18.5 C21.8578644,18.5 18.5,21.8578644 18.5,26 C18.5,30.1421356 21.8578644,33.5 26,33.5 Z" id="合并形状" stroke="#DDDDDD" fill="#FFFFFF"></path><path d="M26,50 C12.745166,50 2,39.254834 2,26 C2,12.745166 12.745166,2 26,2 C39.254834,2 50,12.745166 50,26 C50,39.254834 39.254834,50 26,50 Z M26,36 C31.5228475,36 36,31.5228475 36,26 C36,20.4771525 31.5228475,16 26,16 C20.4771525,16 16,20.4771525 16,26 C16,31.5228475 20.4771525,36 26,36 Z" id="椭圆形" fill="#66C231" fill-rule="nonzero"></path></g></g></g></g></svg>
+            </div>
+            <div class="tip-item-describe">网点定损支出</div>
+        </div>
+
+        <div class="carts-tip-item flex-start-center">
+            <div class="tip-item-icon flex-center">
+                <svg width="27" height="32" viewBox="0 0 54 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><path d="M26,50 C12.745166,50 2,39.254834 2,26 C2,12.745166 12.745166,2 26,2 C39.254834,2 50,12.745166 50,26 C50,39.254834 39.254834,50 26,50 Z M26,36 C31.5228475,36 36,31.5228475 36,26 C36,20.4771525 31.5228475,16 26,16 C20.4771525,16 16,20.4771525 16,26 C16,31.5228475 20.4771525,36 26,36 Z" id="path-1"></path></defs><g id="123" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="人保地图" transform="translate(-134.000000, -956.000000)"><g id="图例" transform="translate(95.000000, 740.000000)"><g id="产保比" transform="translate(40.000000, 217.000000)"><path d="M13.8490285,49.5561353 C5.10998567,45.0396526 -0.5,36.0192158 -0.5,26 C-0.5,11.3644541 11.3644541,-0.5 26,-0.5 C40.6355459,-0.5 52.5,11.3644541 52.5,26 C52.5,36.0192158 46.8900143,45.0396526 38.1509715,49.5561353 L26,61.7071068 L13.8490285,49.5561353 Z M26,33.5 C30.1421356,33.5 33.5,30.1421356 33.5,26 C33.5,21.8578644 30.1421356,18.5 26,18.5 C21.8578644,18.5 18.5,21.8578644 18.5,26 C18.5,30.1421356 21.8578644,33.5 26,33.5 Z" id="合并形状" stroke="#DDDDDD" fill="#FFFFFF"></path><mask id="mask-2" fill="white"><use xlink:href="#path-1"></use></mask><use id="椭圆形" fill="#E74741" fill-rule="nonzero" xlink:href="#path-1"></use><rect id="矩形" stroke="#FFFFFF" fill="#66C231" fill-rule="nonzero" mask="url(#mask-2)" x="0" y="1" width="26" height="50"></rect></g></g></g></g></svg>
+            </div>
+            <div class="tip-item-describe">
+                <div class="item-describe-main">网点产保比例</div>
+                <div class="item-describe-lable">定损金额/保费收入</div>
+            </div>
+        </div>
+
+        <div class="carts-tip-item flex-start-center">
+            <div class="tip-item-icon flex-center">
+                <svg width="20" height="23" viewBox="0 0 40 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="123" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="人保地图" transform="translate(-141.000000, -1048.000000)"><g id="图例" transform="translate(95.000000, 740.000000)"><g id="无数据" transform="translate(46.000000, 308.000000)"><polygon id="Path" fill="#CCCCCC" transform="translate(20.000000, 41.500000) scale(1, -1) translate(-20.000000, -41.500000) " points="20 37 29 46 11 46"></polygon><circle id="Oval-8-Copy-2" stroke="#CCCCCC" stroke-width="12" fill="#F5F5F5" cx="20" cy="20" r="14"></circle></g></g></g></g></svg>
+            </div>
+            <div class="tip-item-describe">网点无数据</div>
+        </div>
+        <div class="carts-tip-line">
+        </div>
+
+        <div class="carts-tip-item flex-start-center">
+            <div class="tip-item-icon flex-center">
+                <svg width="20" height="23" viewBox="0 0 40 46" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><g id="123" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"><g id="人保地图" transform="translate(-141.000000, -1145.000000)"><g id="图例" transform="translate(95.000000, 740.000000)"><g id="未合作" transform="translate(46.000000, 405.000000)"><polygon id="Path" fill="#009FFF" transform="translate(20.000000, 41.500000) scale(1, -1) translate(-20.000000, -41.500000) " points="20 37 29 46 11 46"></polygon><circle id="Oval-8-Copy-2" stroke="#009FFF" stroke-width="12" fill="#F5F5F5" cx="20" cy="20" r="14"></circle></g></g></g></g></svg>
+            </div>
+            <div class="tip-item-describe">未合作网点</div>
+        </div>
+    </div>
+    
     <!-- 筛选模态框 -->
     <ModalByZindex 
         class="filter-modal"
@@ -393,6 +439,8 @@ export default {
                 percentage_90: percentage_90,
                 percentage_100: percentage_100,
             },
+
+            isShowMapTip: !window.sessionStorage.monitorcartstiphidden, // 是否显示 
 
             // 地图上的所有数据
             cartsMaplist: [
@@ -916,7 +964,7 @@ export default {
                 _this.isJoinNum = storeToMapCount.isJoinNum;
                 _this.isNotJoinNum = storeToMapCount.isNotJoinNum;
                 _this.newAddStoreNum = storeToMapCount.newAddStoreNum;
-                _this.signingRate = storeToMapCount.signingRate;
+                _this.signingRate = storeToMapCount.signingRate ? Math.round(storeToMapCount.signingRate * 100) / 100 : '0';
 
                 if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
                     _this.renderBaiduMapData([]); // 初始化百度地图
@@ -1197,6 +1245,14 @@ export default {
         },
 
         /**
+         * 关闭地图提示
+         */
+        closeMapTipHandle: function closeMapTipHandle() {
+            this.isShowMapTip = false; 
+            window.sessionStorage.monitorcartstiphidden = true;
+        },
+
+        /**
          * 跳转到路由
          * @param {object} query 携带的参数 非必填
          */
@@ -1401,6 +1457,7 @@ $black4: #C0C4CC;
     left: 15px;
     top: 15px;
     width: 300px;
+    z-index: 2;
 
     .carts-search-results {
         padding-top: 15px;
@@ -1464,6 +1521,49 @@ $black4: #C0C4CC;
                 height: 100%;
             }
         }
+    }
+}
+
+.monitor-carts-tip {
+    position: absolute;
+    left: 25px;
+    bottom: 25px;
+    padding: 15px;
+    width: 190px;
+    border-radius: 10px;
+    background: #fff;
+
+    .carts-tip-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+    }
+
+    .carts-tip-item {
+        padding: 5px 0px;
+    }
+
+    .tip-item-icon {
+        width: 30px;
+    }
+
+    .tip-item-describe {
+        padding-left: 7.5px;
+        color: $black1;
+    }
+
+    .item-describe-lable {
+        padding-top: 2.5px;
+        font-size: 12px;
+        color: $black3;
+    }
+
+    .carts-tip-line {
+        margin: 10px 0px 10px 0px;
+        width: 100%;
+        height: 1px;
+        border-bottom: 1px dashed #ddd;
     }
 }
 

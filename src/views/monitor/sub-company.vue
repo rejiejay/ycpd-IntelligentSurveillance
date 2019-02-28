@@ -14,7 +14,9 @@
                 end-placeholder="结束日期"
                 :picker-options="startendTimeOptions"
             ></el-date-picker>
-            <el-button icon="el-icon-download" type="primary" @click="exportCompanyMonitor">导出</el-button>
+
+            <el-button icon="el-icon-search" type="primary" @click="searchByConditions">查询</el-button>
+            <el-button icon="el-icon-download" type="success" @click="exportCompanyMonitor">导出</el-button>
         </div>
 
         <div class="company-operate-right">
@@ -346,22 +348,12 @@ export default {
         }
     },
 
-    watch: {
-        /**
-         * 开始结束时间
-         */
-        startendTime: function startendTime(newstartendTime) {
-            if (newstartendTime[0] && newstartendTime[1]) {
-                this.initCompanyMonitorList();
-            }
-        },
-    },
-
 	mounted: function mounted() {
         this.initCompanyMonitorList(); // 初始化 支公司监控
     },
 
 	methods: {
+
         /**
          * 初始化 支公司监控
          */
@@ -487,6 +479,17 @@ export default {
                 }
 
             }, error => console.log(error));
+        },
+
+        /**
+         * 通过条件查询
+         */
+        searchByConditions: function searchByConditions() {
+            if (this.startendTime[0] && this.startendTime[1]) {
+                this.initCompanyMonitorList();
+            } else {
+                this.$alert('查询的日期不能为空', '查询条件有误');
+            }
         },
 
         /**
