@@ -54,6 +54,14 @@
                 prop="alarmUser"
                 label="被预警人"
             ></el-table-column>
+            <el-table-column
+                prop="code"
+                label="发送状态"
+            ></el-table-column>
+            <el-table-column
+                prop="detail"
+                label="发送详情"
+            ></el-table-column>
         </el-table>
     </div>
 
@@ -199,6 +207,8 @@ export default {
                     newItem.alarmName = item.alarmName; // 预警名称
                     newItem.content = item.content; // 预警内容
                     newItem.alarmUser = item.alarmUser; // 被预警人
+                    newItem.code = item.code; // 发送短信状态
+                    newItem.detail = item.detail; // 发送短信错误信息
                     
                     return newItem;
                 });

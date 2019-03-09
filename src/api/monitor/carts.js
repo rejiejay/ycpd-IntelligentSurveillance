@@ -3,6 +3,10 @@ import config from '@/config';
 
 /**
  * 条件查询车商地图展示
+ * @param {string} minLng 最大最小经纬度
+ * @param {string} maxLng 最大最小经纬度
+ * @param {string} minLat 最大最小经纬度
+ * @param {string} maxLat 最大最小经纬度
  * @param {string} startDate 开始日期 2018-01-01 (非必填)
  * @param {string} endDate 结束日期 2018-01-01 (非必填)
  * @param {string} bcId 支公司 唯一标识
@@ -17,9 +21,13 @@ import config from '@/config';
  * @param {string} lowestProportion 最低占比
  * @param {string} highestProportion 最高占比
  */
-export function listStoreToMapUsingGET(startDate, endDate, bcId, teamId, id, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion) {
+export function listStoreToMapUsingGET(minLng, maxLng, minLat, maxLat, startDate, endDate, bcId, teamId, id, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion) {
     let urlparam = '';
 
+    urlparam += minLng ? `&minLng=${minLng}` : '';
+    urlparam += maxLng ? `&maxLng=${maxLng}` : '';
+    urlparam += minLat ? `&minLat=${minLat}` : '';
+    urlparam += maxLat ? `&maxLat=${maxLat}` : '';
     urlparam += startDate ? `&startDate=${startDate}` : '';
     urlparam += endDate ? `&endDate=${endDate}` : '';
     urlparam += bcId ? `&bcId=${bcId}` : '';

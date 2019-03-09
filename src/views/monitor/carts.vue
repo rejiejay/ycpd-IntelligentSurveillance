@@ -142,7 +142,7 @@
                     v-for="(item, key) in searchResults" 
                     :style="`${key !== (searchResults.length - 1) ? 'border-bottom: 1px solid #ddd;' : ''}`"
                     :key="key"
-                    @click="selectListBySearch(item.id)"
+                    @click="selectListBySearch(item.longitude, item.latitude, item.id)"
                 >
                     <div class="results-item-left flex-rest">
                         <div class="item-left-title">{{item.title}}</div>
@@ -424,6 +424,8 @@ export default {
 
             mountBaiduMap: new BMap.Map('BaiduMap'), // 百度地图实例 
 
+            isSelectedMap: false, // 是否选中地图 用于判断是否清空地图标志 防止重复渲染
+
             img: {
                 no_cooperate: no_cooperate,
                 percentage_none: percentage_none,
@@ -443,6 +445,8 @@ export default {
             isShowMapTip: !window.sessionStorage.monitorcartstiphidden, // 是否显示 
 
             // 地图上的所有数据
+            allCartsMaplist: [],
+            // 目前地图上渲染的数据
             cartsMaplist: [
                 // {
                 //     id: '4028ba816856df53016856e344b40000',
@@ -489,6 +493,7 @@ export default {
                 //     ratemax: 3,
                 // }
             ],
+            searchSelectedId: null, // 侧边栏选中唯一标识 用于匹配地图数据
 
             /**
              * 筛选
@@ -633,11 +638,16 @@ export default {
     },
 
 	mounted: function mounted() {
-        // this.initBaiduMap(); // 初始化百度地图
+        this.initBaiduMap(); // 初始化百度地图
         this.initListStoreToMap(); // 条件查询车商地图展示
 
         this.queryCompanyList(); // 支公司下拉选项
         this.selectCartsStoreSearch(''); // 初始化 车行下拉列表
+    },
+
+    destroyed: function destroyed() {
+        this.mountBaiduMap.removeEventListener("dragend", this.initListStoreToMap);
+        this.mountBaiduMap.removeEventListener("zoomend", this.initListStoreToMap);
     },
 
 	methods: {
@@ -733,8 +743,6 @@ export default {
                     return false;
                 }
 
-                // _this.renderBaiduMapData(data); // 不用重新渲染地图
-
                 _this.searchResults = data.map(val => {
                     let newItem = {};
 
@@ -765,6 +773,8 @@ export default {
                     newItem.rate = myStar.rate;
                     newItem.ratemax = myStar.ratemax;
                     newItem.rateLable = val.star;
+                    newItem.longitude = val.longitude;
+                    newItem.latitude = val.latitude;
 
                     return newItem
                 });
@@ -776,42 +786,18 @@ export default {
         /**
          * 点击搜索的下拉列表
          */
-        selectListBySearch: function selectListBySearch(id) {
-            let newCartsMaplist = this.cartsMaplist.concat([]);
+        selectListBySearch: function selectListBySearch(longitude, latitude, id) {
+            if (longitude && latitude) {
+                this.isSelectedMap = true; // 设置为 选中地图
+                // 设置地图中心
+                let myZoom = this.mountBaiduMap.getZoom();
+                this.mountBaiduMap.centerAndZoom(new BMap.Point(longitude, latitude), myZoom);
 
-            this.cartsMaplist = newCartsMaplist.map(val => {
-                if (val.id === id) {
-                    val.isSelected = true;
-                } else {
-                    val.isSelected = false;
-                }
-                return val;
-            });
-            this.getStoreById(id);
-            this.initBaiduMap(); // 初始化百度地图
-        },
+                this.searchSelectedId = id;
+            }
 
-        /**
-         * 根据数据库的数据渲染百度地图
-         */
-        renderBaiduMapData: function renderBaiduMapData(params) {
-            this.cartsMaplist = params.map(val => {
-                let newItem = {};
-
-                newItem.id = val.id; // 车行唯一标识
-                newItem.title = val.networkName; // 车行名称
-                newItem.address = val.address; // 车行地址
-                newItem.isSelected = false; // 是否被选中
-                newItem.isCooperate = val.isJoin === 1 ? true : false; // 是否合作
-                newItem.lossAmount = val.sumlossfee; // 定损金额
-                newItem.premiumAmount = val.sumpremium; // 保费金额
-                newItem.longitude = val.longitude; // 经度
-                newItem.latitude = val.latitude; // 纬度
-
-                return newItem
-            });
-
-            this.initBaiduMap(); // 初始化百度地图
+            this.getStoreById(id); // 根据ID,查询车行详情信
+            this.initListStoreToMap(); // 因为地图移动了, 所以加载一次数据
         },
 
         /**
@@ -840,6 +826,32 @@ export default {
             let highestMaterialfee = this.maxLoss ? this.maxLoss : ''; 
             let lowestProportion = this.minProportion ? (this.minProportion / 100) : ''; 
             let highestProportion = this.maxProportion ? (this.maxProportion / 100) : '';
+
+            /**
+             * 获取中心点
+             */
+            let Bounds = this.mountBaiduMap.getBounds(); // 获取中心点类
+            let centerPoint = Bounds.getCenter(); // 矩形区域的跨度
+            let centerlongitude = centerPoint.lng;
+            let centerlatitude = centerPoint.lat;
+
+            /**
+             * 获取最小最大经纬度
+             */
+            let mySpan = Bounds.toSpan(); // 跨度
+            let myHalfSpan = { // 一半的跨度
+                lng: (mySpan.lng / 2),
+                lat: (mySpan.lat / 2),
+            };
+            // let myHalfPoint = new BMap.Point( // 距离中心点一半的坐标点
+            //     (centerPoint.lng + myHalfSpan.lng),
+            //     (centerPoint.lat + myHalfSpan.lat)
+            // );
+            // let myHalfSpanDistance = Math.floor(this.mountBaiduMap.getDistance(centerPoint, myHalfPoint)); // 屏幕的距离（米）
+            let minLng = centerPoint.lng - myHalfSpan.lng;
+            let maxLng = centerPoint.lng + myHalfSpan.lng;
+            let minLat = centerPoint.lat - myHalfSpan.lat;
+            let maxLat = centerPoint.lat + myHalfSpan.lat;
 
             /**
              * 提交数据的筛选条件展示
@@ -953,8 +965,41 @@ export default {
                 this.proportionLable = ''; // 清空
             }
 
+            /**
+             * 根据数据库的数据渲染百度地图
+             */
+            function renderBaiduMapData(params) {
+                let newCartsMaplist = [];
+                if (params && params.length > 0) {
+                    params.map(val => {
+                        // 判断 点的地理坐标位于此矩形内
+                        // if (val.longitude && val.latitude && Bounds.containsPoint(new BMap.Point(val.longitude, val.latitude))) {
+                            let newItem = {};
+
+                            newItem.id = val.id; // 车行唯一标识
+                            newItem.title = val.networkName; // 车行名称
+                            newItem.address = val.address; // 车行地址
+                            // newItem.isSelected = false; // 是否被选中 因为性能问题, 这个需要删除掉
+                            newItem.isCooperate = val.isJoin === 1 ? true : false; // 是否合作
+                            newItem.lossAmount = val.sumlossfee; // 定损金额
+                            newItem.premiumAmount = val.sumpremium; // 保费金额
+                            newItem.longitude = val.longitude; // 经度
+                            newItem.latitude = val.latitude; // 纬度
+
+                            newCartsMaplist.push(newItem);
+                        // }
+
+                        return val
+                    });
+                }
+
+                _this.cartsMaplist = newCartsMaplist; // 初始化 目前地图上渲染的数据
+
+                _this.renderMarkerPoint(); // 初始化百度地图
+            }
+
             this.isFilterModalShow = false; // 开始请求, 关闭模态框
-            listStoreToMapUsingGET(startDate, endDate, bcId, teamId, networkName, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion)
+            listStoreToMapUsingGET(minLng, maxLng, minLat, maxLat, startDate, endDate, bcId, teamId, networkName, isJoin, networkType, lowestSumpremium, highestSumpremium, lowestMaterialfee, highestMaterialfee, lowestProportion, highestProportion)
             .then(val => {
                 let data = val.data;
 
@@ -967,11 +1012,11 @@ export default {
                 _this.signingRate = storeToMapCount.signingRate ? Math.round(storeToMapCount.signingRate * 100) / 100 : '0';
 
                 if (!data || !data.storeMaps || data.storeMaps instanceof Array === false || data.storeMaps.length <= 0) {
-                    _this.renderBaiduMapData([]); // 初始化百度地图
+                    renderBaiduMapData([]); // 初始化百度地图
                     return false;
                 }
 
-                _this.renderBaiduMapData(data.storeMaps); // 渲染百度地图
+                renderBaiduMapData(data.storeMaps); // 渲染百度地图
 
             }, error => console.log(error));
         },
@@ -1044,7 +1089,7 @@ export default {
             .then(val => {
                 let data = val.data;
 
-                console.log(data)
+                console.log(data);
 
                 _this.storeId = data.id; // 车商id
                 _this.storenetworkName = data.networkName; // 网点名称
@@ -1089,16 +1134,18 @@ export default {
 
         /**
          * 初始化百度地图
+         * 只需要执行一次即可
          */
         initBaiduMap: function initBaiduMap() {
             this.mountBaiduMap = new BMap.Map('BaiduMap'); // 创建地图实例  
-            this.mountBaiduMap.centerAndZoom(new BMap.Point(114.059560, 22.542860), 13); // 初始化地图，设置中心点坐标(深圳福田) 和地图级别  
+            this.mountBaiduMap.centerAndZoom(new BMap.Point(114.059560, 22.542860), 14); // 初始化地图，设置中心点坐标(深圳福田) 和地图级别  
             this.mountBaiduMap.enableScrollWheelZoom(true); //开启鼠标滚轮缩放
             this.mountBaiduMap.addControl(new BMap.NavigationControl({
                 offset: new BMap.Size(10, 65),
             }));
-
-            this.renderMarkerPoint();
+            
+            this.mountBaiduMap.addEventListener("dragend", this.initListStoreToMap);
+            this.mountBaiduMap.addEventListener("zoomend", this.initListStoreToMap);
         },
     
         /**
@@ -1107,6 +1154,14 @@ export default {
          */
         renderMarkerPoint: function renderMarkerPoint() {
             const _this = this;
+
+            // 只有当 不是选中地图的时候才清空
+            if (this.isSelectedMap === false) {
+                this.mountBaiduMap.clearOverlays(); // 清除所有遮罩物
+            } else {
+                // 选中地图的时候, 设置为已经选中过
+                this.isSelectedMap = false;
+            }
 
             /**
              * 根据 定损金额/保费金额 算出 选择哪张图片
@@ -1131,7 +1186,7 @@ export default {
                 // 图标
                 let baiduMapIcon = new BMap.Icon(
                     _this.img.no_cooperate, // 图片（不合作）
-                    new BMap.Size(24, 38), // 尺寸大小
+                    new BMap.Size(12, 19), // 尺寸大小
                 );
 
                 /**
@@ -1201,8 +1256,27 @@ export default {
                 // 开始渲染
                 _this.mountBaiduMap.addOverlay(baiduMapMarker);
 
-                // 选中
-                if (val.isSelected) {
+                // 渲染选中
+                if (_this.searchSelectedId === val.id) {
+                    _this.searchSelectedId = null; // 匹配成功，删除掉匹配数据，防止重复
+                    // 创建信息窗口对象    
+                    let infoWindow = new BMap.InfoWindow(
+                        val.address, 
+                        {    
+                            width : 100,     // 信息窗口宽度 
+                            height: 22,     // 信息窗口高度    
+                            title : val.title  // 信息窗口标题   
+                        }
+                    );
+                    // 打开信息窗口
+                    _this.mountBaiduMap.openInfoWindow(infoWindow, baiduMapPoint); 
+                }
+
+                // 绑定事件
+                baiduMapMarker.addEventListener("click", function () {
+                    _this.getStoreById(_this.cartsMaplist[key].id); // 根据ID,查询车行详情信
+
+                    _this.isSelectedMap = true; // 设置为 选中地图
 
                     // 创建信息窗口对象    
                     let infoWindow = new BMap.InfoWindow(
@@ -1218,28 +1292,7 @@ export default {
 
                     let myZoom = _this.mountBaiduMap.getZoom();
                     _this.mountBaiduMap.centerAndZoom(baiduMapPoint, myZoom); 
-                }
-
-                // 绑定事件
-                baiduMapMarker.addEventListener("click", function () {
-                    _this.getStoreById(_this.cartsMaplist[key].id); // 根据ID,查询车行详情信
-
-                    let newCartslist = _this.cartsMaplist.concat([]);
-
-                    _this.mountBaiduMap.clearOverlays(); // 清除所有遮罩物
-
-                    _this.cartsMaplist = newCartslist.map((data, index) => {
-                        // 选中
-                        if (key === index) {
-                            data.isSelected = true;
-                        } else {
-                            data.isSelected = false;
-                        }
-                        
-                        return data;
-                    });
-
-                    _this.renderMarkerPoint(); // 重新渲染
+                    _this.initListStoreToMap(); // 因为地图移动了, 所以加载一次数据
                 });
             });
         },

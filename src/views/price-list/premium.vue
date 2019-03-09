@@ -351,7 +351,34 @@ export default {
 
                     newItem.netCode = val.monopolycode; // 网点编码
                     newItem.netName = val.repairfactoryname; // 网点名称	
-                    newItem.netType = val.repairfactorytype; // 网点类型	
+
+                    if (val.repairfactorytype == '0') {
+                        newItem.netType = '4S店';
+
+                    } else if (val.repairfactorytype == '1') {
+                        newItem.netType = '修理厂';
+
+                    } else if (val.repairfactorytype == '2') {
+                        newItem.netType = '二网';
+
+                    } else if (val.repairfactorytype == '3') {
+                        newItem.netType = '二手车行';
+
+                    } else if (val.repairfactorytype == '4') {
+                        newItem.netType = '续保';
+
+                    } else if (val.repairfactorytype == '5') {
+                        newItem.netType = '非车险';
+
+                    } else if (val.repairfactorytype == '6') {
+                        newItem.netType = '网络销售';
+
+                    } else if (val.repairfactorytype == '7') {
+                        newItem.netType = '其他';
+
+                    } else {
+                        newItem.netType = ''; // 网点类型
+                    }
                     newItem.netRate = val.netpointstart; // 网点星级
                     newItem.subCompany = val.bcName; // 支公司
                     newItem.team = val.teamName; // 业务团队
