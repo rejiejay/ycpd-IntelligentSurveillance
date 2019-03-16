@@ -123,6 +123,11 @@
                 width="120"
             ></el-table-column>
             <el-table-column
+                prop="teamCode"
+                label="团队代码"
+                width="120"
+            ></el-table-column>
+            <el-table-column
                 prop="teamManager"
                 label="团队经理"
                 width="120"
@@ -362,6 +367,7 @@ export default {
                     newItem.subCompanyCode = val.bcCode; // 支公司代码
                     newItem.linkCode = val.channelCode; // 渠道代码
                     newItem.team = val.teamName; // 团队名称
+                    newItem.teamCode = val.teamCode; // 团队代码
                     newItem.teamManager = val.teamManager; // 团队经理
                     newItem.remark = val.remark; // 备注
                     

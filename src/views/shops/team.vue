@@ -44,7 +44,11 @@
             ></el-table-column>
             <el-table-column
                 prop="subCompany"
-                label="支公司"
+                label="支公司名称"
+            ></el-table-column>
+            <el-table-column
+                prop="bcCode"
+                label="支公司代码"
             ></el-table-column>
             <el-table-column
                 prop="remark"
@@ -220,6 +224,7 @@ export default {
                     newItem.teamLeader = val.manager; // 团队经理
                     newItem.phone = val.phone; // 分管领导电话
                     newItem.subCompany = val.bcName; // 支公司名称
+                    newItem.bcCode = val.bcCode; // 支公司代码
                     newItem.remark = val.remark; // 备注
                     
                     return newItem
